@@ -11,7 +11,6 @@ public class HmmmLibrary {
 		LOGGER.info("Initializing HmmmLibrary");
 		initializeEvents();
 	}
-
 	public static void initializeEvents(){
 		EventHandler.init();
 	}
