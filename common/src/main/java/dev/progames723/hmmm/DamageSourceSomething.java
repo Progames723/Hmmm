@@ -13,9 +13,9 @@ public class DamageSourceSomething {
 	private DamageSourceSomething() {}
 	/**
 	 * Creates a new {@link DamageSource} from {@link DamageType}.
-	 * @param level         registry access for retrieving dynamic {@link DamageType} registry.
-	 * @param damageType    key for finding the {@link DamageType}.
-	 * @param directEntity  the entity directly responsible for causing damage.
+	 * @param level registry access for retrieving dynamic {@link DamageType} registry.
+	 * @param damageType key for finding the {@link DamageType}.
+	 * @param directEntity the entity directly responsible for causing damage.
 	 * @param causingEntity the entity that is responsible for <code>directEntity</code> to cause damage to the target, or an {@link net.minecraft.world.entity.Entity} that shot the projectile.
 	 * @return new {@link DamageSource} instance.
 	 */
@@ -25,9 +25,9 @@ public class DamageSourceSomething {
 	/**
 	 * Creates a new {@link DamageSource} from {@link DamageType}.
 	 * @param registryAccess registry access for retrieving dynamic {@link DamageType} registry.
-	 * @param damageType     key for finding the {@link DamageType}.
-	 * @param directEntity   the entity directly responsible for causing damage.
-	 * @param causingEntity  the entity that is responsible for <code>directEntity</code> to cause damage to the target.
+	 * @param damageType key for finding the {@link DamageType}.
+	 * @param directEntity the entity directly responsible for causing damage.
+	 * @param causingEntity the entity that is responsible for <code>directEntity</code> to cause damage to the target.
 	 * @return new {@link DamageSource} instance.
 	 */
 	public static DamageSource of(RegistryAccess registryAccess, ResourceKey<DamageType> damageType, @Nullable Entity directEntity, @Nullable Entity causingEntity) {

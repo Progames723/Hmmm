@@ -10,7 +10,7 @@ public class LivingEvents {
 	private LivingEvents() {}
 	/**
 	 * Triggered before {@code LivingEntity} is damaged, before damage is reduced.<p>
-	 * {@link  Level} is already included for less boilerplate™!
+	 * {@link  Level} is already included for less boilerplate!
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingHurt> BEFORE_LIVING_HURT = EventFactory.createArrayBacked(LivingEvents.livingHurt.class, callbacks -> (level, entity, damageSource, damageAmount) -> {
@@ -27,7 +27,7 @@ public class LivingEvents {
 	});
 	/**
 	 * Triggered before {@code LivingEntity} is damaged, after damage is reduced.<p>
-	 * {@link Level} is already included for less boilerplate™!
+	 * {@link Level} is already included for less boilerplate!
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingDamaged> BEFORE_LIVING_DAMAGED = EventFactory.createArrayBacked(LivingEvents.livingDamaged.class, callbacks -> (level, entity, damageSource, damageAmount) -> {
@@ -44,7 +44,7 @@ public class LivingEvents {
 	});
 	/**
 	 * Triggered before {@code LivingEntity} is damaged, can be cancelled by returning false.<p>
-	 * {@link Level} is already included for less boilerplate™!
+	 * {@link Level} is already included for less boilerplate!
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingHurtCancellable> BEFORE_LIVING_HURT_CANCELLABLE = EventFactory.createArrayBacked(LivingEvents.livingHurtCancellable.class, callbacks -> (level, entity, damageSource, damageAmount) -> {

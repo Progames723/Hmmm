@@ -11,7 +11,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 public class MinecraftDamageReduction {
 	/**
 	 * Calculates magic damage reduction<p>
-	 * Ripped straight from minecraft's code™!
+	 * Ripped straight from minecraft's code!
 	 * @param arg {@link DamageSource}
 	 * @param entity a {@link LivingEntity}
 	 * @param g {@link Float} damage amount
@@ -45,7 +45,7 @@ public class MinecraftDamageReduction {
 
 	/**
 	 * Calculates armor damage reduction<p>
-	 * Ripped straight from minecraft's code™!
+	 * Ripped straight from minecraft's code!
 	 * @param damage {@link Float} damage amount
 	 * @param entity a {@link LivingEntity}
 	 * @param source {@link DamageSource}
