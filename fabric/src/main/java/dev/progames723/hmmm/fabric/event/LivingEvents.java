@@ -26,7 +26,7 @@ public class LivingEvents {
 		return damageAmount;
 	});
 	/**
-	 * Triggered before {@code LivingEntity} is damaged, after damage is reduced.<p>
+	 * Triggered before {@code LivingEntity} is damaged, but after damage is reduced.<p>
 	 * {@link Level} is already included for less boilerplate!
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */

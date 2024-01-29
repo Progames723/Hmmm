@@ -15,4 +15,5 @@ public class HmmmDamageTypes {
 		return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(HmmmLibrary.MOD_ID, name));
 	}
 	public static ResourceKey<DamageType> PIERCING = register("piercing");
+	public static ResourceKey<DamageType> BLEED = register("bleed");
 }
