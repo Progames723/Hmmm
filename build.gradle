@@ -48,6 +48,11 @@ allprojects {
         options.encoding = "UTF-8"
         options.release.set(17)
     }
+    tasks.withType(Jar) {
+        manifest {
+            attributes["Fabric-Loom-Remap"] = true
+        }
+    }
 
     java {
         withSourcesJar()
