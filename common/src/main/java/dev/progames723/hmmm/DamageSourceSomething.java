@@ -10,7 +10,7 @@ import net.minecraft.world.level.LevelReader;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageSourceSomething {
-	private DamageSourceSomething() {}
+	private DamageSourceSomething(){}
 	/**
 	 * Creates a new {@link DamageSource} from {@link DamageType}.
 	 * @param level registry access for retrieving dynamic {@link DamageType} registry.

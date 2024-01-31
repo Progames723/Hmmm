@@ -26,7 +26,7 @@ public abstract class LivingEntityMixin extends Entity {
 			argsOnly = true
 	)
 	private float onLivingDamaged(float f, DamageSource damageSource, float damage){
-		LivingEntity livingEntity = (LivingEntity)(Object)this;
+		LivingEntity livingEntity = (LivingEntity) (Object) this;
 		Level level = livingEntity.level();
 		float newValue = LivingEvents.BEFORE_LIVING_DAMAGED.invoker().onLivingDamaged(
 				level, livingEntity, damageSource, f);
@@ -41,7 +41,7 @@ public abstract class LivingEntityMixin extends Entity {
 			argsOnly = true
 	)
 	private float onLivingHurt(float originalValue, DamageSource source, float amount) {
-		LivingEntity entity = (LivingEntity)(Object)this;
+		LivingEntity entity = (LivingEntity) (Object) this;
 		Level level = entity.level();
 		float newValue = LivingEvents.BEFORE_LIVING_HURT.invoker().onLivingHurt(
 				level, entity, source, originalValue);
@@ -65,5 +65,4 @@ public abstract class LivingEntityMixin extends Entity {
 			cir.setReturnValue(false);
 		}
 	}
-
 }

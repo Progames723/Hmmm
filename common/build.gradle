@@ -11,6 +11,12 @@ dependencies {
 architectury {
     common("fabric", "forge")
 }
+tasks.withType(Jar) {
+    manifest {
+        attributes["Fabric-Loom-Remap"] = true
+        attributes["Fabric-Mapping-Namespace"] = "named"
+    }
+}
 
 publishing {
     publications {
