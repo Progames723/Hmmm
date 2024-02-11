@@ -1,4 +1,4 @@
-package dev.progames723.hmmm;
+package dev.progames723.hmmm.damage_types;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;

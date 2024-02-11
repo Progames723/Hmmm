@@ -17,7 +17,7 @@ public class MinecraftDamageReduction {
 	 * @param g {@link Float} damage amount
 	 * @return reduced damage(if reduction can be applied)
 	 */
-	public float getDamageAfterMagicAbsorb(DamageSource arg, LivingEntity entity, float g) {
+	public static float getDamageAfterMagicAbsorb(DamageSource arg, LivingEntity entity, float g) {
 		if (arg.is(DamageTypeTags.BYPASSES_EFFECTS)) {
 			return g;
 		} else {
@@ -51,7 +51,7 @@ public class MinecraftDamageReduction {
 	 * @param source {@link DamageSource}
 	 * @return reduced damage(if reduction can be applied)
 	 */
-	public float getDamageAfterArmorAbsorb(float damage, LivingEntity entity, DamageSource source) {
+	public static float getDamageAfterArmorAbsorb(float damage, LivingEntity entity, DamageSource source) {
 		if (source.is(DamageTypeTags.BYPASSES_ARMOR)) {
 			return damage;
 		}

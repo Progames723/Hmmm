@@ -1,8 +1,11 @@
 package dev.progames723.hmmm.fabric.event;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -56,6 +59,15 @@ public class LivingEvents {
 		}
 		return true;
 	});
+	public static final Event<LivingEvents.effectTick> ON_LIVING_EFFECT_TICK = EventFactory.createArrayBacked(LivingEvents.effectTick.class, callbacks -> (entity, effect, effectInstance) -> {
+		for (LivingEvents.effectTick callback : callbacks) {
+			callback.onEffectTick(entity, effect, effectInstance);
+		}
+	});
+	@FunctionalInterface
+	public interface effectTick {
+		void onEffectTick(Entity entity, MobEffect effect, MobEffectInstance effectInstance);
+	}
 	@FunctionalInterface
 	public interface livingDamaged {
 		float onLivingDamaged(Level level, Entity entity, DamageSource damageSource, float damageAmount);
