@@ -2,6 +2,8 @@ package dev.progames723.hmmm.fabric.mixin;
 
 import com.google.common.collect.Maps;
 import dev.progames723.hmmm.fabric.event.LivingEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -9,7 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,17 +25,17 @@ import java.util.Map;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
+	@Final @Shadow private Map<MobEffect, MobEffectInstance> activeEffects = Maps.newHashMap();
 	private LivingEntityMixin(EntityType<?> entityType, Level level) {
 		super(entityType, level);
 	}
-	@Final @Shadow private final Map<MobEffect, MobEffectInstance> activeEffects = Maps.newHashMap();
-	@Shadow protected void onEffectUpdated(MobEffectInstance mobEffectInstance, boolean bl, @Nullable Entity entity) {}
-	@Shadow protected void onEffectRemoved(MobEffectInstance mobEffectInstance) {}
 	@ModifyVariable(
 			method = "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V",
-			at = @At(value = "INVOKE",
+			at = @At(
+					value = "INVOKE",
 					target = "Ljava/lang/Math;max(FF)F",
-					ordinal = 0),
+					ordinal = 0
+			),
 			ordinal = 0,
 			argsOnly = true
 	)
@@ -56,8 +57,7 @@ public abstract class LivingEntityMixin extends Entity {
 	private float onLivingHurt(float originalValue, DamageSource source, float amount) {
 		LivingEntity entity = (LivingEntity) (Object) this;
 		Level level = entity.level();
-		float newValue = LivingEvents.BEFORE_LIVING_HURT.invoker().onLivingHurt(
-				level, entity, source, originalValue);
+		float newValue = LivingEvents.BEFORE_LIVING_HURT.invoker().onLivingHurt(level, entity, source, originalValue);
 		if (newValue <= 0){
 			newValue = 0;
 		}
@@ -79,25 +79,87 @@ public abstract class LivingEntityMixin extends Entity {
 		}
 	}
 	@Inject(
-			method = "tickEffects",
+			method = "tick",
 			at = @At(value = "HEAD")
 	)
-	private void livingEffectTick(CallbackInfo ci){
-		Iterator<MobEffect> iterator = this.activeEffects.keySet().iterator();
-		while(iterator.hasNext()) {
-			MobEffect mobEffect = iterator.next();
-			MobEffectInstance mobEffectInstance = this.activeEffects.get(mobEffect);
-			LivingEvents.ON_LIVING_EFFECT_TICK.invoker().onEffectTick((LivingEntity) (Object) this, mobEffect, mobEffectInstance);
-			if (!mobEffectInstance.tick((LivingEntity) (Object) this, () -> {
-				this.onEffectUpdated(mobEffectInstance, true, null);
-			})) {
-				if (!this.level().isClientSide) {
-					iterator.remove();
-					this.onEffectRemoved(mobEffectInstance);
-				}
-			} else if (mobEffectInstance.getDuration() % 600 == 0) {
-				this.onEffectUpdated(mobEffectInstance, false, null);
-			}
+	private void livingTick(CallbackInfo ci){
+		LivingEntity entity = (LivingEntity) (Object) this;
+		LivingEvents.ON_LIVING_TICK.invoker().onLivingTick(entity.level(), entity);
+	}
+	@Inject(
+			method = "tickEffects",
+			at = @At(
+					value = "HEAD"
+			)
+	)
+	private void tickEffect(CallbackInfo ci){
+		LivingEntity entity = (LivingEntity) (Object) this;
+		MobEffectInstance mobEffectInstance;
+		while (this.activeEffects.values().iterator().hasNext()) {
+			mobEffectInstance = this.activeEffects.values().iterator().next();
+			MobEffect mobEffect = mobEffectInstance.getEffect();
+			LivingEvents.ON_LIVING_EFFECT_TICK.invoker().onLivingEffectTick(entity.level(), entity, mobEffectInstance, mobEffect);
+		}
+	}
+	@Inject(
+			method = "tickEffects",
+			at = @At(
+					value = "INVOKE",
+					target = "Ljava/util/Iterator;remove()V"
+			)
+	)
+	private void effectExpired(CallbackInfo ci){
+		LivingEntity entity = (LivingEntity) (Object) this;
+		MobEffectInstance mobEffectInstance;
+		while (this.activeEffects.values().iterator().hasNext()) {
+			mobEffectInstance = this.activeEffects.values().iterator().next();
+			MobEffect mobEffect = mobEffectInstance.getEffect();
+			LivingEvents.ON_LIVING_EFFECT_EXPIRED.invoker().onLivingEffectExpired(entity.level(), entity, mobEffectInstance, mobEffect);
+		}
+	}
+	@Inject(
+			method = "canBeAffected",
+			at = @At(
+					value = "HEAD"
+			),
+			cancellable = true
+	)
+	private void beforeEffectApplied(MobEffectInstance mobEffectInstance, CallbackInfoReturnable<Boolean> cir) {
+		LivingEntity entity = (LivingEntity) (Object) this;
+		MobEffect mobEffect = mobEffectInstance.getEffect();
+		LivingEvents.EventLogic the = LivingEvents.LIVING_BEFORE_EFFECT_APPLIED.invoker().livingBeforeEffectApplied(entity.level(), entity, mobEffectInstance, mobEffect);
+		if (the == LivingEvents.EventLogic.YES){
+			cir.setReturnValue(true);
+		} else if (the == LivingEvents.EventLogic.NO) {
+			cir.setReturnValue(false);
+		}
+	}
+	@Inject(
+			method = "onEffectRemoved",
+			at = @At(
+					value = "HEAD"
+			),
+			cancellable = true
+	)
+	private void beforeEffectRemoved(MobEffectInstance mobEffectInstance, CallbackInfo ci) {
+		LivingEntity entity = (LivingEntity) (Object) this;
+		MobEffect mobEffect = mobEffectInstance.getEffect();
+		if (!LivingEvents.LIVING_BEFORE_EFFECT_REMOVED.invoker().livingBeforeEffectRemoved(entity.level(), entity, mobEffectInstance, mobEffect)){
+			ci.cancel();
+		}
+	}
+	@Inject(
+			method = "onEffectAdded",
+			at = @At(
+					value = "HEAD"
+			),
+			cancellable = true
+	)
+	private void beforeEffectAdded(MobEffectInstance mobEffectInstance, Entity entity2, CallbackInfo ci) {
+		LivingEntity entity = (LivingEntity) (Object) this;
+		MobEffect mobEffect = mobEffectInstance.getEffect();
+		if (!LivingEvents.LIVING_BEFORE_EFFECT_ADDED.invoker().livingBeforeEffectAdded(entity.level(), entity, mobEffectInstance, mobEffect)) {
+			ci.cancel();
 		}
 	}
 }
