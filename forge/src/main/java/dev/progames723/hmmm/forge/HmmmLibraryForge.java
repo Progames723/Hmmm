@@ -2,9 +2,6 @@ package dev.progames723.hmmm.forge;
 
 import dev.architectury.platform.forge.EventBuses;
 import dev.progames723.hmmm.HmmmLibrary;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
