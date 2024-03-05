@@ -10,11 +10,12 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * This is a collection of {@code registries}
+ * This is a collection of {@code registries}<p>
  * That i will use often(and not)
  */
 public class HmmmRegistries {
@@ -44,6 +45,12 @@ public class HmmmRegistries {
 			logger.info("Registered attribute: " + name);
 		}
 		return Registry.register(BuiltInRegistries.ATTRIBUTE, new ResourceLocation(modid, name), obj);
+	}
+	public static Block registerBlock(String modid, String name, Block obj, @Nullable Logger logger) {
+		if (logger != null) {
+			logger.info("Registered attribute: " + name);
+		}
+		return Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(modid, name), obj);
 	}
 
 	public static ResourceKey<DamageType> registerDamageType(String modid, String name, @Nullable Logger logger) {

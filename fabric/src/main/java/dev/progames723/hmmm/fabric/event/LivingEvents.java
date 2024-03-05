@@ -43,8 +43,7 @@ public class LivingEvents {
 		}
 	}
 	/**
-	 * Triggered before {@code LivingEntity} is damaged, before damage is reduced.<p>
-	 * {@link  Level} is already included for less boilerplate!
+	 * Triggered before {@code LivingEntity} is damaged, before damage is reduced.
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingHurt> BEFORE_LIVING_HURT = EventFactory.createArrayBacked(LivingEvents.livingHurt.class, callbacks -> (level, entity, damageSource, damageAmount) -> {
@@ -62,7 +61,6 @@ public class LivingEvents {
 	/**
 	 * Triggered before {@code LivingEntity} is damaged, but after damage is reduced.<p>
 	 * Cancelling the event WILL NOT RESTORE THE DURABILITY and etc
-	 * {@link Level} is already included for less boilerplate!
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingDamaged> BEFORE_LIVING_DAMAGED = EventFactory.createArrayBacked(LivingEvents.livingDamaged.class, callbacks -> (level, entity, damageSource, damageAmount) -> {
@@ -78,8 +76,7 @@ public class LivingEvents {
 		return damageAmount;
 	});
 	/**
-	 * Triggered before {@code LivingEntity} is damaged, can be cancelled by returning false.<p>
-	 * {@link Level} is already included for less boilerplate!
+	 * Triggered before {@code LivingEntity} is damaged, can be cancelled by returning false.
 	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingHurtCancellable> BEFORE_LIVING_HURT_CANCELLABLE = EventFactory.createArrayBacked(LivingEvents.livingHurtCancellable.class, callbacks -> (level, entity, damageSource, damageAmount) -> {
@@ -91,6 +88,10 @@ public class LivingEvents {
 		}
 		return true;
 	});
+	/**
+	 * Triggered before {@code LivingEntity} is ticked, can not be cancelled.
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
+	 */
 	public static final Event<LivingEvents.livingTick> ON_LIVING_TICK = EventFactory.createArrayBacked(LivingEvents.livingTick.class, callbacks -> (level, entity) -> {
 		for (LivingEvents.livingTick callback : callbacks) {
 			callback.onLivingTick(level, entity);
@@ -98,17 +99,27 @@ public class LivingEvents {
 	});
 	/**
 	 * Ticks absolutely every effect on {@link LivingEntity}
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
 	 */
 	public static final Event<LivingEvents.livingEffectTick> ON_LIVING_EFFECT_TICK = EventFactory.createArrayBacked(LivingEvents.livingEffectTick.class, callbacks -> (level, entity, mobEffectInstance, mobEffect) -> {
 		for (LivingEvents.livingEffectTick callback : callbacks) {
 			callback.onLivingEffectTick(level, entity, mobEffectInstance, mobEffect);
 		}
 	});
+	/**
+	 * Triggered before an effect on a {@code LivingEntity} is expired, can not be cancelled.
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
+	 */
 	public static final Event<LivingEvents.livingEffectExpired> ON_LIVING_EFFECT_EXPIRED = EventFactory.createArrayBacked(LivingEvents.livingEffectExpired.class, callbacks -> (level, entity, mobEffectInstance, mobEffect) -> {
 		for (LivingEvents.livingEffectExpired callback : callbacks) {
 			callback.onLivingEffectExpired(level, entity, mobEffectInstance, mobEffect);
 		}
 	});
+	/**
+	 * Triggered before {@code LivingEntity} is applied, can be cancelled by returning {@link EventLogic#NO}, <p>
+	 * {@link EventLogic#YES} ignores minecraft's effect applying logic and {@link EventLogic#DEFAULT} uses minecraft's logic
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
+	 */
 	public static final Event<LivingEvents.beforeEffectApplied> LIVING_BEFORE_EFFECT_APPLIED = EventFactory.createArrayBacked(LivingEvents.beforeEffectApplied.class, callbacks -> (level, entity, mobEffectInstance, mobEffect) -> {
 		for (LivingEvents.beforeEffectApplied callback : callbacks) {
 			EventLogic eventLogic = callback.livingBeforeEffectApplied(level, entity, mobEffectInstance, mobEffect);
@@ -116,6 +127,10 @@ public class LivingEvents {
 		}
 		return EventLogic.DEFAULT;
 	});
+	/**
+	 * Triggered before an effect is added to a {@code LivingEntity}, can be cancelled by returning {@code false}.
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
+	 */
 	public static final Event<LivingEvents.beforeEffectAdded> LIVING_BEFORE_EFFECT_ADDED = EventFactory.createArrayBacked(LivingEvents.beforeEffectAdded.class, callbacks -> (level, entity, mobEffectInstance, mobEffect) -> {
 		for (LivingEvents.beforeEffectAdded callback : callbacks) {
 			boolean eventCancel = callback.livingBeforeEffectAdded(level, entity, mobEffectInstance, mobEffect);
@@ -125,6 +140,10 @@ public class LivingEvents {
 		}
 		return false;
 	});
+	/**
+	 * Triggered before an effect is removed from a {@code LivingEntity}, can be cancelled by returning false.
+	 * @see dev.progames723.hmmm.fabric.mixin.LivingEntityMixin
+	 */
 	public static final Event<LivingEvents.beforeEffectRemoved> LIVING_BEFORE_EFFECT_REMOVED = EventFactory.createArrayBacked(LivingEvents.beforeEffectRemoved.class, callbacks -> (level, entity, mobEffectInstance, mobEffect) -> {
 		for (LivingEvents.beforeEffectRemoved callback : callbacks) {
 			boolean eventCancel = callback.livingBeforeEffectRemoved(level, entity, mobEffectInstance, mobEffect);
@@ -134,6 +153,8 @@ public class LivingEvents {
 		}
 		return false;
 	});
+	//does this really interest you?
+	//i dont think so!
 	@FunctionalInterface
 	public interface livingTick {
 		void onLivingTick(Level level, LivingEntity entity);

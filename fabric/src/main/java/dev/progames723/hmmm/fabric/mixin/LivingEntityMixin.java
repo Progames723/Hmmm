@@ -2,8 +2,6 @@ package dev.progames723.hmmm.fabric.mixin;
 
 import com.google.common.collect.Maps;
 import dev.progames723.hmmm.fabric.event.LivingEvents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Iterator;
 import java.util.Map;
 
 @Mixin(LivingEntity.class)
