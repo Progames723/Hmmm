@@ -1,8 +1,5 @@
 {
   "death.attack.piercing.item": "%1$s was pierced by %2$s using %3$s",
   "death.attack.piercing": "%1$s was pierced",
-  "death.attack.piercing.player": "%1$s was pierced by %2$s",
-  "death.attack.bleed.item": "%1$s was wounded badly by %2$s using %3$s",
-  "death.attack.bleed": "%1$s was wounded badly",
-  "death.attack.bleed.player": "%1$s was wounded badly by %2$s"
+  "death.attack.piercing.player": "%1$s was pierced by %2$s"
 }
