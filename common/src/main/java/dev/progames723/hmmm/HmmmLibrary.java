@@ -14,12 +14,6 @@ public class HmmmLibrary {
 	public static void init() {
 		LOGGER.info("Initializing HmmmLibrary");
 		initializeEvents();
-		PlayerEvent.PICKUP_ITEM_PRE.register((player, itemEntity, item) -> {
-			return EventResult.pass();
-		});
-		LivingEvents.BEFORE_LIVING_HURT.register((level, entity, source, amount) -> {
-			return amount;
-		});
 	}
 	public static void initializeEvents(){
 		EventHandler.init();
