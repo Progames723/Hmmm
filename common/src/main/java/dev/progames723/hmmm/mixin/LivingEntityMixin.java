@@ -1,7 +1,7 @@
-package dev.progames723.hmmm.fabric.mixin;
+package dev.progames723.hmmm.mixin;
 
 import com.google.common.collect.Maps;
-import dev.progames723.hmmm.fabric.event.LivingEvents;
+import dev.progames723.hmmm.event.LivingEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 
-@Deprecated(since = "0.4")
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 	@Final @Shadow private Map<MobEffect, MobEffectInstance> activeEffects = Maps.newHashMap();
