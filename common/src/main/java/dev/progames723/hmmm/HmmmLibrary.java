@@ -1,10 +1,6 @@
 package dev.progames723.hmmm;
 
 import dev.architectury.event.EventHandler;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.event.events.common.TickEvent;
-import dev.progames723.hmmm.event.LivingEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
