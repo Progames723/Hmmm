@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class MinecraftDamageReduction {
+	private MinecraftDamageReduction() {}
 	/**
 	 * Calculates magic damage reduction<p>
 	 * Ripped straight from minecraft's code!
