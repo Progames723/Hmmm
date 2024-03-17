@@ -1,6 +1,7 @@
 package dev.progames723.hmmm.mixin;
 
 import com.google.common.collect.Maps;
+import dev.architectury.event.EventResult;
 import dev.progames723.hmmm.event.LivingEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -124,11 +125,11 @@ public abstract class LivingEntityMixin extends Entity {
 	private void beforeEffectApplied(MobEffectInstance mobEffectInstance, CallbackInfoReturnable<Boolean> cir) {
 		LivingEntity entity = (LivingEntity) (Object) this;
 		MobEffect mobEffect = mobEffectInstance.getEffect();
-		LivingEvents.EventLogic the = LivingEvents.LIVING_BEFORE_EFFECT_APPLIED.invoker().livingBeforeEffectApplied(entity.level(), entity, mobEffectInstance, mobEffect);
-		if (the == LivingEvents.EventLogic.YES){
-			cir.setReturnValue(true);
-		} else if (the == LivingEvents.EventLogic.NO) {
+		EventResult the = LivingEvents.LIVING_BEFORE_EFFECT_APPLIED.invoker().livingBeforeEffectApplied(entity.level(), entity, mobEffectInstance, mobEffect);
+		if (the.interruptsFurtherEvaluation() && the.value() == null) {
 			cir.setReturnValue(false);
+		} else if (the.interruptsFurtherEvaluation()) {
+			cir.setReturnValue(the.value());
 		}
 	}
 	@Inject(

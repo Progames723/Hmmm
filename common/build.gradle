@@ -11,6 +11,13 @@ dependencies {
 architectury {
     common("fabric", "forge")
 }
+loom {
+    accessWidenerPath = file("src/main/resources/hmmm.accesswidener")
+    enableTransitiveAccessWideners = true
+    interfaceInjection {
+        interfaceInjection.setEnableDependencyInterfaceInjection(true)
+    }
+}
 tasks.withType(Jar) {
     manifest {
         attributes["Fabric-Loom-Remap"] = true

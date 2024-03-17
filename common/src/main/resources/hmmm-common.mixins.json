@@ -4,6 +4,7 @@
   "package": "dev.progames723.hmmm.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "EventFactoryInvoker",
     "LivingEntityMixin"
   ],
   "client": [
