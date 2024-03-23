@@ -18,7 +18,7 @@ import java.lang.reflect.Proxy;
 import java.util.Objects;
 
 public class LivingEvents {
-	private LivingEvents() {}
+	private LivingEvents() {} // non-instantiable because it shouldn't be
 	/**
 	 * Triggered before {@code LivingEntity} is damaged, before damage is reduced, can be cancelled by returning {@code false}.
 	 * @see LivingEntityMixin

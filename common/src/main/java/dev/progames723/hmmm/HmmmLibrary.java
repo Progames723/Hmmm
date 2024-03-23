@@ -8,7 +8,7 @@ public class HmmmLibrary {
 	public static final String MOD_ID = "hmmm";
 	public static final Logger LOGGER = LoggerFactory.getLogger("HmmmLibrary");
 	public static void init() {
-		LOGGER.info("Initializing HmmmLibrary");
+		LOGGER.info("Initialized HmmmLibrary!");
 		initializeEvents();
 	}
 	public static void initializeEvents(){

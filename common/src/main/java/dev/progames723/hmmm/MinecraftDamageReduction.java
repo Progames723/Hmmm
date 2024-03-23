@@ -1,9 +1,11 @@
 package dev.progames723.hmmm;
 
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -13,33 +15,36 @@ public class MinecraftDamageReduction {
 	/**
 	 * Calculates magic damage reduction<p>
 	 * Ripped straight from minecraft's code!
-	 * @param arg {@link DamageSource}
+	 * @param source {@link DamageSource}
 	 * @param entity a {@link LivingEntity}
-	 * @param g {@link Float} damage amount
+	 * @param damage {@link Float} damage amount
 	 * @return reduced damage(if reduction can be applied)
 	 */
-	public static float getDamageAfterMagicAbsorb(DamageSource arg, LivingEntity entity, float g) {
-		if (arg.is(DamageTypeTags.BYPASSES_EFFECTS)) {
-			return g;
+	public static float getDamageAfterMagicAbsorb(DamageSource source, LivingEntity entity, float damage) {
+		if (entity.isInvulnerableTo(source)) {
+			return 0;
+		}
+		if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) {
+			return damage;
 		} else {
 			int k;
-			if (entity.hasEffect(MobEffects.DAMAGE_RESISTANCE) && !arg.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
+			if (entity.hasEffect(MobEffects.DAMAGE_RESISTANCE) && !source.is(DamageTypeTags.BYPASSES_RESISTANCE)) {
 				k = (entity.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier() + 1) * 5;
 				int j = 25 - k;
-				float f = g * (float)j;
-				g = Math.max(f / 25.0F, 0.0F);
+				float f = damage * (float)j;
+				damage = Math.max(f / 25.0F, 0.0F);
 			}
 
-			if (g <= 0.0F) {
+			if (damage <= 0.0F) {
 				return 0.0F;
-			} else if (arg.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
-				return g;
+			} else if (source.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
+				return damage;
 			} else {
-				k = EnchantmentHelper.getDamageProtection(entity.getArmorSlots(), arg);
+				k = EnchantmentHelper.getDamageProtection(entity.getArmorSlots(), source);
 				if (k > 0) {
-					g = CombatRules.getDamageAfterMagicAbsorb(g, (float)k);
+					damage = CombatRules.getDamageAfterMagicAbsorb(damage, (float)k);
 				}
-				return g;
+				return damage;
 			}
 		}
 	}
@@ -60,6 +65,30 @@ public class MinecraftDamageReduction {
 		if (source.is(DamageTypeTags.DAMAGES_HELMET)){
 			damage *= 0.75f;
 		}
+		if (entity.isInvulnerableTo(source)) {
+			return 0;
+		}
+		return damage;
+	}
+	public static float getFinalDamageReduction(float damage, DamageSource source, LivingEntity entity) {
+		if (entity.isInvulnerableTo(source)) {
+			return 0;
+		}
+		if (entity.level().isClientSide) {
+			return 0;
+		}
+		if (entity.isDeadOrDying()) {
+			return 0;
+		}
+		if (source.is(DamageTypeTags.IS_FIRE) && entity.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+			return 0;
+		}
+		if (entity.isDamageSourceBlocked(source)){
+			return 0;
+		}
+		if (source.is(DamageTypeTags.IS_FREEZING) && entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+			damage *= 5.0f;
+		}//TODO finish
 		return damage;
 	}
 }
