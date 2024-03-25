@@ -1,5 +1,6 @@
 package dev.progames723.hmmm;
 
+import dev.progames723.hmmm.mixin.LivingEntityAccessor;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
@@ -71,24 +72,16 @@ public class MinecraftDamageReduction {
 		return damage;
 	}
 	public static float getFinalDamageReduction(float damage, DamageSource source, LivingEntity entity) {
-		if (entity.isInvulnerableTo(source)) {
-			return 0;
+		if (entity.isInvulnerable() || entity.isInvulnerableTo(source)){
+			return 0.0f;
+		} else {
+			damage = getDamageAfterArmorAbsorb(damage, entity, source);
+			damage = getDamageAfterMagicAbsorb(source, entity, damage);
+			if (damage <= 0.0F){
+				return 0.0F;
+			}
+			//TODO rewrite this
+			return damage;
 		}
-		if (entity.level().isClientSide) {
-			return 0;
-		}
-		if (entity.isDeadOrDying()) {
-			return 0;
-		}
-		if (source.is(DamageTypeTags.IS_FIRE) && entity.hasEffect(MobEffects.FIRE_RESISTANCE)) {
-			return 0;
-		}
-		if (entity.isDamageSourceBlocked(source)){
-			return 0;
-		}
-		if (source.is(DamageTypeTags.IS_FREEZING) && entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-			damage *= 5.0f;
-		}//TODO finish
-		return damage;
 	}
 }
