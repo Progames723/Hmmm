@@ -3,9 +3,10 @@ package dev.progames723.hmmm;
 import java.util.Random;
 
 public class Util {
-	private Util() {}
+	private Util() {}//no instances allowed
 	
 	public static int iPercent(int number, int max) {return (int)lPercent(number, max);}
+
 	public static long lPercent(long number, long max) {return (number / max) * 100;}
 	
 	public static double dPercent(double number, double max) {return (number / max) * 100;}
@@ -14,9 +15,13 @@ public class Util {
 	
 	public static boolean dChance(double percent) {
 		Random rand = new Random();
-		double i = rand.nextInt(101);
+		double i = rand.nextDouble();
+		if (percent > 100) percent = 100;
+		if (percent =< 0) return false;
+		percent /= 100; //clamping it
 		return i <= percent;
 	}
+
 	public static boolean fChance(float percent) {return dChance(percent);}
 	
 	public static boolean lChance(long percent) {
