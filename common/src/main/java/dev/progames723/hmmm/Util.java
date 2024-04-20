@@ -17,7 +17,7 @@ public class Util {
 		Random rand = new Random();
 		double i = rand.nextDouble();
 		if (percent > 100) percent = 100;
-		if (percent =< 0) return false;
+		if (percent <= 0) return false;
 		percent /= 100; //clamping it
 		return i <= percent;
 	}

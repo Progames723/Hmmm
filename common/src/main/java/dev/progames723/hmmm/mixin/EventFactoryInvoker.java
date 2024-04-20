@@ -11,8 +11,8 @@ import java.lang.reflect.Method;
 public interface EventFactoryInvoker {
 	//i had to have this
 	@SuppressWarnings("unchecked")
-	@Invoker(value = "invokeMethod", remap = false)
-	static <T, R> R getInvokeMethod(T listener, Method method, Object[] args) throws Throwable {
+	@Invoker(value = "invokeMethod")
+	static <T, R> R invokeMethod(T listener, Method method, Object[] args) throws Throwable {
 		return (R) MethodHandles.lookup().unreflect(method).bindTo(listener).invokeWithArguments(args);
 	}
 }

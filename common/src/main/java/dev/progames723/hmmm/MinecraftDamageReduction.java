@@ -1,8 +1,9 @@
 package dev.progames723.hmmm;
 
-import dev.progames723.hmmm.mixin.LivingEntityAccessor;
+import dev.progames723.hmmm.mixin.LivingEntityAccess;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 public class MinecraftDamageReduction {
 	private MinecraftDamageReduction() {}
@@ -21,6 +23,7 @@ public class MinecraftDamageReduction {
 	 * @param damage {@link Float} damage amount
 	 * @return reduced damage(if reduction can be applied)
 	 */
+	@Deprecated(forRemoval = true)
 	public static float getDamageAfterMagicAbsorb(DamageSource source, LivingEntity entity, float damage) {
 		if (entity.isInvulnerableTo(source)) {
 			return 0;
@@ -58,6 +61,7 @@ public class MinecraftDamageReduction {
 	 * @param source {@link DamageSource}
 	 * @return reduced damage(if reduction can be applied)
 	 */
+	@Deprecated(forRemoval = true)
 	public static float getDamageAfterArmorAbsorb(float damage, LivingEntity entity, DamageSource source) {
 		if (source.is(DamageTypeTags.BYPASSES_ARMOR)) {
 			return damage;
@@ -71,17 +75,15 @@ public class MinecraftDamageReduction {
 		}
 		return damage;
 	}
-	public static float getFinalDamageReduction(float damage, DamageSource source, LivingEntity entity) {
-		if (entity.isInvulnerable() || entity.isInvulnerableTo(source)){
-			return 0.0f;
+	
+	public static float getFinalDamageReduction(float damage, DamageSource source, LivingEntity entity) {//good method name
+		if (!entity.isInvulnerableTo(source) && !entity.isInvulnerable()) {
+			damage = ((LivingEntityAccess) entity).getDamageAfterArmorAbsorb(source, damage);
+			damage = ((LivingEntityAccess) entity).getDamageAfterMagicAbsorb(source, damage);
+			damage = Math.max(damage - entity.getAbsorptionAmount(), 0.0F);
 		} else {
-			damage = getDamageAfterArmorAbsorb(damage, entity, source);
-			damage = getDamageAfterMagicAbsorb(source, entity, damage);
-			if (damage <= 0.0F){
-				return 0.0F;
-			}
-			//TODO rewrite this
-			return damage;
+			return 0.0f;
 		}
+		return damage;//TODO finish this once and for all
 	}
 }
