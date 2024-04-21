@@ -4,8 +4,8 @@ import org.jetbrains.annotations.Range;
 
 import java.util.Random;
 
-public class Util {
-	private Util() {}//no instances allowed
+public class MathUtil {
+	private MathUtil() {}//no instances allowed
 
 	public static long percent(long number, long max) {return (number / max) * 100;}
 	
@@ -21,7 +21,8 @@ public class Util {
 		if (percent > 100) percent = 100;
 		if (percent <= 0) return false;
 		percent /= 100; //clamping it
-		return i <= percent;
+		clamp(percent, 0, 1);//clamping again
+		return ActualSecureRandom.createSecureRandom().nextBoolean() ? i <= percent : i >= percent;
 	}
 
 	public static boolean chance(float percent) {return chance((double) percent);}
@@ -29,7 +30,7 @@ public class Util {
 	public static boolean chance(long percent) {
 		Random rand = new Random();
 		int i = rand.nextInt(101);
-		return i <= percent;
+		return ActualSecureRandom.createSecureRandom().nextBoolean() ? i <= percent : i >= percent;
 	}
 	
 	public static boolean chance(int percent) {return chance((long) percent);}
@@ -66,5 +67,21 @@ public class Util {
 	
 	public static float roundTo(float value, @Range(from = 0, to = Long.MAX_VALUE) long powerOf10) {
 		return (float) roundTo((double) value, powerOf10);
+	}
+	
+	public static double clamp(double value, double min, double max) {
+		return Math.max(Math.min(value, max), min);
+	}
+	
+	public static float clamp(float value, float min, float max) {
+		return (float) clamp((double) value, min, max);
+	}
+	
+	public static long clamp(long value, long min, long max) {
+		return Math.max(Math.min(value, max), min);
+	}
+	
+	public static int clamp(int value, int min, int max) {
+		return (int) clamp((long) value, min, max);
 	}
 }
