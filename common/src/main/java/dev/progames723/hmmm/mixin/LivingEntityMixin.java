@@ -24,9 +24,11 @@ import java.util.Map;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 	@Final @Shadow private Map<MobEffect, MobEffectInstance> activeEffects = Maps.newHashMap();
+	
 	private LivingEntityMixin(EntityType<?> entityType, Level level) {
 		super(entityType, level);
 	}
+	
 	@ModifyVariable(
 			method = "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V",
 			at = @At(
@@ -43,10 +45,11 @@ public abstract class LivingEntityMixin extends Entity {
 		float newValue = LivingEvents.BEFORE_LIVING_DAMAGED.invoker().onLivingDamaged(
 				level, livingEntity, damageSource, f);
 		if (newValue <= 0){
-            newValue = 0;
-        }
+			newValue = 0;
+		}
 		return newValue;
 	}
+	
 	@ModifyVariable(
 			method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
 			at = @At("HEAD"),
@@ -61,6 +64,7 @@ public abstract class LivingEntityMixin extends Entity {
 		}
 		return newValue;
 	}
+	
 	@Inject(
 			method = "hurt",
 			at = @At(
@@ -76,6 +80,7 @@ public abstract class LivingEntityMixin extends Entity {
 			cir.setReturnValue(false);
 		}
 	}
+	
 	@Inject(
 			method = "tick",
 			at = @At(value = "HEAD")
@@ -84,6 +89,7 @@ public abstract class LivingEntityMixin extends Entity {
 		LivingEntity entity = (LivingEntity) (Object) this;
 		LivingEvents.ON_LIVING_TICK.invoker().onLivingTick(entity.level(), entity);
 	}
+	
 	@Inject(
 			method = "tickEffects",
 			at = @At(
@@ -99,6 +105,7 @@ public abstract class LivingEntityMixin extends Entity {
 			LivingEvents.ON_LIVING_EFFECT_TICK.invoker().onLivingEffectTick(entity.level(), entity, mobEffectInstance, mobEffect);
 		}
 	}
+	
 	@Inject(
 			method = "tickEffects",
 			at = @At(
@@ -115,6 +122,7 @@ public abstract class LivingEntityMixin extends Entity {
 			LivingEvents.ON_LIVING_EFFECT_EXPIRED.invoker().onLivingEffectExpired(entity.level(), entity, mobEffectInstance, mobEffect);
 		}
 	}
+	
 	@Inject(
 			method = "canBeAffected",
 			at = @At(
@@ -132,6 +140,7 @@ public abstract class LivingEntityMixin extends Entity {
 			cir.setReturnValue(the.value());
 		}
 	}
+	
 	@Inject(
 			method = "onEffectRemoved",
 			at = @At(
@@ -146,6 +155,7 @@ public abstract class LivingEntityMixin extends Entity {
 			ci.cancel();
 		}
 	}
+	
 	@Inject(
 			method = "onEffectAdded",
 			at = @At(

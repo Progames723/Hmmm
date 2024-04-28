@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Range;
 
 import java.util.Random;
 
+@SuppressWarnings("unused")
 public class MathUtil {
 	private MathUtil() {}//no instances allowed
 

@@ -1,17 +1,16 @@
 package dev.progames723.hmmm;
 
 import dev.progames723.hmmm.mixin.LivingEntityAccess;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.CombatRules;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.gameevent.GameEvent;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.beans.Transient;
 
 public class MinecraftDamageReduction {
 	private MinecraftDamageReduction() {}
@@ -75,8 +74,9 @@ public class MinecraftDamageReduction {
 		}
 		return damage;
 	}
-	
+	@ApiStatus.Experimental
 	public static float getFinalDamageReduction(float damage, DamageSource source, LivingEntity entity) {//good method name
+		float unModifiedDamage = damage;//use later if needed
 		if (!entity.isInvulnerableTo(source) && !entity.isInvulnerable()) {
 			damage = ((LivingEntityAccess) entity).getDamageAfterArmorAbsorb(source, damage);
 			damage = ((LivingEntityAccess) entity).getDamageAfterMagicAbsorb(source, damage);
