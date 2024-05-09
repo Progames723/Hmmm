@@ -4,20 +4,32 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class LimitedCapacityArrayList<E> extends ArrayList<E> {
-	private int MAX_CAPACITY = Integer.MAX_VALUE;
+	private long MAX_CAPACITY = Long.MAX_VALUE;
 	
-	public LimitedCapacityArrayList(int maxCapacity) {
+	public LimitedCapacityArrayList(long maxCapacity) {
 		super();
 		this.MAX_CAPACITY = maxCapacity;
 	}
 	
-	public LimitedCapacityArrayList(int maxCapacity, int initialCapacity) {
+	public LimitedCapacityArrayList(long maxCapacity, int initialCapacity) {
 		super(initialCapacity);
 		this.MAX_CAPACITY = maxCapacity;
 	}
 	
 	public LimitedCapacityArrayList() {
 		super();
+	}
+	
+	public LimitedCapacityArrayList(Collection<? extends E> collection) {
+		super(collection);
+	}
+	
+	public LimitedCapacityArrayList(Collection<? extends E> collection, long maxCapacity) {
+		super(collection);
+		if (maxCapacity < collection.size()) {
+			throw new RuntimeException("Max capacity cannot be less than the collection size");
+		}
+		this.MAX_CAPACITY = maxCapacity;
 	}
 	
 	@Override

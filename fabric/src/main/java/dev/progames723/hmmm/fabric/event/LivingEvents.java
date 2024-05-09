@@ -8,13 +8,13 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-@Deprecated(since = "0.4")
+
 public class LivingEvents {
 	private LivingEvents() {}
 	public enum EventLogic {
 		YES,
 		NO,
-		DEFAULT;
+		DEFAULT
 	}
 	
 	/**

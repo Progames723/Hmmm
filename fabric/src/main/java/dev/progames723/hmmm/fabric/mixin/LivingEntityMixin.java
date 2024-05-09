@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 
-@Deprecated(since = "0.4")
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 	@Final @Shadow private Map<MobEffect, MobEffectInstance> activeEffects = Maps.newHashMap();

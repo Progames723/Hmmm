@@ -1,3 +1,6 @@
 {
+  "injected_interfaces": {
+    "net/minecraft/class_1282": ["dev/progames723/hmmm/damage_types/ExtDamageSource"]
+  },
   "accessWidener": "hmmm.accesswidener"
 }

@@ -23,7 +23,7 @@ public class HmmmRegistries {
 	public static MobEffect registerEffect(String modid, String name, MobEffect obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
 			if (logger != null) {
-				logger.info("Registered effect: " + name);
+				logger.info("Registered effect: {}", name);
 			}
 			return Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation(modid, name), obj);
 		}
@@ -33,7 +33,7 @@ public class HmmmRegistries {
 	public static Item registerItem(String modid, String name, Item obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
 			if (logger != null) {
-				logger.info("Registered item: " + name);
+				logger.info("Registered item: {}", name);
 			}
 			return Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(modid, name), obj);
 		}
@@ -43,7 +43,7 @@ public class HmmmRegistries {
 	public static Enchantment registerEnchantment(String modid, String name, Enchantment obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
 			if (logger != null) {
-				logger.info("Registered enchantment: " + name);
+				logger.info("Registered enchantment: {}", name);
 			}
 			return Registry.register(BuiltInRegistries.ENCHANTMENT, new ResourceLocation(modid, name), obj);
 		}
@@ -53,7 +53,7 @@ public class HmmmRegistries {
 	public static Attribute registerAttribute(String modid, String name, Attribute obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
 			if (logger != null) {
-				logger.info("Registered attribute: " + name);
+				logger.info("Registered attribute: {}", name);
 			}
 			return Registry.register(BuiltInRegistries.ATTRIBUTE, new ResourceLocation(modid, name), obj);
 		}
@@ -62,7 +62,7 @@ public class HmmmRegistries {
 	public static Block registerBlock(String modid, String name, Block obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
 			if (logger != null) {
-				logger.info("Registered block: " + name);
+				logger.info("Registered block: {}", name);
 			}
 			return Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(modid, name), obj);
 		}
@@ -71,7 +71,7 @@ public class HmmmRegistries {
 
 	public static ResourceKey<DamageType> registerDamageType(String modid, String name, @Nullable Logger logger) {
 		if (logger != null){
-			logger.info("Registered damage type: " + name);
+			logger.info("Registered damage type: {}", name);
 		}
 		return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
 	}

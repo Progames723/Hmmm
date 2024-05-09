@@ -7,6 +7,5 @@ public class HmmmLibraryFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         HmmmLibrary.init();
-        HmmmLibrary.initializeEvents();
     }
 }
