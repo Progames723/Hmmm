@@ -4,12 +4,22 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
+
+/**
+ * only useful for mods without mixins, otherwise redundant
+ * and for bashing the jdk because mixins dont work there
+ */
 public class JavaUtil {
+	private static int loopCount = 0;
+	private static final int maxLoopCount = 10;//prevents StackOverflowException ig
 	
 	public static Class<?> getClass(@NotNull String path, @NotNull String name) {
 		return getClass(path + "." + name);
@@ -19,12 +29,12 @@ public class JavaUtil {
 		return getClass(path + "$" + name);
 	}
 	
-	private static Class<?> getClass(@NotNull String path) {
+	public static Class<?> getClass(@NotNull String path) {
 		try {
 			return Class.forName(path);
 		}
 		catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 			return null;
 		}
 	}
@@ -32,11 +42,12 @@ public class JavaUtil {
 	public static Constructor<?> getConstructor(@NotNull Class<?> clazz, Class<?>... types) {
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(types);
-			constructor.setAccessible(true);
+			throwExceptionIfWrongClassPackage(checkClassPackage(constructor.getClass()));
+			tryToMakeItAccessible(constructor);
 			return constructor;
 		}
 		catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		return null;
 	}
@@ -46,7 +57,7 @@ public class JavaUtil {
 			return constructor.newInstance(args);
 		}
 		catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		return args;
 	}
@@ -65,8 +76,8 @@ public class JavaUtil {
 			try {
 				list.add(type.cast(field.get(null)));
 			}
-			catch (IllegalArgumentException | IllegalAccessException exception) {
-				exception.printStackTrace();
+			catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace(System.err);
 			}
 		}
 		
@@ -91,13 +102,87 @@ public class JavaUtil {
 		return result;
 	}
 	
+	public static void tryToMakeItAccessible(@NotNull AccessibleObject object) {
+		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
+		@NotNull AccessibleObject finalObject = object;
+		PrivilegedAction<AccessibleObject> action = () -> {
+			finalObject.setAccessible(true);
+			return finalObject;
+		};
+		try {
+			object = AccessController.doPrivileged(action);//just to be safe
+		} catch (InaccessibleObjectException e) {
+			forceAccessible(object, true);
+		}
+		try {
+			object.setAccessible(true);
+		} catch (InaccessibleObjectException e) {
+			throw new RuntimeException(e);
+		} catch (SecurityException e) {
+			try {
+				action.run();
+			} catch (InaccessibleObjectException | SecurityException exception) {
+				throw new RuntimeException(exception);//nah too bad if it didnt work
+			}
+		}
+	}
+	
+	private static void test() {
+		HmmmLibrary.LOGGER.info("Test passed");
+	}
+	
+	public static void forceAccessible(@NotNull AccessibleObject object, boolean useMethod) {
+		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
+		try {
+			object.trySetAccessible();
+		} catch (SecurityException e) {
+			try {
+				AccessibleObject finalObject = object;
+				PrivilegedAction<AccessibleObject> action = () -> {
+					finalObject.setAccessible(true);
+					return finalObject;
+				};
+				object = AccessController.doPrivileged(action);
+			} catch (Exception exception) {
+				throw new RuntimeException(e);
+			}
+		}
+		//the thing below makes it 100% accessible if the above succeeds
+		if (useMethod) invokeMethod(getMethod(AccessibleObject.class, "setAccessible0", boolean.class), object, true);
+		else {
+			try {
+				getField(object.getClass(), "override").set(object, true);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	private static boolean checkClassPackage(String className) {
+		return !(className.startsWith("java") || className.startsWith("com.sun") || className.startsWith("javax") || className.startsWith("jdk") || className.startsWith("sun"));
+	}
+	
+	private static boolean checkClassPackage(Class<?> clazz) {
+		return checkClassPackage(clazz.getName());
+	}
+	
+	public static void throwExceptionIfWrongClassPackage(boolean checkClassPackageResult) {
+		if (checkClassPackageResult) {
+			throw new RuntimeException(new IllegalCallerException("Cannot access java's packages"));
+		}
+	}
+	
 	public static Field getField(@NotNull Class<?> clazz, @NotNull String fieldName) {
 		try {
 			return clazz.getDeclaredField(fieldName);
 		}
 		catch (NoSuchFieldException e) {
 			Class<?> superClass = clazz.getSuperclass();
-			return superClass == null ? null : getField(superClass, fieldName);
+			if (superClass == null) {
+				throw new RuntimeException(e);
+			} else {
+				return getField(superClass, fieldName);
+			}
 		}
 	}
 	
@@ -107,11 +192,12 @@ public class JavaUtil {
 			Field field = getField(clazz, fieldName);
 			if (field == null) return null;
 			
-			field.setAccessible(true);
+			throwExceptionIfWrongClassPackage(checkClassPackage(field.getClass()));
+			tryToMakeItAccessible(field);
 			return field.get(from);
 		}
 		catch (IllegalAccessException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		return null;
 	}
@@ -124,12 +210,13 @@ public class JavaUtil {
 			Field field = getField(clazz, fieldName);
 			if (field == null) return false;
 			
-			field.setAccessible(true);
+			throwExceptionIfWrongClassPackage(checkClassPackage(field.getClass()));
+			tryToMakeItAccessible(field);
 			field.set(isStatic ? null : of, value);
 			return true;
 		}
 		catch (IllegalAccessException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		return false;
 	}
@@ -140,17 +227,22 @@ public class JavaUtil {
 		}
 		catch (NoSuchMethodException e) {
 			Class<?> superClass = clazz.getSuperclass();
-			return superClass == null ? null : getMethod(superClass, methodName);
+			if (superClass == null) {
+				throw new RuntimeException(e);
+			} else {
+				return getMethod(superClass, methodName);
+			}
 		}
 	}
 	
 	public static Object invokeMethod(@NotNull Method method, @Nullable Object object, @Nullable Object... param) {
-		method.setAccessible(true);
+		throwExceptionIfWrongClassPackage(checkClassPackage(method.getClass()));
+		tryToMakeItAccessible(method);
 		try {
 			return method.invoke(object, param);
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		return null;
 	}

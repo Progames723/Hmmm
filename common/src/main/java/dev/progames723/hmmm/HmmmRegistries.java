@@ -70,9 +70,12 @@ public class HmmmRegistries {
 	}
 
 	public static ResourceKey<DamageType> registerDamageType(String modid, String name, @Nullable Logger logger) {
-		if (logger != null){
-			logger.info("Registered damage type: {}", name);
+		if (!Platform.isForgeLike()){
+			if (logger != null){
+				logger.info("Registered damage type: {}", name);
+			}
+			return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
 		}
-		return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
+		throw new RuntimeException("Fabric and Quilt only!");
 	}
 }

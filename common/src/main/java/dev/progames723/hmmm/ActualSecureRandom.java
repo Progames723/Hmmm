@@ -11,7 +11,8 @@ public abstract class ActualSecureRandom {
 		SecureRandom sRandom = new SecureRandom(generateSeed());
 		SecureRandom sRandom1 = new SecureRandom(sRandom.generateSeed(Integer.MAX_VALUE));
 		SecureRandom secureRandom = new SecureRandom(sRandom1.generateSeed(Integer.MAX_VALUE));
-		return new SecureRandom(generateSeed((byte) (secureRandom.nextInt(128)+1), secureRandom.nextInt(320)));
+		SecureRandom random = new SecureRandom(generateSeed((byte) (secureRandom.nextInt(128)+1), secureRandom.nextInt(320)));
+		return new SecureRandom(generateSeed((byte) (random.nextInt(128)+1), random.nextInt(320)));
 	}
 	private static byte[] generateSeed() {
 		return generateSeed((byte) 128, 0);
