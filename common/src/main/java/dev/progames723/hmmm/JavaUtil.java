@@ -15,12 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * only useful for mods without mixins, otherwise redundant
- * and for bashing the jdk because mixins dont work there
+ * okay its useless if you have mixins lol
  */
 public class JavaUtil {
-	private static int loopCount = 0;
-	private static final int maxLoopCount = 10;//prevents StackOverflowException ig
-	
 	public static Class<?> getClass(@NotNull String path, @NotNull String name) {
 		return getClass(path + "." + name);
 	}
@@ -109,16 +106,10 @@ public class JavaUtil {
 			finalObject.setAccessible(true);
 			return finalObject;
 		};
-		try {
-			object = AccessController.doPrivileged(action);//just to be safe
-		} catch (InaccessibleObjectException e) {
-			forceAccessible(object, true);
-		}
+		object = AccessController.doPrivileged(action);//just to be safe
 		try {
 			object.setAccessible(true);
-		} catch (InaccessibleObjectException e) {
-			throw new RuntimeException(e);
-		} catch (SecurityException e) {
+		} catch (SecurityException | InaccessibleObjectException e) {
 			try {
 				action.run();
 			} catch (InaccessibleObjectException | SecurityException exception) {
@@ -131,7 +122,7 @@ public class JavaUtil {
 		HmmmLibrary.LOGGER.info("Test passed");
 	}
 	
-	public static void forceAccessible(@NotNull AccessibleObject object, boolean useMethod) {
+	public static void forceAccessible(@NotNull AccessibleObject object) {
 		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
 		try {
 			object.trySetAccessible();
@@ -148,22 +139,21 @@ public class JavaUtil {
 			}
 		}
 		//the thing below makes it 100% accessible if the above succeeds
-		if (useMethod) invokeMethod(getMethod(AccessibleObject.class, "setAccessible0", boolean.class), object, true);
-		else {
-			try {
-				getField(object.getClass(), "override").set(object, true);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
+		invokeMethod(getMethod(AccessibleObject.class, "setAccessible0", boolean.class), object, true);
 	}
 	
 	private static boolean checkClassPackage(String className) {
-		return !(className.startsWith("java") || className.startsWith("com.sun") || className.startsWith("javax") || className.startsWith("jdk") || className.startsWith("sun"));
+		Class<?> clazz;
+		try {
+			clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		return !(className.startsWith("java") || className.startsWith("com.sun") || className.startsWith("javax") || className.startsWith("jdk") || className.startsWith("sun")) && !clazz.isHidden();
 	}
 	
 	private static boolean checkClassPackage(Class<?> clazz) {
-		return checkClassPackage(clazz.getName());
+		return checkClassPackage(clazz.getName()) && !clazz.isHidden();
 	}
 	
 	public static void throwExceptionIfWrongClassPackage(boolean checkClassPackageResult) {
