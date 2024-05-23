@@ -3,7 +3,7 @@ package dev.progames723.hmmm;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LimitedCapacityArrayList<E> extends ArrayList<E> {
+public class LimitedCapacityArrayList<E> extends ArrayList<E> {//idk but funny
 	private long MAX_CAPACITY = Long.MAX_VALUE;
 	
 	public LimitedCapacityArrayList(long maxCapacity) {

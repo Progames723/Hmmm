@@ -15,10 +15,6 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-/**
- * This is a collection of {@code registries}<p>
- * That i will use often(and not)
- */
 public class HmmmRegistries {
 	public static MobEffect registerEffect(String modid, String name, MobEffect obj, @Nullable Logger logger) {
 		if (!Platform.isForgeLike()){
@@ -70,12 +66,9 @@ public class HmmmRegistries {
 	}
 
 	public static ResourceKey<DamageType> registerDamageType(String modid, String name, @Nullable Logger logger) {
-		if (!Platform.isForgeLike()){
-			if (logger != null){
-				logger.info("Registered damage type: {}", name);
-			}
-			return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
+		if (logger != null){
+			logger.info("Registered damage type: {}", name);
 		}
-		throw new RuntimeException("Fabric and Quilt only!");
+		return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(modid, name));
 	}
 }

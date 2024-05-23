@@ -6,7 +6,10 @@ import java.util.Random;
 /**
  * NOT ACTUAL IMPLEMENTATION OF SECURE RANDOM
  */
-public abstract class ActualSecureRandom {
+public class ActualSecureRandom {
+	
+	private ActualSecureRandom() {}
+	
 	public static SecureRandom createSecureRandom(){
 		SecureRandom sRandom = new SecureRandom(generateSeed());
 		SecureRandom sRandom1 = new SecureRandom(sRandom.generateSeed(Integer.MAX_VALUE));
@@ -14,10 +17,12 @@ public abstract class ActualSecureRandom {
 		SecureRandom random = new SecureRandom(generateSeed((byte) (secureRandom.nextInt(128)+1), secureRandom.nextInt(320)));
 		return new SecureRandom(generateSeed((byte) (random.nextInt(128)+1), random.nextInt(320)));
 	}
+	
 	private static byte[] generateSeed() {
 		return generateSeed((byte) 128, 0);
 	}
-	private static byte[] generateSeed(byte maxBound, int funny) {
+	
+	private static byte[] generateSeed(byte maxBound, int funny) {//please dont ask about this
 		Random random = new Random();
 		if (funny < 0) funny *= -1;
 		SecureRandom secureRandom = new SecureRandom(new byte[]{

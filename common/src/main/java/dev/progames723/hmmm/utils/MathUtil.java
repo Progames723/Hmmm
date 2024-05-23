@@ -1,5 +1,6 @@
-package dev.progames723.hmmm;
+package dev.progames723.hmmm.utils;
 
+import dev.progames723.hmmm.ActualSecureRandom;
 import org.jetbrains.annotations.Range;
 
 import java.util.Random;
@@ -8,11 +9,11 @@ import java.util.Random;
 public class MathUtil {
 	private MathUtil() {}//no instances allowed
 
-	public static long percent(long number, long max) {return (number / max) * 100;}
+	public static double percent(long number, long max) {return clamp((number / max),0, 1);}
 	
-	public static int percent(int number, int max) {return (int) percent((long) number, max);}
+	public static double percent(int number, int max) {return (int) percent((long) number, max);}
 	
-	public static double percent(double number, double max) {return (number / max) * 100;}
+	public static double percent(double number, double max) {return clamp((number / max),0, 1);}
 	
 	public static float percent(float number, float max) {return (float)percent((double) number, max);}
 	

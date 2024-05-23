@@ -1,4 +1,4 @@
-package dev.progames723.hmmm;
+package dev.progames723.hmmm.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -6,18 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.*;
 
 /**
  * only useful for mods without mixins, otherwise redundant
  * okay its useless if you have mixins lol
  */
 public class JavaUtil {
+	private JavaUtil() {}
+	
 	public static Class<?> getClass(@NotNull String path, @NotNull String name) {
 		return getClass(path + "." + name);
 	}
@@ -119,28 +116,9 @@ public class JavaUtil {
 	}
 	
 	private static void test() {
-		HmmmLibrary.LOGGER.info("Test passed");
+		System.out.println("Test passed ig");
 	}
 	
-	public static void forceAccessible(@NotNull AccessibleObject object) {
-		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
-		try {
-			object.trySetAccessible();
-		} catch (SecurityException e) {
-			try {
-				AccessibleObject finalObject = object;
-				PrivilegedAction<AccessibleObject> action = () -> {
-					finalObject.setAccessible(true);
-					return finalObject;
-				};
-				object = AccessController.doPrivileged(action);
-			} catch (Exception exception) {
-				throw new RuntimeException(e);
-			}
-		}
-		//the thing below makes it 100% accessible if the above succeeds
-		invokeMethod(getMethod(AccessibleObject.class, "setAccessible0", boolean.class), object, true);
-	}
 	
 	private static boolean checkClassPackage(String className) {
 		Class<?> clazz;
@@ -156,7 +134,7 @@ public class JavaUtil {
 		return checkClassPackage(clazz.getName()) && !clazz.isHidden();
 	}
 	
-	public static void throwExceptionIfWrongClassPackage(boolean checkClassPackageResult) {
+	private static void throwExceptionIfWrongClassPackage(boolean checkClassPackageResult) {
 		if (checkClassPackageResult) {
 			throw new RuntimeException(new IllegalCallerException("Cannot access java's packages"));
 		}
@@ -235,5 +213,13 @@ public class JavaUtil {
 			e.printStackTrace(System.err);
 		}
 		return null;
+	}
+	
+	public static Class<?> getCallerClass() {
+		try {
+			return StackWalker.getInstance(Set.of(StackWalker.Option.values())).getCallerClass();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
