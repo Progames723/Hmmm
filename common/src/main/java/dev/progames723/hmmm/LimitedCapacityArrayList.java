@@ -3,8 +3,9 @@ package dev.progames723.hmmm;
 import java.util.ArrayList;
 import java.util.Collection;
 
+@SuppressWarnings("unused")
 public class LimitedCapacityArrayList<E> extends ArrayList<E> {//idk but funny
-	private long MAX_CAPACITY = Long.MAX_VALUE;
+	private final long MAX_CAPACITY;
 	
 	public LimitedCapacityArrayList(long maxCapacity) {
 		super();
@@ -18,10 +19,12 @@ public class LimitedCapacityArrayList<E> extends ArrayList<E> {//idk but funny
 	
 	public LimitedCapacityArrayList() {
 		super();
+		MAX_CAPACITY = Long.MAX_VALUE;
 	}
 	
 	public LimitedCapacityArrayList(Collection<? extends E> collection) {
 		super(collection);
+		MAX_CAPACITY = Long.MAX_VALUE;
 	}
 	
 	public LimitedCapacityArrayList(Collection<? extends E> collection, long maxCapacity) {

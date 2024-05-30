@@ -19,7 +19,7 @@ public class ActualSecureRandom {
 	}
 	
 	private static byte[] generateSeed() {
-		return generateSeed((byte) 128, 0);
+		return generateSeed(Byte.MAX_VALUE, 0);
 	}
 	
 	private static byte[] generateSeed(byte maxBound, int funny) {//please dont ask about this

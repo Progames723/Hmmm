@@ -9,7 +9,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import org.jetbrains.annotations.Nullable;
 
-public class DamageSourceFactory {
+@SuppressWarnings("unused")
+public final class DamageSourceFactory {
 	/**
 	 * Creates a new {@link net.minecraft.world.damagesource.DamageSource} from {@code ResourceKey<DamageType>}.
 	 * @param registryAccess registry access for retrieving dynamic {@link DamageType} registry.
@@ -21,6 +22,28 @@ public class DamageSourceFactory {
 	public static DamageSource create(RegistryAccess registryAccess, ResourceKey<DamageType> damageType, @Nullable Entity directEntity, @Nullable Entity causingEntity) {
 		return new DamageSource(registryAccess.registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(damageType), directEntity, causingEntity);
 	}
+	
+	/**
+	 * Creates a new {@link net.minecraft.world.damagesource.DamageSource} from {@code ResourceKey<DamageType>}.
+	 * @param registryAccess registry access for retrieving dynamic {@link DamageType} registry.
+	 * @param damageType key for finding the {@link DamageType}.
+	 * @param directEntity the entity directly responsible for causing damage.
+	 * @return new {@link net.minecraft.world.damagesource.DamageSource} instance.
+	 */
+	public static DamageSource create(RegistryAccess registryAccess, ResourceKey<DamageType> damageType, @Nullable Entity directEntity) {
+		return create(registryAccess, damageType, directEntity, null);
+	}
+	
+	/**
+	 * Creates a new {@link net.minecraft.world.damagesource.DamageSource} from {@code ResourceKey<DamageType>}.
+	 * @param registryAccess registry access for retrieving dynamic {@link DamageType} registry.
+	 * @param damageType key for finding the {@link DamageType}.
+	 * @return new {@link net.minecraft.world.damagesource.DamageSource} instance.
+	 */
+	public static DamageSource create(RegistryAccess registryAccess, ResourceKey<DamageType> damageType) {
+		return create(registryAccess, damageType, null, null);
+	}
+	
 	
 	/**
 	 * Creates a new {@link net.minecraft.world.damagesource.DamageSource} from {@code ResourceKey<DamageType>}.
@@ -42,7 +65,7 @@ public class DamageSourceFactory {
 	 * @return new {@link net.minecraft.world.damagesource.DamageSource} instance.
 	 */
 	public static DamageSource create(LevelReader level, ResourceKey<DamageType> damageType, @Nullable Entity directEntity) {
-		return create(level, damageType, directEntity, null);
+		return create(level.registryAccess(), damageType, directEntity, null);
 	}
 	
 	/**
@@ -52,6 +75,8 @@ public class DamageSourceFactory {
 	 * @return new {@link net.minecraft.world.damagesource.DamageSource} instance.
 	 */
 	public static DamageSource create(LevelReader level, ResourceKey<DamageType> damageType) {
-		return create(level, damageType, null, null);
+		return create(level.registryAccess(), damageType, null, null);
 	}
+	
+	private DamageSourceFactory() {throw new RuntimeException();}
 }

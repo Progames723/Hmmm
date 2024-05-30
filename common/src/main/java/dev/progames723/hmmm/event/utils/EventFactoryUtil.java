@@ -1,4 +1,4 @@
-package dev.progames723.hmmm.event;
+package dev.progames723.hmmm.event.utils;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
@@ -7,8 +7,10 @@ import dev.progames723.hmmm.mixin.EventFactoryAccess;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
 
-@SuppressWarnings({"unchecked"})
-public class EventFactoryUtil {//no fabric port ig :(
+@SuppressWarnings({"unchecked", "unused"})
+public final class EventFactoryUtil {//no fabric port ig :(
+	private EventFactoryUtil() {throw new RuntimeException();}
+	
 	@SafeVarargs
 	public static <T> Event<T> createBoolean(boolean defaultReturn, T... typeGetter) {
 		if (typeGetter.length != 0) throw new IllegalStateException("array must be empty!");
@@ -19,6 +21,21 @@ public class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				return (boolean) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
+			}
+			return defaultReturn;
+		}));
+	}
+	
+	@SafeVarargs
+	public static <T> Event<T> createNullableBoolean(Boolean defaultReturn, T... typeGetter) {
+		if (typeGetter.length != 0) throw new IllegalStateException("array must be empty!");
+		return createNullableBoolean(defaultReturn, (Class<T>) typeGetter.getClass().getComponentType());
+	}
+	
+	public static <T> Event<T> createNullableBoolean(Boolean defaultReturn, Class<T> clazz) {
+		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
+			for (var listener : listeners) {
+				return EventFactoryAccess.invokeMethod(listener, method, args);
 			}
 			return defaultReturn;
 		}));
@@ -64,12 +81,8 @@ public class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				DoubleValue<?, ?> doubleValue = (DoubleValue<?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (doubleValue.getA() == null ^ defaultReturn.getA() == null) {
-					throw new NullPointerException();
-				}
-				if (doubleValue.getB() == null ^ defaultReturn.getB() == null) {
-					throw new NullPointerException();
-				}
+				if (doubleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
+				if (doubleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
 				return doubleValue;
 			}
 			return defaultReturn;
@@ -86,16 +99,30 @@ public class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				TripleValue<?, ?, ?> tripleValue = (TripleValue<?, ?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (tripleValue.getA() == null ^ defaultReturn.getA() == null) {
-					throw new NullPointerException();
-				}
-				if (tripleValue.getB() == null ^ defaultReturn.getB() == null) {
-					throw new NullPointerException();
-				}
-				if (tripleValue.getC() == null ^ defaultReturn.getC() == null) {
-					throw new NullPointerException();
-				}
+				if (tripleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
+				if (tripleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
+				if (tripleValue.getC() == null ^ defaultReturn.getC() == null) {throw new NullPointerException();}
 				return tripleValue;
+			}
+			return defaultReturn;
+		}));
+	}
+	
+	@SafeVarargs
+	public static <T> Event<T> createQuadrupleValue(QuadrupleValue<?, ?, ?, ?> defaultReturn, T... typeGetter) {
+		if (typeGetter.length != 0) throw new IllegalStateException("array must be empty!");
+		return createQuadrupleValue(defaultReturn, (Class<T>) typeGetter.getClass().getComponentType());
+	}
+	
+	public static <T> Event<T> createQuadrupleValue(QuadrupleValue<?, ?, ?, ?> defaultReturn, Class<T> clazz) {
+		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
+			for (var listener : listeners) {
+				QuadrupleValue<?, ?, ?, ?> quadrupleValue = (QuadrupleValue<?, ?, ?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
+				if (quadrupleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
+				if (quadrupleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
+				if (quadrupleValue.getC() == null ^ defaultReturn.getC() == null) {throw new NullPointerException();}
+				if (quadrupleValue.getD() == null ^ defaultReturn.getD() == null) {throw new NullPointerException();}
+				return quadrupleValue;
 			}
 			return defaultReturn;
 		}));

@@ -12,8 +12,9 @@ import java.util.*;
  * only useful for mods without mixins, otherwise redundant
  * okay its useless if you have mixins lol
  */
-public class JavaUtil {
-	private JavaUtil() {}
+@SuppressWarnings("unused")
+public class ReflectUtil {
+	private ReflectUtil() {throw new RuntimeException();}
 	
 	public static Class<?> getClass(@NotNull String path, @NotNull String name) {
 		return getClass(path + "." + name);
@@ -60,7 +61,7 @@ public class JavaUtil {
 	public static <T> List<T> getFields(@NotNull Class<?> clazz, @NotNull Class<T> type) {
 		List<T> list = new ArrayList<>();
 		
-		for (Field field : JavaUtil.getFields(clazz)) {
+		for (Field field : ReflectUtil.getFields(clazz)) {
 			if (!field.getDeclaringClass().equals(clazz)) continue;
 			if (!Modifier.isStatic(field.getModifiers())) continue;
 			if (!Modifier.isFinal(field.getModifiers())) continue;

@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8.5",
-  "package": "dev.progames723.hmmm.forge.mixin",
+  "package": "dev.progames723.hmmm.neoforge.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],

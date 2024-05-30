@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "GNU GPL 3.0"
+
+[[mods]]
+modId = "hmmm"
+version = "${version}"
+displayName = "hmmm library"
+authors = "Progames723"
+description = '''
+A library for my mods!
+'''
+logoFile="icon.png"
+
+[[dependencies.hmmm]]
+modId = "neoforge"
+type = "required"
+versionRange = "[20.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.hmmm]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.20.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.hmmm]]
+modId = "architectury"
+type = "required"
+versionRange = "[10.0.0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[mixins]]
+config = "hmmm.mixins.json"

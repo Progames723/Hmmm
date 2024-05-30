@@ -1,5 +1,6 @@
-package dev.progames723.hmmm.event;
+package dev.progames723.hmmm.event.utils;
 
+@SuppressWarnings("unused")
 public class TripleValue<A, B, C> extends DoubleValue<A, B> {
 	private C c;
 	

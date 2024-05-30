@@ -1,5 +1,6 @@
-package dev.progames723.hmmm.event;
+package dev.progames723.hmmm.event.utils;
 
+@SuppressWarnings("unused")
 public class DoubleValue<A, B> {
 	private A a;
 	private B b;
