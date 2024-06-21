@@ -6,19 +6,7 @@ on:
         branches: ["master"]
 
 jobs:
-    make_gradlew_executable:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - name: Set up JDK 17
-          uses: actions/setup-java@v4
-          with:
-              java-version: 17
-              distribution: 'temurin'
-        - name: Make gradlew executable
-          run: chmod +x ./gradlew
     build_fabric:
-        needs: make_gradlew_executable
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -29,10 +17,11 @@ jobs:
                   distribution: 'temurin'
             - name: Setup Gradle
               uses: gradle/gradle-build-action@v3
+            - name: Make gradlew executable
+              run: chmod +x ./gradlew
             - name: Build with Gradle
               run: ./gradlew fabric:build
     build_forge:
-        needs: make_gradlew_executable
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -41,10 +30,11 @@ jobs:
               with:
                   java-version: 17
                   distribution: 'temurin'
+            - name: Make gradlew executable
+              run: chmod +x ./gradlew
             - name: Build with Gradle
               run: ./gradlew forge:build
     build_neoforge:
-        needs: make_gradlew_executable
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -53,5 +43,7 @@ jobs:
               with:
                   java-version: 17
                   distribution: 'temurin'
+            - name: Make gradlew executable
+              run: chmod +x ./gradlew
             - name: Build with Gradle
               run: ./gradlew neoforge:build
