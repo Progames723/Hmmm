@@ -1,0 +1,40 @@
+name: Build Mod Jar's
+
+on:
+    push:
+        branches: ["main"]
+
+jobs:
+    build_fabric:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: 17
+                  distribution: 'temurin'
+            - name: Build with Gradle
+              run: ./gradlew fabric:build
+    build_forge:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: 17
+                  distribution: 'temurin'
+            - name: Build with Gradle
+              run: ./gradlew forge:build
+    build_neoforge:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: 17
+                  distribution: 'temurin'
+            - name: Build with Gradle
+              run: ./gradlew neoforge:build
