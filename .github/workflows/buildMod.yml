@@ -20,7 +20,14 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              run: ./gradlew fabric:build
+              run: ./gradlew :fabric:build
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: hmmm-forge-DEV
+                  path: ./fabric/build/libs/hmmm-*.jar
+                  retention-days: 7
+                  compression-level: 9
     build_forge:
         runs-on: ubuntu-latest
         steps:
@@ -33,7 +40,14 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              run: ./gradlew forge:build
+              run: ./gradlew :forge:build
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: hmmm-forge-DEV
+                  path: ./forge/build/libs/hmmm-*.jar
+                  retention-days: 7
+                  compression-level: 9       
     build_neoforge:
         runs-on: ubuntu-latest
         steps:
@@ -46,4 +60,11 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              run: ./gradlew neoforge:build
+              run: ./gradlew :neoforge:build
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: hmmm-forge-DEV
+                  path: ./neoforge/build/libs/hmmm-*.jar
+                  retention-days: 7
+                  compression-level: 9
