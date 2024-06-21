@@ -7,7 +7,7 @@ import dev.progames723.hmmm.mixin.EventFactoryAccess;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
 
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings({"unchecked", "unused", ""})
 public final class EventFactoryUtil {//no fabric port ig :(
 	private EventFactoryUtil() {throw new RuntimeException();}
 	
@@ -35,7 +35,7 @@ public final class EventFactoryUtil {//no fabric port ig :(
 	public static <T> Event<T> createNullableBoolean(Boolean defaultReturn, Class<T> clazz) {
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
-				return EventFactoryAccess.invokeMethod(listener, method, args);
+				return (Boolean) EventFactoryAccess.invokeMethod(listener, method, args);
 			}
 			return defaultReturn;
 		}));

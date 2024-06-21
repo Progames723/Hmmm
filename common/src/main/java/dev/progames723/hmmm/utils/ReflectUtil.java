@@ -5,14 +5,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.security.AccessController;
+import java.security.AllPermission;
 import java.security.PrivilegedAction;
 import java.util.*;
 
 /**
  * only useful for mods without mixins, otherwise redundant
- * okay its useless if you have mixins lol
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "removal"})
 public class ReflectUtil {
 	private ReflectUtil() {throw new RuntimeException();}
 	
@@ -86,7 +86,7 @@ public class ReflectUtil {
 		Class<?> clazz = type;
 		while (clazz != null && clazz != Object.class) {
 			if (!result.isEmpty()) {
-				result.addAll(0, Arrays.asList(clazz.getDeclaredFields()));
+				result.addAll(Arrays.asList(clazz.getDeclaredFields()));
 			}
 			else {
 				Collections.addAll(result, clazz.getDeclaredFields());
@@ -109,7 +109,7 @@ public class ReflectUtil {
 			object.setAccessible(true);
 		} catch (SecurityException | InaccessibleObjectException e) {
 			try {
-				action.run();
+				AccessController.doPrivileged(action, AccessController.getContext(), new AllPermission());
 			} catch (InaccessibleObjectException | SecurityException exception) {
 				throw new RuntimeException(exception);//nah too bad if it didnt work
 			}
@@ -222,5 +222,29 @@ public class ReflectUtil {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static String getMethodDescriptor(Method method) {
+		String signature;
+		try {
+			Field signatureField = Method.class.getDeclaredField("signature");
+			signatureField.setAccessible(true);
+			signature = (String) signatureField.get(method);
+			if (signature != null) return signature;
+		} catch (IllegalAccessException | NoSuchFieldException ignored) {}
+		StringBuilder stringBuilder = new StringBuilder("(");
+		for (Class<?> c : method.getParameterTypes()) stringBuilder.append((signature = Array.newInstance(c, 0).toString()), 1, signature.indexOf("@"));
+		return stringBuilder.append(")").append(method.getReturnType() == void.class ? "V" : (signature = Array.newInstance(method.getReturnType(), 0).toString()).substring(1, signature.indexOf("@"))).toString();
+	}
+	
+	public static String getFieldDescriptor(Field field) {
+		String signature;
+		try {
+			Field signatureField = Method.class.getDeclaredField("signature");
+			signatureField.setAccessible(true);
+			signature = (String) signatureField.get(field);
+			if (signature != null) return signature;
+		} catch (IllegalAccessException | NoSuchFieldException ignored) {}
+		return field.getType() == void.class ? "V" : (signature = Array.newInstance(field.getType(), 0).toString()).substring(1, signature.indexOf("@"));
 	}
 }
