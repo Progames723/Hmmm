@@ -10,7 +10,7 @@ on:
 jobs:
   build_fabric:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('**/fabric/build.gradle') != '' }}
+    if: ${{ always() && hashFiles('**/fabric/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -33,7 +33,7 @@ jobs:
           compression-level: 9
   build_quilt:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('**/quilt/build.gradle') != '' }}
+    if: ${{ always() && hashFiles('**/quilt/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -56,7 +56,7 @@ jobs:
           compression-level: 9
   build_forge:
     runs-on: ubuntu-latest
-    if: ${{ hashFiles('**/forge/build.gradle') != '' }}
+    if: ${{ always() && hashFiles('**/forge/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -76,7 +76,7 @@ jobs:
           retention-days: 7
           compression-level: 9
   build_neoforge:
-    if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
+    if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
