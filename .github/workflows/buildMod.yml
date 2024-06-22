@@ -22,11 +22,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
+        if: ${{ hashFiles('**/fabric/build.gradle') != '' }}
         run: ./gradlew :fabric:build --no-daemon
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
+        if: ${{ hashFiles('**/fabric/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-fabric-DEV
           path: ./fabric/build/libs/*.jar
@@ -46,11 +46,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
+        if: ${{ hashFiles('**/quilt/build.gradle') != '' }}
         run: ./gradlew :quilt:build --no-daemon
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
+        if: ${{ hashFiles('**/quilt/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-fabric-DEV
           path: ./quilt/build/libs/*.jar
@@ -68,11 +68,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
+        if: ${{ hashFiles('**/forge/build.gradle') != '' }}
         run: ./gradlew :forge:build --no-daemon
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
+        if: ${{ hashFiles('**/forge/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-forge-DEV
           path: ./forge/build/libs/*.jar
@@ -90,11 +90,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
+        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
         run: ./gradlew :neoforge:build --no-daemon
-        if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
         if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
+        uses: actions/upload-artifact@v4
         with:
           name: hmmm-neoforge-DEV
           path: ./neoforge/build/libs/*.jar
