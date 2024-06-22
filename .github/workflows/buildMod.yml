@@ -30,7 +30,7 @@ jobs:
               run: ./gradlew :fabric:build
             - name: Build with Gradle(No daemon)
               if: inputs.gradle_daemon == false
-              run: ./gradlew :fabric:build
+              run: ./gradlew :fabric:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
@@ -54,7 +54,7 @@ jobs:
               run: ./gradlew :forge:build
             - name: Build with Gradle(No daemon)
               if: inputs.gradle_daemon == false
-              run: ./gradlew :forge:build
+              run: ./gradlew :forge:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
@@ -78,7 +78,7 @@ jobs:
               run: ./gradlew :neoforge:build
             - name: Build with Gradle(No daemon)
               if: inputs.gradle_daemon == false
-              run: ./gradlew :neoforge:build
+              run: ./gradlew :neoforge:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
               with:
