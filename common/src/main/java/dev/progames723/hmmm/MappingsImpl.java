@@ -7,6 +7,11 @@ public abstract class MappingsImpl implements MappingsExtended {
 	
 	private final Collection<String> to;
 	
+	public MappingsImpl() {
+		from = Collections.emptyList();
+		to = Collections.emptyList();
+	}
+	
 	public MappingsImpl(Collection<String> in, Collection<String> out) {
 		if (in == null || out == null) {
 			throw new NullPointerException("Null lists not allowed!");

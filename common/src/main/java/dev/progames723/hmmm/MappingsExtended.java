@@ -4,19 +4,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public interface MappingsExtended extends Mappings<String, String> {
-	String map(String b);
+	String map(String a);
 	
-	String mapClassName(Class<?> b);
+	String mapClassName(Class<?> a);
 	
-	String mapField(Field b, String descriptor);
+	String mapField(Field a, String descriptor);
 	
-	String mapMethod(Method b, String descriptor);
+	String mapMethod(Method a, String descriptor);
 	
-	String unmap(String a);
+	String unmap(String b);
 	
-	String unmapClassName(Class<?> a);
+	String unmapClassName(Class<?> b);
 	
-	String unmapField(Field a, String descriptor);
+	String unmapField(Field b, String descriptor);
 	
-	String unmapMethod(Method a, String descriptor);
+	String unmapMethod(Method b, String descriptor);
 }
