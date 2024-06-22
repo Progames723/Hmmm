@@ -25,7 +25,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: hmmm-fabric-DEV
-                  path: ./fabric/build/libs/hmmm-*.jar
+                  path: ./fabric/build/libs/*.jar
                   retention-days: 7
                   compression-level: 9
     build_forge:
@@ -45,7 +45,7 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: hmmm-forge-DEV
-                  path: ./forge/build/libs/hmmm-*.jar
+                  path: ./forge/build/libs/*.jar
                   retention-days: 7
                   compression-level: 9       
     build_neoforge:
@@ -65,6 +65,6 @@ jobs:
               uses: actions/upload-artifact@v4
               with:
                   name: hmmm-neoforge-DEV
-                  path: ./neoforge/build/libs/hmmm-*.jar
+                  path: ./neoforge/build/libs/*.jar
                   retention-days: 7
                   compression-level: 9
