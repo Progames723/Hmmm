@@ -1,10 +1,8 @@
 package dev.progames723.hmmm;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
-public abstract class MappingsImpl implements Mappings<String, String> {
+public abstract class MappingsImpl implements MappingsExtended {
 	private final Collection<String> from;
 	
 	private final Collection<String> to;
@@ -90,16 +88,4 @@ public abstract class MappingsImpl implements Mappings<String, String> {
 		}
 		return string;
 	}
-	
-	public abstract String mapClassName(Class<?> b);
-	
-	public abstract String mapField(Field b, String descriptor);
-	
-	public abstract String mapMethod(Method b, String descriptor);
-	
-	public abstract String unmapClassName(Class<?> a);
-	
-	public abstract String unmapField(Field a, String descriptor);
-	
-	public abstract String unmapMethod(Method a, String descriptor);
 }
