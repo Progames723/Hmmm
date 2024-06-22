@@ -1,13 +1,7 @@
 name: Build Mod Jar's
 
-on:
+on: 
   workflow_dispatch:
-    inputs:
-      gradle_daemon:
-        description: 'Enable Gradle Daemon'
-        required: false
-        default: false
-        type: boolean
   push:
       branches: ["master"]
 
@@ -26,10 +20,6 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              if: inputs.gradle_daemon == true
-              run: ./gradlew :fabric:build
-            - name: Build with Gradle(No daemon)
-              if: inputs.gradle_daemon == false
               run: ./gradlew :fabric:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
@@ -50,10 +40,6 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              if: inputs.gradle_daemon == true
-              run: ./gradlew :forge:build
-            - name: Build with Gradle(No daemon)
-              if: inputs.gradle_daemon == false
               run: ./gradlew :forge:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
@@ -74,10 +60,6 @@ jobs:
             - name: Make gradlew executable
               run: chmod +x ./gradlew
             - name: Build with Gradle
-              if: inputs.gradle_daemon == true
-              run: ./gradlew :neoforge:build
-            - name: Build with Gradle(No daemon)
-              if: inputs.gradle_daemon == false
               run: ./gradlew :neoforge:build --no-daemon
             - name: Upload artifact
               uses: actions/upload-artifact@v4
