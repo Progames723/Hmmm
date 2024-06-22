@@ -10,7 +10,6 @@ on:
 jobs:
   build_fabric:
     runs-on: ubuntu-latest
-    if: ${{ always() && hashFiles('**/fabric/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -24,8 +23,10 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew :fabric:build --no-daemon
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-fabric-DEV
           path: ./fabric/build/libs/*.jar
@@ -33,7 +34,6 @@ jobs:
           compression-level: 9
   build_quilt:
     runs-on: ubuntu-latest
-    if: ${{ always() && hashFiles('**/quilt/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -47,8 +47,10 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew :quilt:build --no-daemon
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-fabric-DEV
           path: ./quilt/build/libs/*.jar
@@ -56,7 +58,6 @@ jobs:
           compression-level: 9
   build_forge:
     runs-on: ubuntu-latest
-    if: ${{ always() && hashFiles('**/forge/build.gradle') != '' }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -68,15 +69,16 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew :forge:build --no-daemon
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-forge-DEV
           path: ./forge/build/libs/*.jar
           retention-days: 7
           compression-level: 9
   build_neoforge:
-    if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,8 +91,10 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew :neoforge:build --no-daemon
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
       - name: Upload artifact
         uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('**/neoforge/build.gradle') != '' }}
         with:
           name: hmmm-neoforge-DEV
           path: ./neoforge/build/libs/*.jar
