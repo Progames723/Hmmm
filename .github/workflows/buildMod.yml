@@ -21,7 +21,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         if: ${{ hashFiles('**/fabric/build.gradle') != '' }}
-        run: ./gradlew :fabric:build --no-daemon
+        run: ./gradlew fabric:build
       - name: Upload artifact
         if: ${{ hashFiles('**/fabric/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
@@ -43,7 +43,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         if: ${{ hashFiles('**/quilt/build.gradle') != '' }}
-        run: ./gradlew :quilt:build --no-daemon
+        run: ./gradlew quilt:build
       - name: Upload artifact
         if: ${{ hashFiles('**/quilt/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
@@ -65,7 +65,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         if: ${{ hashFiles('**/forge/build.gradle') != '' }}
-        run: ./gradlew :forge:build --no-daemon
+        run: ./gradlew forge:build
       - name: Upload artifact
         if: ${{ hashFiles('**/forge/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
@@ -87,7 +87,7 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
-        run: ./gradlew :neoforge:build --no-daemon
+        run: ./gradlew neoforge:build
       - name: Upload artifact
         if: ${{ hashFiles('**/neoforge/build.gradle') != '' }}
         uses: actions/upload-artifact@v4
