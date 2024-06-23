@@ -67,11 +67,10 @@ public final class EnigmaFileReader {
 
 			if (visitor.visitContent()) {
 				StringBuilder commentSb = new StringBuilder(200);
-				final MappingVisitor finalVisitor = visitor;
-
+				
 				do {
 					if (reader.nextCol("CLASS")) { // class: CLASS <name-a> [<name-b>]
-						readClass(reader, 0, null, null, commentSb, finalVisitor);
+						readClass(reader, 0, null, null, commentSb, visitor);
 					}
 				} while (reader.nextLine(0));
 			}
@@ -124,7 +123,7 @@ public final class EnigmaFileReader {
 			boolean isMethod;
 
 			if (reader.nextCol("CLASS")) { // nested class: CLASS <name-a> [<name-b>]
-				if (!visited || commentSb.length() > 0) {
+				if (!visited || !commentSb.isEmpty()) {
 					visitClass(srcClass, dstClass, state, commentSb, visitor);
 					visited = true;
 				}
@@ -164,7 +163,7 @@ public final class EnigmaFileReader {
 			}
 		}
 
-		if (!visited || commentSb.length() > 0) {
+		if (!visited || !commentSb.isEmpty()) {
 			visitClass(srcClass, dstClass, state, commentSb, visitor);
 		}
 	}
@@ -185,7 +184,7 @@ public final class EnigmaFileReader {
 
 			state = visitContent ? 1 : -1;
 
-			if (commentSb.length() > 0) {
+			if (!commentSb.isEmpty()) {
 				if (state > 0) visitor.visitComment(MappedElementKind.CLASS, commentSb.toString());
 
 				commentSb.setLength(0);
@@ -234,7 +233,7 @@ public final class EnigmaFileReader {
 	}
 
 	private static void readComment(ColumnFileReader reader, StringBuilder commentSb) throws IOException {
-		if (commentSb.length() > 0) commentSb.append('\n');
+		if (!commentSb.isEmpty()) commentSb.append('\n');
 
 		String comment = reader.nextCols(true);
 
@@ -244,7 +243,7 @@ public final class EnigmaFileReader {
 	}
 
 	private static void submitComment(MappedElementKind kind, StringBuilder commentSb, MappingVisitor visitor) throws IOException {
-		if (commentSb.length() == 0) return;
+		if (commentSb.isEmpty()) return;
 
 		visitor.visitComment(kind, commentSb.toString());
 		commentSb.setLength(0);

@@ -36,8 +36,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
 
 public final class MappingReader {
 	private MappingReader() {
@@ -146,60 +144,9 @@ public final class MappingReader {
 	}
 
 	private static boolean isEmptyOrStartsWithHash(String string) {
-		if (string.isEmpty() || string.startsWith("#")) return true;
-		return false;
+		return string.isEmpty() || string.startsWith("#");
 	}
-
-	public static List<String> getNamespaces(Path file) throws IOException {
-		return getNamespaces(file, null);
-	}
-
-	public static List<String> getNamespaces(Path file, MappingFormat format) throws IOException {
-		if (format == null) {
-			format = detectFormat(file);
-			if (format == null) throw new IOException("invalid/unsupported mapping format");
-		}
-
-		if (format.hasNamespaces) {
-			try (Reader reader = Files.newBufferedReader(file)) {
-				return getNamespaces(reader, format);
-			}
-		} else {
-			return Arrays.asList(MappingUtil.NS_SOURCE_FALLBACK, MappingUtil.NS_TARGET_FALLBACK);
-		}
-	}
-
-	public static List<String> getNamespaces(Reader reader) throws IOException {
-		return getNamespaces(reader, null);
-	}
-
-	public static List<String> getNamespaces(Reader reader, MappingFormat format) throws IOException {
-		if (format == null) {
-			if (!reader.markSupported()) reader = new BufferedReader(reader);
-			reader.mark(DETECT_HEADER_LEN);
-			format = detectFormat(reader);
-			reader.reset();
-			if (format == null) throw new IOException("invalid/unsupported mapping format");
-		}
-
-		if (format.hasNamespaces) {
-			checkReaderCompatible(format);
-
-			switch (format) {
-			case TINY_FILE:
-				return Tiny1FileReader.getNamespaces(reader);
-			case TINY_2_FILE:
-				return Tiny2FileReader.getNamespaces(reader);
-			case TSRG_2_FILE:
-				return TsrgFileReader.getNamespaces(reader);
-			default:
-				throw new IllegalStateException();
-			}
-		} else {
-			return Arrays.asList(MappingUtil.NS_SOURCE_FALLBACK, MappingUtil.NS_TARGET_FALLBACK);
-		}
-	}
-
+	
 	/**
 	 * Tries to detect the format of the given path and read it.
 	 *
@@ -230,11 +177,9 @@ public final class MappingReader {
 				read(reader, format, visitor);
 			}
 		} else {
-			switch (format) {
-			case ENIGMA_DIR:
+			if (format == MappingFormat.ENIGMA_DIR) {
 				EnigmaDirReader.read(path, visitor);
-				break;
-			default:
+			} else {
 				throw new IllegalStateException();
 			}
 		}

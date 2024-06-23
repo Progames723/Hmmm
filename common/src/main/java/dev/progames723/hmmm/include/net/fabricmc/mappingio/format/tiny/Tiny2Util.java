@@ -25,16 +25,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class Tiny2Util {
 	private Tiny2Util() {
 	}
-
-	public static boolean needEscape(String s) {
-		for (int pos = 0, len = s.length(); pos < len; pos++) {
-			char c = s.charAt(pos);
-			if (toEscape.indexOf(c) >= 0) return true;
-		}
-
-		return false;
-	}
-
+	
 	public static void writeEscaped(String s, Writer out) throws IOException {
 		final int len = s.length();
 		int start = 0;

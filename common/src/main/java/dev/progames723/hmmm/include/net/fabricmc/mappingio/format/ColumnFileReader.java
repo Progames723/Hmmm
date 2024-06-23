@@ -72,18 +72,7 @@ public final class ColumnFileReader implements Closeable {
 	public String nextCol(boolean unescape) throws IOException {
 		return read(unescape, true, true, null);
 	}
-
-	/**
-	 * Read a column without consuming, and unescape if requested.
-	 * Since it doesn't consume, it won't (un)mark BOF, EOL or EOF.
-	 *
-	 * @return {@code null} if nothing has been read (first char was EOL), otherwise the read string (may be empty).
-	 */
-	@Nullable
-	public String peekCol(boolean unescape) throws IOException {
-		return read(unescape, false, true, null);
-	}
-
+	
 	/**
 	 * @param unescape Whether to unescape the read string.
 	 * @param consume Whether to advance the bufferPos.
@@ -209,18 +198,7 @@ public final class ColumnFileReader implements Closeable {
 	public String nextCols(boolean unescape) throws IOException {
 		return read(unescape, true, false, null);
 	}
-
-	/**
-	 * Read all columns until EOL without consuming, and unescape if requested.
-	 * Since it doesn't consume, it won't (un)mark BOF, EOL or EOF.
-	 *
-	 * @return {@code null} if nothing has been read (first char was EOL), otherwise the read string (may be empty).
-	 */
-	@Nullable
-	public String peekCols(boolean unescape) throws IOException {
-		return read(unescape, false, false, null);
-	}
-
+	
 	/**
 	 * Read and consume a column and convert it to integer.
 	 *
@@ -284,18 +262,7 @@ public final class ColumnFileReader implements Closeable {
 	public int getLineNumber() {
 		return lineNumber;
 	}
-
-	/**
-	 * Whether or not EOL has been encountered in the current line yet.
-	 */
-	public boolean isAtEol() {
-		return eol;
-	}
-
-	public boolean isAtBof() {
-		return bof;
-	}
-
+	
 	public boolean isAtEof() {
 		return eof;
 	}

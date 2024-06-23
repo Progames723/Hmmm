@@ -139,13 +139,7 @@ public enum MappingFormat {
 	public boolean hasSingleFile() {
 		return fileExt != null;
 	}
-
-	public String getGlobPattern() {
-		if (fileExt == null) throw new UnsupportedOperationException("not applicable to dir based format");
-
-		return "*."+fileExt;
-	}
-
+	
 	public final String name;
 	@Nullable
 	public final String fileExt;

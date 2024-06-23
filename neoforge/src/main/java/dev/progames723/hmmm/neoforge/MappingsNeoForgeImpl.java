@@ -50,6 +50,10 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 		super(mappingMap);
 	}
 	
+	public MappingsNeoForgeImpl() {
+		super();
+	}
+	
 	@Override
 	public String mapClassName(Class<?> b) {
 		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.CLASS, b.getName());

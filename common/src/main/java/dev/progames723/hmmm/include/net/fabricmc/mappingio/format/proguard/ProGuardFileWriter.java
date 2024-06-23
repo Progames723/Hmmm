@@ -63,18 +63,7 @@ public final class ProGuardFileWriter implements MappingWriter {
 			throw new IllegalArgumentException("Namespace must be non-negative, found " + dstNamespace);
 		}
 	}
-
-	/**
-	 * Constructs a ProGuard mapping writer.
-	 *
-	 * @param writer The writer where the mappings will be written.
-	 * @param dstNamespace The namespace name to write as the destination namespace.
-	 */
-	public ProGuardFileWriter(Writer writer, String dstNamespace) {
-		this.writer = Objects.requireNonNull(writer, "writer cannot be null");
-		this.dstNamespaceString = Objects.requireNonNull(dstNamespace, "namespace cannot be null");
-	}
-
+	
 	/**
 	 * Closes the internal {@link Writer}.
 	 */

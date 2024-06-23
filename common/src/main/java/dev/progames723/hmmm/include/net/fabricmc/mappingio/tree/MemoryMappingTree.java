@@ -16,29 +16,14 @@
 
 package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
 
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappedElementKind;
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingFlag;
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * {@link VisitableMappingTree} implementation that stores all data in memory.
@@ -219,24 +204,12 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 	public List<? extends MetadataEntry> getMetadata() {
 		return metadata;
 	}
-
-	@Override
-	public List<? extends MetadataEntry> getMetadata(String key) {
-		return Collections.unmodifiableList(metadata.stream()
-				.filter(entry -> entry.getKey().equals(key))
-				.collect(Collectors.toList()));
-	}
-
+	
 	@Override
 	public void addMetadata(MetadataEntry entry) {
 		metadata.add(entry);
 	}
-
-	@Override
-	public boolean removeMetadata(String key) {
-		return metadata.removeIf(entry -> entry.getKey().equals(key));
-	}
-
+	
 	@Override
 	public Collection<? extends ClassMapping> getClasses() {
 		return classesBySrcName.values();
@@ -284,22 +257,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 		return ret;
 	}
-
-	@Override
-	@Nullable
-	public ClassMapping removeClass(String srcName) {
-		ClassEntry ret = classesBySrcName.remove(srcName);
-
-		if (ret != null && indexByDstNames) {
-			for (int i = 0; i < ret.dstNames.length; i++) {
-				String dstName = ret.dstNames[i];
-				if (dstName != null) classesByDstNames[i].remove(dstName);
-			}
-		}
-
-		return ret;
-	}
-
+	
 	@Override
 	public void accept(MappingVisitor visitor, VisitOrder order) throws IOException {
 		do {
@@ -898,16 +856,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 			return addMember(entry, fields, FLAG_HAS_ANY_FIELD_DESC, FLAG_MISSES_ANY_FIELD_DESC);
 		}
-
-		@Override
-		@Nullable
-		public FieldEntry removeField(String srcName, @Nullable String srcDesc) {
-			FieldEntry ret = getField(srcName, srcDesc);
-			if (ret != null) fields.remove(ret.key);
-
-			return ret;
-		}
-
+		
 		@Override
 		public Collection<MethodEntry> getMethods() {
 			if (methods == null) return Collections.emptyList();
@@ -935,16 +884,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 			return addMember(entry, methods, FLAG_HAS_ANY_METHOD_DESC, FLAG_MISSES_ANY_METHOD_DESC);
 		}
-
-		@Override
-		@Nullable
-		public MethodEntry removeMethod(String srcName, @Nullable String srcDesc) {
-			MethodEntry ret = getMethod(srcName, srcDesc);
-			if (ret != null) methods.remove(ret.key);
-
-			return ret;
-		}
-
+		
 		private static <T extends MemberEntry<T>> T getMember(String srcName, @Nullable String srcDesc,
 				@Nullable Map<MemberKey, T> map, int flags, int flagHasAny, int flagMissesAny) {
 			if (map == null) return null;
@@ -1328,16 +1268,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 			existing.copyFrom(toAdd, replace);
 		}
-
-		@Override
-		@Nullable
-		public MethodArgEntry removeArg(int argPosition, int lvIndex, @Nullable String srcName) {
-			MethodArgEntry ret = getArg(argPosition, lvIndex, srcName);
-			if (ret != null) args.remove(ret);
-
-			return ret;
-		}
-
+		
 		@Override
 		public Collection<MethodVarEntry> getVars() {
 			if (vars == null) return Collections.emptyList();
@@ -1444,16 +1375,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 			existing.copyFrom(toAdd, replace);
 		}
-
-		@Override
-		@Nullable
-		public MethodVarEntry removeVar(int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName) {
-			MethodVarEntry ret = getVar(lvtRowIndex, lvIndex, startOpIdx, endOpIdx, srcName);
-			if (ret != null) vars.remove(ret);
-
-			return ret;
-		}
-
+		
 		void accept(MappingVisitor visitor, VisitOrder order, boolean supplyDstDescs) throws IOException {
 			if (visitor.visitMethod(srcName, srcDesc) && acceptMember(visitor, supplyDstDescs)) {
 				boolean varsFirst = order.isMethodVarsFirst() && args != null && vars != null;

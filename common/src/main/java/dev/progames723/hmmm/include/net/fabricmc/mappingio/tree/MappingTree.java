@@ -16,10 +16,10 @@
 
 package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collection;
 import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Mutable mapping tree.
@@ -35,24 +35,9 @@ public interface MappingTree extends MappingTreeView {
 	 */
 	@Override
 	List<? extends MetadataEntry> getMetadata();
-
-	/**
-	 * @return An unmodifiable list of all metadata entries currently present
-	 * in the tree whose key is equal to the passed one.
-	 * The list's order is equal to the order in which the entries have been originally added.
-	 */
-	@Override
-	List<? extends MetadataEntry> getMetadata(String key);
-
+	
 	void addMetadata(MetadataEntry entry);
-
-	/**
-	 * Removes all metadata entries whose key is equal to the passed one.
-	 *
-	 * @return Whether or not any entries have been removed.
-	 */
-	boolean removeMetadata(String key);
-
+	
 	@Override
 	Collection<? extends ClassMapping> getClasses();
 	@Override
@@ -66,9 +51,7 @@ public interface MappingTree extends MappingTreeView {
 	}
 
 	ClassMapping addClass(ClassMapping cls);
-	@Nullable
-	ClassMapping removeClass(String srcName);
-
+	
 	@Override
 	@Nullable
 	default FieldMapping getField(String srcClsName, String srcName, @Nullable String srcDesc) {
@@ -118,9 +101,7 @@ public interface MappingTree extends MappingTreeView {
 		}
 
 		FieldMapping addField(FieldMapping field);
-		@Nullable
-		FieldMapping removeField(String srcName, @Nullable String srcDesc);
-
+		
 		@Override
 		Collection<? extends MethodMapping> getMethods();
 		@Override
@@ -134,8 +115,6 @@ public interface MappingTree extends MappingTreeView {
 		}
 
 		MethodMapping addMethod(MethodMapping method);
-		@Nullable
-		MethodMapping removeMethod(String srcName, @Nullable String srcDesc);
 	}
 
 	interface MemberMapping extends ElementMapping, MemberMappingView {
@@ -153,17 +132,13 @@ public interface MappingTree extends MappingTreeView {
 		@Nullable
 		MethodArgMapping getArg(int argPosition, int lvIndex, @Nullable String srcName);
 		MethodArgMapping addArg(MethodArgMapping arg);
-		@Nullable
-		MethodArgMapping removeArg(int argPosition, int lvIndex, @Nullable String srcName);
-
+		
 		@Override
 		Collection<? extends MethodVarMapping> getVars();
 		@Override
 		@Nullable
 		MethodVarMapping getVar(int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName);
 		MethodVarMapping addVar(MethodVarMapping var);
-		@Nullable
-		MethodVarMapping removeVar(int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName);
 	}
 
 	interface MethodArgMapping extends ElementMapping, MethodArgMappingView {

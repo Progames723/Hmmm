@@ -26,19 +26,7 @@ import java.util.Collection;
 @ApiStatus.Experimental
 public interface HierarchyInfoProvider<T> {
 	String getNamespace();
-
-	/**
-	 * @return The internal name of the owner class highest up in the hierarchy.
-	 */
-	@Nullable
-	String resolveField(String owner, String name, @Nullable String desc);
-
-	/**
-	 * @return The internal name of the owner class highest up in the hierarchy.
-	 */
-	@Nullable
-	String resolveMethod(String owner, String name, @Nullable String desc);
-
+	
 	@Nullable
 	T getMethodHierarchy(String owner, String name, @Nullable String desc);
 

@@ -16,8 +16,6 @@
 
 package dev.progames723.hmmm.include.net.fabricmc.mappingio;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.adapter.FlatAsRegularMappingVisitor;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.adapter.RegularAsFlatMappingVisitor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -104,17 +102,7 @@ public interface FlatMappingVisitor {
 	default boolean visitEnd() throws IOException {
 		return true;
 	}
-
-	// regular <-> flat visitor adaptation methods
-
-	default MappingVisitor asRegularVisitor() {
-		return new FlatAsRegularMappingVisitor(this);
-	}
-
-	static FlatMappingVisitor fromRegularVisitor(MappingVisitor visitor) {
-		return new RegularAsFlatMappingVisitor(visitor);
-	}
-
+	
 	// convenience visit methods without extra dst context
 
 	default boolean visitField(String srcClsName, String srcName, @Nullable String srcDesc, String[] dstNames) throws IOException {
@@ -152,15 +140,7 @@ public interface FlatMappingVisitor {
 	default boolean visitClass(String srcName, String dstName) throws IOException {
 		return visitClass(srcName, toArray(dstName));
 	}
-
-	default void visitClassComment(String srcName, String comment) throws IOException {
-		visitClassComment(srcName, (String) null, comment);
-	}
-
-	default void visitClassComment(String srcName, @Nullable String dstName, String comment) throws IOException {
-		visitClassComment(srcName, toArray(dstName), comment);
-	}
-
+	
 	default boolean visitField(String srcClsName, String srcName, @Nullable String srcDesc,
 			String dstName) throws IOException {
 		return visitField(srcClsName, srcName, srcDesc,
@@ -172,22 +152,7 @@ public interface FlatMappingVisitor {
 		return visitField(srcClsName, srcName, srcDesc,
 				toArray(dstClsName), toArray(dstName), toArray(dstDesc));
 	}
-
-	default void visitFieldComment(String srcClsName, String srcName, @Nullable String srcDesc,
-			String comment) throws IOException {
-		visitFieldComment(srcClsName, srcName, srcDesc,
-				(String) null, null, null,
-				comment);
-	}
-
-	default void visitFieldComment(String srcClsName, String srcName, @Nullable String srcDesc,
-			@Nullable String dstClsName, @Nullable String dstName, @Nullable String dstDesc,
-			String comment) throws IOException {
-		visitFieldComment(srcClsName, srcName, srcDesc,
-				toArray(dstClsName), toArray(dstName), toArray(dstDesc),
-				comment);
-	}
-
+	
 	default boolean visitMethod(String srcClsName, String srcName, @Nullable String srcDesc,
 			String dstName) throws IOException {
 		return visitMethod(srcClsName, srcName, srcDesc,
@@ -199,22 +164,7 @@ public interface FlatMappingVisitor {
 		return visitMethod(srcClsName, srcName, srcDesc,
 				toArray(dstClsName), toArray(dstName), toArray(dstDesc));
 	}
-
-	default void visitMethodComment(String srcClsName, String srcName, @Nullable String srcDesc,
-			String comment) throws IOException {
-		visitMethodComment(srcClsName, srcName, srcDesc,
-				(String) null, null, null,
-				comment);
-	}
-
-	default void visitMethodComment(String srcClsName, String srcName, @Nullable String srcDesc,
-			@Nullable String dstClsName, @Nullable String dstName, @Nullable String dstDesc,
-			String comment) throws IOException {
-		visitMethodComment(srcClsName, srcName, srcDesc,
-				toArray(dstClsName), toArray(dstName), toArray(dstDesc),
-				comment);
-	}
-
+	
 	default boolean visitMethodArg(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
 			int argPosition, int lvIndex, @Nullable String srcName, String dstName) throws IOException {
 		return visitMethodArg(srcClsName, srcMethodName, srcMethodDesc,
@@ -230,25 +180,7 @@ public interface FlatMappingVisitor {
 				argPosition, lvIndex, srcName,
 				toArray(dstClsName), toArray(dstMethodName), toArray(dstMethodDesc), toArray(dstName));
 	}
-
-	default void visitMethodArgComment(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
-			int argPosition, int lvIndex, @Nullable String srcName, String comment) throws IOException {
-		visitMethodArgComment(srcClsName, srcMethodName, srcMethodDesc,
-				argPosition, lvIndex, srcName,
-				(String) null, null, null, null,
-				comment);
-	}
-
-	default void visitMethodArgComment(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
-			int argPosition, int lvIndex, @Nullable String srcName,
-			@Nullable String dstClsName, @Nullable String dstMethodName,
-			@Nullable String dstMethodDesc, @Nullable String dstName,
-			String comment) throws IOException {
-		visitMethodArgComment(srcClsName, srcMethodName, srcMethodDesc, argPosition, lvIndex, srcName,
-				toArray(dstClsName), toArray(dstMethodName), toArray(dstMethodDesc), toArray(dstName),
-				comment);
-	}
-
+	
 	default boolean visitMethodVar(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
 			int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName,
 			String dstName) throws IOException {
@@ -265,23 +197,5 @@ public interface FlatMappingVisitor {
 				lvtRowIndex, lvIndex, startOpIdx, endOpIdx, srcName,
 				toArray(dstClsName), toArray(dstMethodName), toArray(dstMethodDesc), toArray(dstName));
 	}
-
-	default void visitMethodVarComment(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
-			int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName,
-			String comment) throws IOException {
-		visitMethodVarComment(srcClsName, srcMethodName, srcMethodDesc,
-				lvtRowIndex, lvIndex, startOpIdx, endOpIdx, srcName,
-				(String) null, null, null, null,
-				comment);
-	}
-
-	default void visitMethodVarComment(String srcClsName, String srcMethodName, @Nullable String srcMethodDesc,
-			int lvtRowIndex, int lvIndex, int startOpIdx, int endOpIdx, @Nullable String srcName,
-			@Nullable String dstClsName, @Nullable String dstMethodName, @Nullable String dstMethodDesc,
-			@Nullable String dstName, String comment) throws IOException {
-		visitMethodVarComment(srcClsName, srcMethodName, srcMethodDesc,
-				lvtRowIndex, lvIndex, startOpIdx, endOpIdx, srcName,
-				toArray(dstClsName), toArray(dstMethodName), toArray(dstMethodDesc), toArray(dstName),
-				comment);
-	}
+	
 }

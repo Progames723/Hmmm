@@ -38,21 +38,7 @@ public interface MappingTreeView {
 	 * Can only be empty if the tree is uninitialized.
 	 */
 	List<String> getDstNamespaces();
-
-	/**
-	 * @return The maximum available namespace ID (exclusive).
-	 */
-	default int getMaxNamespaceId() {
-		return getDstNamespaces().size();
-	}
-
-	/**
-	 * @return The minimum available namespace ID (inclusive).
-	 */
-	default int getMinNamespaceId() {
-		return MIN_NAMESPACE_ID;
-	}
-
+	
 	default int getNamespaceId(String namespace) {
 		if (namespace.equals(getSrcNamespace())) {
 			return SRC_NAMESPACE_ID;
@@ -62,16 +48,9 @@ public interface MappingTreeView {
 
 		return ret >= 0 ? ret : NULL_NAMESPACE_ID;
 	}
-
-	default String getNamespaceName(int id) {
-		if (id < 0) return getSrcNamespace();
-
-		return getDstNamespaces().get(id);
-	}
-
+	
 	List<? extends MetadataEntryView> getMetadata();
-	List<? extends MetadataEntryView> getMetadata(String key);
-
+	
 	Collection<? extends ClassMappingView> getClasses();
 	@Nullable
 	ClassMappingView getClass(String srcName);
@@ -149,11 +128,7 @@ public interface MappingTreeView {
 	default String mapDesc(CharSequence desc, int srcNamespace, int dstNamespace) {
 		return mapDesc(desc, 0, desc.length(), srcNamespace, dstNamespace);
 	}
-
-	default String mapDesc(CharSequence desc, int start, int end, int namespace) {
-		return mapDesc(desc, start, end, SRC_NAMESPACE_ID, namespace);
-	}
-
+	
 	default String mapDesc(CharSequence desc, int start, int end, int srcNamespace, int dstNamespace) {
 		if (srcNamespace == dstNamespace) return desc.subSequence(start, end).toString();
 
@@ -293,14 +268,7 @@ public interface MappingTreeView {
 		ClassMappingView getOwner();
 		@Nullable
 		String getSrcDesc();
-
-		@Nullable
-		default String getDstDesc(int namespace) {
-			String srcDesc = getSrcDesc();
-
-			return srcDesc != null ? getTree().mapDesc(srcDesc, namespace) : null;
-		}
-
+		
 		@Nullable
 		default String getDesc(int namespace) {
 			String srcDesc = getSrcDesc();
@@ -311,17 +279,7 @@ public interface MappingTreeView {
 				return getTree().mapDesc(srcDesc, namespace);
 			}
 		}
-
-		@Nullable
-		default String getDesc(String namespace) {
-			int nsId = getTree().getNamespaceId(namespace);
-
-			if (nsId == NULL_NAMESPACE_ID) {
-				return null;
-			} else {
-				return getDesc(nsId);
-			}
-		}
+		
 	}
 
 	interface FieldMappingView extends MemberMappingView { }
@@ -351,6 +309,5 @@ public interface MappingTreeView {
 	}
 
 	int SRC_NAMESPACE_ID = -1;
-	int MIN_NAMESPACE_ID = SRC_NAMESPACE_ID;
 	int NULL_NAMESPACE_ID = -2;
 }
