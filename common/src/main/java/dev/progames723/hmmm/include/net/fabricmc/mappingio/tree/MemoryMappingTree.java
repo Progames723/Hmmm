@@ -19,7 +19,6 @@ package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappedElementKind;
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingFlag;
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -36,36 +35,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 	public MemoryMappingTree(boolean indexByDstNames) {
 		this.indexByDstNames = indexByDstNames;
 	}
-
-	public MemoryMappingTree(MappingTree src) {
-		if (src instanceof MemoryMappingTree) {
-			indexByDstNames = ((MemoryMappingTree) src).indexByDstNames;
-		}
-
-		setSrcNamespace(src.getSrcNamespace());
-		setDstNamespaces(src.getDstNamespaces());
-
-		for (MetadataEntry entry : src.getMetadata()) {
-			addMetadata(entry);
-		}
-
-		for (ClassMapping cls : src.getClasses()) {
-			addClass(cls);
-		}
-	}
-
-	public void setIndexByDstNames(boolean indexByDstNames) {
-		if (indexByDstNames == this.indexByDstNames) return;
-
-		if (!indexByDstNames) {
-			classesByDstNames = null;
-		} else if (dstNamespaces != null) {
-			initClassesByDstNames();
-		}
-
-		this.indexByDstNames = indexByDstNames;
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	private void initClassesByDstNames() {
 		classesByDstNames = new Map[dstNamespaces.size()];
@@ -81,16 +51,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 			}
 		}
 	}
-
-	@ApiStatus.Experimental
-	public void setHierarchyInfoProvider(@Nullable HierarchyInfoProvider<?> provider) {
-		hierarchyInfo = provider;
-
-		if (provider != null) {
-			propagateNames(provider);
-		}
-	}
-
+	
 	@Override
 	@Nullable
 	public String getSrcNamespace() {
@@ -1674,12 +1635,10 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 		public boolean equals(Object other) {
 			if (other == this) return true;
 
-			if (!(other instanceof MetadataEntryImpl)) {
+			if (!(other instanceof MetadataEntryImpl entry)) {
 				return false;
 			}
-
-			MetadataEntryImpl entry = (MetadataEntryImpl) other;
-
+			
 			return this.key.equals(entry.key) && this.value.equals(entry.value);
 		}
 
@@ -1734,7 +1693,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 		private final boolean isField;
 	}
 
-	private boolean indexByDstNames;
+	private final boolean indexByDstNames;
 	private String srcNamespace;
 	private List<String> dstNamespaces = Collections.emptyList();
 	private final List<MetadataEntry> metadata = new ArrayList<>();

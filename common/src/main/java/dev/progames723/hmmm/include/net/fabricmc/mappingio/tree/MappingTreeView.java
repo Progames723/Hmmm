@@ -103,11 +103,7 @@ public interface MappingTreeView {
 	}
 
 	void accept(MappingVisitor visitor, VisitOrder order) throws IOException;
-
-	default String mapClassName(String name, int namespace) {
-		return mapClassName(name, SRC_NAMESPACE_ID, namespace);
-	}
-
+	
 	default String mapClassName(String name, int srcNamespace, int dstNamespace) {
 		assert name.indexOf('.') < 0;
 

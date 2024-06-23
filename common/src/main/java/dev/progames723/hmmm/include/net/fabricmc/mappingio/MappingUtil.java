@@ -20,10 +20,6 @@ public final class MappingUtil {
 	private MappingUtil() {
 	}
 	
-	static String[] toArray(String s) {
-		return s != null ? new String[] { s } : null;
-	}
-
 	public static final String NS_SOURCE_FALLBACK = "source";
 	public static final String NS_TARGET_FALLBACK = "target";
 }

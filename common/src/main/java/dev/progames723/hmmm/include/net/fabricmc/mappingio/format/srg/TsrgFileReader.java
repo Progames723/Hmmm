@@ -26,7 +26,6 @@ import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.MappingFormat;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,26 +40,7 @@ import java.util.List;
 public final class TsrgFileReader {
 	private TsrgFileReader() {
 	}
-
-	public static List<String> getNamespaces(Reader reader) throws IOException {
-		return getNamespaces(new ColumnFileReader(reader, '\t', ' '));
-	}
-
-	private static List<String> getNamespaces(ColumnFileReader reader) throws IOException {
-		if (reader.nextCol("tsrg2")) { // tsrg2 magic
-			List<String> ret = new ArrayList<>();
-			String ns;
-
-			while ((ns = reader.nextCol()) != null) {
-				ret.add(ns);
-			}
-
-			return ret;
-		} else { // assume tsrg1
-			return Arrays.asList(MappingUtil.NS_SOURCE_FALLBACK, MappingUtil.NS_TARGET_FALLBACK);
-		}
-	}
-
+	
 	public static void read(Reader reader, MappingVisitor visitor) throws IOException {
 		read(reader, MappingUtil.NS_SOURCE_FALLBACK, MappingUtil.NS_TARGET_FALLBACK, visitor);
 	}

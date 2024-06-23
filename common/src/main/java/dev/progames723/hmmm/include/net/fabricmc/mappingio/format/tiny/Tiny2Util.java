@@ -16,9 +16,6 @@
 
 package dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -26,25 +23,6 @@ public final class Tiny2Util {
 	private Tiny2Util() {
 	}
 	
-	public static void writeEscaped(String s, Writer out) throws IOException {
-		final int len = s.length();
-		int start = 0;
-
-		for (int pos = 0; pos < len; pos++) {
-			char c = s.charAt(pos);
-			int idx = toEscape.indexOf(c);
-
-			if (idx >= 0) {
-				out.write(s, start, pos - start);
-				out.write('\\');
-				out.write(escaped.charAt(idx));
-				start = pos + 1;
-			}
-		}
-
-		out.write(s, start, len - start);
-	}
-
 	public static String unescape(String str) {
 		int pos = str.indexOf('\\');
 		if (pos < 0) return str;

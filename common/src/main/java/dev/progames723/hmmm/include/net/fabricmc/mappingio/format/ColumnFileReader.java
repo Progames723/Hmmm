@@ -394,7 +394,7 @@ public final class ColumnFileReader implements Closeable {
 		return true;
 	}
 
-	private static final String noMatch = new String();
+	private static final String noMatch = "";
 	private final Reader reader;
 	private final char indentationChar;
 	private final char columnSeparator;
