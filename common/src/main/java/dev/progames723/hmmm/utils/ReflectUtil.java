@@ -1,8 +1,5 @@
 package dev.progames723.hmmm.utils;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.AllPermission;
@@ -16,15 +13,15 @@ import java.util.*;
 public class ReflectUtil {
 	private ReflectUtil() {throw new RuntimeException();}
 	
-	public static Class<?> getClass(@NotNull String path, @NotNull String name) {
-		return getClass(path + "." + name);
+	public static Class<?> getClass(String path, String name) {
+		return getClass(path.replace('/', '.') + "." + name);
 	}
 	
-	public static Class<?> getInnerClass(@NotNull String path, @NotNull String name) {
-		return getClass(path + "$" + name);
+	public static Class<?> getInnerClass(String path, String name) {
+		return getClass(path.replace('/', '.') + "$" + name);
 	}
 	
-	public static Class<?> getClass(@NotNull String path) {
+	public static Class<?> getClass(String path) {
 		try {
 			return Class.forName(path);
 		}
@@ -34,7 +31,7 @@ public class ReflectUtil {
 		}
 	}
 	
-	public static Constructor<?> getConstructor(@NotNull Class<?> clazz, Class<?>... types) {
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... types) {
 		try {
 			Constructor<?> constructor = clazz.getDeclaredConstructor(types);
 			throwExceptionIfWrongClassPackage(checkClassPackage(constructor.getClass()));
@@ -47,7 +44,7 @@ public class ReflectUtil {
 		return null;
 	}
 	
-	public static Object invokeConstructor(@NotNull Constructor<?> constructor, Object... args) {
+	public static Object invokeConstructor(Constructor<?> constructor, Object... args) {
 		try {
 			return constructor.newInstance(args);
 		}
@@ -57,8 +54,7 @@ public class ReflectUtil {
 		return args;
 	}
 	
-	@NotNull
-	public static <T> List<T> getFields(@NotNull Class<?> clazz, @NotNull Class<T> type) {
+	public static <T> List<T> getFields(Class<?> clazz, Class<T> type) {
 		List<T> list = new ArrayList<>();
 		
 		for (Field field : ReflectUtil.getFields(clazz)) {
@@ -79,8 +75,7 @@ public class ReflectUtil {
 		return list;
 	}
 	
-	@NotNull
-	public static List<Field> getFields(@NotNull Class<?> type) {
+	public static List<Field> getFields(Class<?> type) {
 		List<Field> result = new ArrayList<>();
 		
 		Class<?> clazz = type;
@@ -97,9 +92,9 @@ public class ReflectUtil {
 		return result;
 	}
 	
-	public static void tryToMakeItAccessible(@NotNull AccessibleObject object) {
+	public static void tryToMakeItAccessible(AccessibleObject object) {
 		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
-		@NotNull AccessibleObject finalObject = object;
+		AccessibleObject finalObject = object;
 		PrivilegedAction<AccessibleObject> action = () -> {
 			finalObject.setAccessible(true);
 			return finalObject;
@@ -110,8 +105,8 @@ public class ReflectUtil {
 		} catch (SecurityException | InaccessibleObjectException e) {
 			try {
 				AccessController.doPrivileged(action, AccessController.getContext(), new AllPermission());
-			} catch (InaccessibleObjectException | SecurityException exception) {
-				throw new RuntimeException(exception);//nah too bad if it didnt work
+			} catch (InaccessibleObjectException | SecurityException exc) {
+				throw new RuntimeException(exc);//nah too bad if it didnt work
 			}
 		}
 	}
@@ -141,7 +136,7 @@ public class ReflectUtil {
 		}
 	}
 	
-	public static Field getField(@NotNull Class<?> clazz, @NotNull String fieldName) {
+	public static Field getField(Class<?> clazz, String fieldName) {
 		try {
 			return clazz.getDeclaredField(fieldName);
 		}
@@ -155,7 +150,7 @@ public class ReflectUtil {
 		}
 	}
 	
-	public static Object getFieldValue(@NotNull Object from, @NotNull String fieldName) {
+	public static Object getFieldValue(Object from, String fieldName) {
 		try {
 			Class<?> clazz = from instanceof Class<?> ? (Class<?>) from : from.getClass();
 			Field field = getField(clazz, fieldName);
@@ -171,7 +166,7 @@ public class ReflectUtil {
 		return null;
 	}
 	
-	public static boolean setFieldValue(@NotNull Object of, @NotNull String fieldName, @Nullable Object value) {
+	public static boolean setFieldValue(Object of, String fieldName, Object value) {
 		try {
 			boolean isStatic = of instanceof Class;
 			Class<?> clazz = isStatic ? (Class<?>) of : of.getClass();
@@ -190,7 +185,7 @@ public class ReflectUtil {
 		return false;
 	}
 	
-	public static Method getMethod(@NotNull Class<?> clazz, @NotNull String methodName, @NotNull Class<?>... o) {
+	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... o) {
 		try {
 			return clazz.getDeclaredMethod(methodName, o);
 		}
@@ -204,7 +199,7 @@ public class ReflectUtil {
 		}
 	}
 	
-	public static Object invokeMethod(@NotNull Method method, @Nullable Object object, @Nullable Object... param) {
+	public static Object invokeMethod(Method method, Object object, Object... param) {
 		throwExceptionIfWrongClassPackage(checkClassPackage(method.getClass()));
 		tryToMakeItAccessible(method);
 		try {
@@ -216,22 +211,18 @@ public class ReflectUtil {
 		return null;
 	}
 	
-	public static Class<?> getCallerClass() {
-		try {
-			return StackWalker.getInstance(Set.of(StackWalker.Option.values())).getCallerClass();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public static Class<?> getCallerClass() {//should work
+		return StackWalker.getInstance(Set.of(StackWalker.Option.values())).getCallerClass();
 	}
 	
 	public static String getMethodDescriptor(Method method) {
 		String signature;
 		try {
-			Field signatureField = Method.class.getDeclaredField("signature");
-			signatureField.setAccessible(true);
-			signature = (String) signatureField.get(method);
+			Method signatureMethod = Method.class.getDeclaredMethod("getGenericSignature");
+			signatureMethod.setAccessible(true);
+			signature = (String) signatureMethod.invoke(method);
 			if (signature != null) return signature;
-		} catch (IllegalAccessException | NoSuchFieldException ignored) {}
+		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 		StringBuilder stringBuilder = new StringBuilder("(");
 		for (Class<?> c : method.getParameterTypes()) stringBuilder.append((signature = Array.newInstance(c, 0).toString()), 1, signature.indexOf("@"));
 		return stringBuilder.append(")").append(method.getReturnType() == void.class ? "V" : (signature = Array.newInstance(method.getReturnType(), 0).toString()).substring(1, signature.indexOf("@"))).toString();
@@ -240,11 +231,13 @@ public class ReflectUtil {
 	public static String getFieldDescriptor(Field field) {
 		String signature;
 		try {
-			Field signatureField = Method.class.getDeclaredField("signature");
-			signatureField.setAccessible(true);
-			signature = (String) signatureField.get(field);
+			Method signatureMethod = Field.class.getDeclaredMethod("getGenericSignature");
+			signatureMethod.setAccessible(true);
+			signature = (String) signatureMethod.invoke(field);
 			if (signature != null) return signature;
-		} catch (IllegalAccessException | NoSuchFieldException ignored) {}
+		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 		return field.getType() == void.class ? "V" : (signature = Array.newInstance(field.getType(), 0).toString()).substring(1, signature.indexOf("@"));
 	}
+	
+	//native bypassing methods will be provided
 }

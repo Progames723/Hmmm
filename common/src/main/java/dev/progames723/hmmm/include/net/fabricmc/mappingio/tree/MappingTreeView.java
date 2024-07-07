@@ -49,8 +49,6 @@ public interface MappingTreeView {
 		return ret >= 0 ? ret : NULL_NAMESPACE_ID;
 	}
 	
-	List<? extends MetadataEntryView> getMetadata();
-	
 	Collection<? extends ClassMappingView> getClasses();
 	@Nullable
 	ClassMappingView getClass(String srcName);

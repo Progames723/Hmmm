@@ -19,22 +19,11 @@ package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Mutable mapping tree.
  */
 public interface MappingTree extends MappingTreeView {
-	@Nullable
-	String setSrcNamespace(String namespace);
-	List<String> setDstNamespaces(List<String> namespaces);
-
-	/**
-	 * @return A modifiable list of all metadata entries currently present in the tree.
-	 * The list's order is equal to the order in which the entries have been originally added.
-	 */
-	@Override
-	List<? extends MetadataEntry> getMetadata();
 	
 	void addMetadata(MetadataEntry entry);
 	
@@ -49,8 +38,6 @@ public interface MappingTree extends MappingTreeView {
 	default ClassMapping getClass(String name, int namespace) {
 		return (ClassMapping) MappingTreeView.super.getClass(name, namespace);
 	}
-
-	ClassMapping addClass(ClassMapping cls);
 	
 	@Override
 	@Nullable

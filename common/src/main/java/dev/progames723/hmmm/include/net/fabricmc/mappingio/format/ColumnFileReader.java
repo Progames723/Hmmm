@@ -188,16 +188,6 @@ public final class ColumnFileReader implements Closeable {
 
 		return ret;
 	}
-
-	/**
-	 * Read and consume all columns until EOL, and unescape if requested.
-	 *
-	 * @return {@code null} if nothing has been read (first char was EOL), otherwise the read string (may be empty).
-	 */
-	@Nullable
-	public String nextCols(boolean unescape) throws IOException {
-		return read(unescape, true, false, null);
-	}
 	
 	/**
 	 * Read and consume a column and convert it to integer.
@@ -254,19 +244,11 @@ public final class ColumnFileReader implements Closeable {
 
 		return false;
 	}
-
-	public boolean hasExtraIndents() throws IOException {
-		return fillBuffer(1, false, false) && buffer[bufferPos] == indentationChar;
-	}
-
+	
 	public int getLineNumber() {
 		return lineNumber;
 	}
 	
-	public boolean isAtEof() {
-		return eof;
-	}
-
 	/**
 	 * Marks the present position in the stream. Subsequent calls to
 	 * {@link #reset()} will reposition the stream to this point.

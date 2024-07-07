@@ -135,10 +135,6 @@ public enum MappingFormat {
 		this.supportsLocals = supportsLocals;
 		this.hasWriter = hasWriter;
 	}
-
-	public boolean hasSingleFile() {
-		return fileExt != null;
-	}
 	
 	public final String name;
 	@Nullable

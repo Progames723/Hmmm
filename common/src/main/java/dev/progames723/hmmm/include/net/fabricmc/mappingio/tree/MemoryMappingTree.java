@@ -57,66 +57,12 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 	public String getSrcNamespace() {
 		return srcNamespace;
 	}
-
-	@Override
-	@Nullable
-	public String setSrcNamespace(String namespace) {
-		String ret = srcNamespace;
-		srcNamespace = namespace;
-
-		return ret;
-	}
-
+	
 	@Override
 	public List<String> getDstNamespaces() {
 		return dstNamespaces;
 	}
-
-	@Override
-	public List<String> setDstNamespaces(List<String> namespaces) {
-		if (!classesBySrcName.isEmpty()) { // classes present, update existing dstNames
-			int newSize = namespaces.size();
-			int[] nameMap = new int[newSize];
-
-			for (int i = 0; i < newSize; i++) {
-				String newNs = namespaces.get(i);
-
-				if (newNs.equals(srcNamespace)) {
-					throw new IllegalArgumentException("can't use the same namespace for src and dst");
-				} else {
-					int oldNsIdx = dstNamespaces.indexOf(newNs);
-					nameMap[i] = oldNsIdx;
-				}
-			}
-
-			boolean useResize = true;
-
-			for (int i = 0; i < newSize; i++) {
-				int src = nameMap[i];
-
-				if (src != i && (src >= 0 || i >= dstNamespaces.size())) { // not a 1:1 copy with potential null extension
-					useResize = false;
-					break;
-				}
-			}
-
-			if (useResize) {
-				resizeDstNames(newSize);
-			} else {
-				updateDstNames(nameMap);
-			}
-		}
-
-		List<String> ret = dstNamespaces;
-		dstNamespaces = namespaces;
-
-		if (indexByDstNames) {
-			initClassesByDstNames();
-		}
-
-		return ret;
-	}
-
+	
 	private void resizeDstNames(int newSize) {
 		for (ClassEntry cls : classesBySrcName.values()) {
 			cls.resizeDstNames(newSize);
@@ -137,33 +83,6 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 				}
 			}
 		}
-	}
-
-	private void updateDstNames(int[] nameMap) {
-		for (ClassEntry cls : classesBySrcName.values()) {
-			cls.updateDstNames(nameMap);
-
-			for (FieldEntry field : cls.getFields()) {
-				field.updateDstNames(nameMap);
-			}
-
-			for (MethodEntry method : cls.getMethods()) {
-				method.updateDstNames(nameMap);
-
-				for (MethodArgEntry arg : method.getArgs()) {
-					arg.updateDstNames(nameMap);
-				}
-
-				for (MethodVarEntry var : method.getVars()) {
-					var.updateDstNames(nameMap);
-				}
-			}
-		}
-	}
-
-	@Override
-	public List<? extends MetadataEntry> getMetadata() {
-		return metadata;
 	}
 	
 	@Override
@@ -191,27 +110,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 			return classesByDstNames[namespace].get(name);
 		}
 	}
-
-	@Override
-	public ClassMapping addClass(ClassMapping cls) {
-		ClassEntry entry = cls instanceof ClassEntry && cls.getTree() == this ? (ClassEntry) cls : new ClassEntry(this, cls, getSrcNsEquivalent(cls));
-		ClassEntry ret = classesBySrcName.putIfAbsent(cls.getSrcName(), entry);
-
-		if (ret != null) {
-			ret.copyFrom(entry, false);
-			entry = ret;
-		}
-
-		if (indexByDstNames) {
-			for (int i = 0; i < entry.dstNames.length; i++) {
-				String dstName = entry.dstNames[i];
-				if (dstName != null) classesByDstNames[i].put(dstName, entry);
-			}
-		}
-
-		return entry;
-	}
-
+	
 	private int getSrcNsEquivalent(ElementMapping mapping) {
 		int ret = mapping.getTree().getNamespaceId(srcNamespace);
 		if (ret == NULL_NAMESPACE_ID) throw new UnsupportedOperationException("can't find source namespace in referenced mapping tree");
@@ -671,21 +570,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 		void resizeDstNames(int newSize) {
 			dstNames = Arrays.copyOf(dstNames, newSize);
 		}
-
-		void updateDstNames(int[] map) {
-			String[] newDstNames = new String[map.length];
-
-			for (int i = 0; i < map.length; i++) {
-				int src = map[i];
-
-				if (src >= 0) {
-					newDstNames[i] = dstNames[src];
-				}
-			}
-
-			dstNames = newDstNames;
-		}
-
+		
 		@Override
 		@Nullable
 		public final String getComment() {
@@ -747,19 +632,7 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 		ClassEntry(MemoryMappingTree tree, String srcName) {
 			super(tree, srcName);
 		}
-
-		ClassEntry(MemoryMappingTree tree, ClassMapping src, int srcNsEquivalent) {
-			super(tree, src, srcNsEquivalent);
-
-			for (FieldMapping field : src.getFields()) {
-				addField(field);
-			}
-
-			for (MethodMapping method : src.getMethods()) {
-				addMethod(method);
-			}
-		}
-
+		
 		@Override
 		public MappedElementKind getKind() {
 			return MappedElementKind.CLASS;

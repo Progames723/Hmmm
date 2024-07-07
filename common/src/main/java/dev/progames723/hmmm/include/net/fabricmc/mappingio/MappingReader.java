@@ -17,45 +17,16 @@
 package dev.progames723.hmmm.include.net.fabricmc.mappingio;
 
 import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.MappingFormat;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.enigma.EnigmaDirReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.enigma.EnigmaFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.jobf.JobfFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.proguard.ProGuardFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.simple.RecafSimpleFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.srg.JamFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.srg.SrgFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.srg.TsrgFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny.Tiny1FileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny.Tiny2FileReader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public final class MappingReader {
 	private MappingReader() {
 	}
-
-	@Nullable
-	public static MappingFormat detectFormat(Path file) throws IOException {
-		if (Files.isDirectory(file)) {
-			return MappingFormat.ENIGMA_DIR;
-		}
-
-		try (Reader reader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8)) {
-			String fileName = file.getFileName().toString();
-			int dotIdx = fileName.lastIndexOf('.');
-			String fileExt = dotIdx >= 0 ? fileName.substring(dotIdx + 1) : null;
-
-			return detectFormat(reader, fileExt);
-		}
-	}
-
+	
 	@Nullable
 	public static MappingFormat detectFormat(Reader reader) throws IOException {
 		return detectFormat(reader, null);
@@ -147,115 +118,5 @@ public final class MappingReader {
 		return string.isEmpty() || string.startsWith("#");
 	}
 	
-	/**
-	 * Tries to detect the format of the given path and read it.
-	 *
-	 * @param path The path to read from. Can be a file or a directory.
-	 * @param visitor The receiving visitor.
-	 * @throws IOException If the format can't be detected or reading fails.
-	 */
-	public static void read(Path path, MappingVisitor visitor) throws IOException {
-		read(path, null, visitor);
-	}
-
-	/**
-	 * Tries to read the given path using the passed format's reader.
-	 *
-	 * @param path The path to read from. Can be a file or a directory.
-	 * @param format The format to use. Has to match the path's format.
-	 * @param visitor The receiving visitor.
-	 * @throws IOException If reading fails.
-	 */
-	public static void read(Path path, MappingFormat format, MappingVisitor visitor) throws IOException {
-		if (format == null) {
-			format = detectFormat(path);
-			if (format == null) throw new IOException("invalid/unsupported mapping format");
-		}
-
-		if (format.hasSingleFile()) {
-			try (Reader reader = Files.newBufferedReader(path)) {
-				read(reader, format, visitor);
-			}
-		} else {
-			if (format == MappingFormat.ENIGMA_DIR) {
-				EnigmaDirReader.read(path, visitor);
-			} else {
-				throw new IllegalStateException();
-			}
-		}
-	}
-
-	/**
-	 * Tries to detect the reader's content's format and read it.
-	 *
-	 * @param reader The reader to read from.
-	 * @param visitor The receiving visitor.
-	 * @throws IOException If the format can't be detected or reading fails.
-	 */
-	public static void read(Reader reader, MappingVisitor visitor) throws IOException {
-		read(reader, null, visitor);
-	}
-
-	/**
-	 * Tries to read the reader's content using the passed format's mapping reader.
-	 *
-	 * @param reader The reader to read from.
-	 * @param format The format to use. Has to match the reader's content's format.
-	 * @param visitor The receiving visitor.
-	 * @throws IOException If reading fails.
-	 */
-	public static void read(Reader reader, MappingFormat format, MappingVisitor visitor) throws IOException {
-		if (format == null) {
-			if (!reader.markSupported()) reader = new BufferedReader(reader);
-			reader.mark(DETECT_HEADER_LEN);
-			format = detectFormat(reader);
-			reader.reset();
-			if (format == null) throw new IOException("invalid/unsupported mapping format");
-		}
-
-		checkReaderCompatible(format);
-
-		switch (format) {
-		case TINY_FILE:
-			Tiny1FileReader.read(reader, visitor);
-			break;
-		case TINY_2_FILE:
-			Tiny2FileReader.read(reader, visitor);
-			break;
-		case ENIGMA_FILE:
-			EnigmaFileReader.read(reader, visitor);
-			break;
-		case SRG_FILE:
-		case XSRG_FILE:
-			SrgFileReader.read(reader, visitor);
-			break;
-		case JAM_FILE:
-			JamFileReader.read(reader, visitor);
-			break;
-		case CSRG_FILE:
-		case TSRG_FILE:
-		case TSRG_2_FILE:
-			TsrgFileReader.read(reader, visitor);
-			break;
-		case PROGUARD_FILE:
-			ProGuardFileReader.read(reader, visitor);
-			break;
-		case RECAF_SIMPLE_FILE:
-			RecafSimpleFileReader.read(reader, visitor);
-			break;
-		case JOBF_FILE:
-			JobfFileReader.read(reader, visitor);
-			break;
-		default:
-			throw new IllegalStateException();
-		}
-	}
-
-	private static void checkReaderCompatible(MappingFormat format) throws IOException {
-		if (!format.hasSingleFile()) {
-			throw new IOException("can't read mapping format "+format.name+" using a Reader, use the Path based API");
-		}
-	}
-
 	private static final int DETECT_HEADER_LEN = 4096;
 }
