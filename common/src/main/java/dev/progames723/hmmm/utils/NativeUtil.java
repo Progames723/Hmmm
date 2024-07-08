@@ -1,5 +1,6 @@
 package dev.progames723.hmmm.utils;
 
+import dev.architectury.platform.Platform;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -43,8 +44,8 @@ public class NativeUtil {
 	}
 	
 	private static @NotNull String getFileName(String path) {
-		if (null == path || !path.startsWith("/")) {
-			throw new IllegalArgumentException("The path has to be absolute (start with '/').");
+		if (path == null || !new File(path).isAbsolute()) {
+			throw new IllegalArgumentException("The path has to be absolute.");
 		}
 		
 		String[] parts = path.split("/");
@@ -65,7 +66,9 @@ public class NativeUtil {
 	}
 	
 	private static File createTempDirectory() {
-		String tempDir = System.getProperty("java.io.tmpdir");
+		String tempDir = Platform.getConfigFolder().toString();
+		tempDir = tempDir.charAt(tempDir.length() - 1) == '/' ? tempDir.concat("temp") : tempDir.concat("/temp");
+		
 		File generatedDir = new File(tempDir, NativeUtil.NATIVE_FOLDER_PATH_PREFIX + System.nanoTime());
 		
 		if (!generatedDir.mkdir()) throw new RuntimeException(new IOException("Failed to create temp directory " + generatedDir.getName()));
