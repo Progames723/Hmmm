@@ -11,7 +11,7 @@ static JNINativeMethod methods[] = {
     {"nthRoot", "(DD)D", (void *)&Java_dev_progames723_hmmm_utils_MathUtil_nthRoot}
 };
 
-static double fastPow(double x, double y)
+static double fast_pow(double x, double y)
 {
   union {
     double d;
@@ -20,6 +20,28 @@ static double fastPow(double x, double y)
   u.x[1] = (int)(y * (u.x[1] - 1072632447) + 1072632447);
   u.x[0] = 0;
   return u.d;
+}
+
+static double fast_sqrt(double x)
+{
+  if (x > 0 && x < 1) return 1 / fast_sqrt(1 / x);
+
+  double l = 0, r = x;
+
+  // precision
+  double epsilon = 1e-15;
+
+  while (l <= r) 
+  {
+    double mid = (l + r) / 2;
+    if (mid * mid > x) r = mid;
+    else 
+    {
+      if (x - mid * mid < epsilon) return mid;
+      l = mid;
+    }
+  }
+  return -1;
 }
 
 extern "C" {
@@ -52,26 +74,7 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_MathUtil_registerNatives
 JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt
   (JNIEnv *env, jclass cls, jdouble j_double)
   {
-    double x = (double) j_double;
-
-    if (x > 0 && x < 1) return 1 / (double) env->CallStaticDoubleMethod(cls, env->GetStaticMethodID(cls, "fastSqrt", "(D)D"), 1 / x);
-
-    double l = 0, r = x;
-    
-    // precision
-    double epsilon = 1e-15;
-
-    while (l <= r) 
-    {
-      double mid = (l + r) / 2;
-      if (mid * mid > x) r = mid;
-      else 
-      {
-        if (x - mid * mid < epsilon) return mid;
-        l = mid;
-      }
-    }
-    return -1;
+    return fast_sqrt(j_double);
   }
 
 /*
@@ -82,7 +85,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt
 JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__D
   (JNIEnv *env, jclass cls, jdouble j_double) 
   {
-    double y = (double) j_double;
+    double y = j_double;
     double x2 = y * 0.5;
 
     long long i = *(long long *) &y;
@@ -126,7 +129,7 @@ JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__F
 JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastPow
   (JNIEnv *env, jclass cls, jdouble x, jdouble y)
   {
-    return fastPow((double) x, (double) y);
+    return fast_pow(x, y);
   }
 
 /*
@@ -137,7 +140,6 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastPow
 JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_nthRoot
   (JNIEnv *env, jclass cls, jdouble x, jdouble y) 
   {
-    return fastPow((double) x, 1 / (double) y);
+    return fast_pow(x, 1 / y);
   }
-
 }

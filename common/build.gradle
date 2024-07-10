@@ -15,6 +15,7 @@ dependencies {
 architectury {
     common("fabric", "forge", "neoforge")
 }
+
 loom {
 //  accessWidenerPath = file("src/main/resources/hmmm.accesswidener")
     enableTransitiveAccessWideners = true
