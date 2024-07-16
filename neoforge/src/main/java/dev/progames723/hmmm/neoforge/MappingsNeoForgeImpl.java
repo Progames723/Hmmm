@@ -30,6 +30,10 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 	
 	private static final MixinIntermediaryDevRemapper remapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "named", "intermediary");
 	
+	public MappingsNeoForgeImpl() {
+		super();
+	}
+	
 	public MappingsNeoForgeImpl(Collection<String> in, Collection<String> out) {
 		super(in, out);
 	}
@@ -48,10 +52,6 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 	
 	public MappingsNeoForgeImpl(Map<String, String> mappingMap) {
 		super(mappingMap);
-	}
-	
-	public MappingsNeoForgeImpl() {
-		super();
 	}
 	
 	@Override

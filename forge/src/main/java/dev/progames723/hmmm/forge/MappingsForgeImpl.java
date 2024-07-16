@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class MappingsForgeImpl extends MappingsImpl {
+	public MappingsForgeImpl() {
+		super();
+	}
 	
 	public MappingsForgeImpl(Collection<String> in, Collection<String> out) {
 		super(in, out);

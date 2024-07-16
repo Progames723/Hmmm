@@ -9,13 +9,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -72,6 +70,11 @@ public abstract class LivingEntityMixin extends Entity {
 			cancellable = true
 	)
 	private void livingHurt(final DamageSource damageSource, final float f, CallbackInfoReturnable<Boolean> cir) {
+		if (hmmm$instance instanceof Player player) if (player.getGameProfile().getName().equals("TemporaryPlayerTemp")) {
+			hmmm$tempDamageSource = damageSource;
+			hmmm$hurtTempDamage = sanitizeFloat(f);
+			return;
+		}
 		TripleValue<Boolean, DamageSource, Float> tripleValue = LivingEvents.LIVING_HURT.invoker().livingHurt(hmmm$instance, damageSource, f);
 		hmmm$tempDamageSource = tripleValue.getB();
 		hmmm$hurtTempDamage = sanitizeFloat(tripleValue.getC());
@@ -123,6 +126,10 @@ public abstract class LivingEntityMixin extends Entity {
 			cancellable = true
 	)
 	private void livingDamaged(final DamageSource damageSource, final float f, CallbackInfo ci) {
+		if (hmmm$instance instanceof Player player) if (player.getGameProfile().getName().equals("TemporaryPlayerTemp")) {
+			hmmm$damagedTempDamage = sanitizeFloat(f);
+			return;
+		}
 		DoubleValue<Boolean, Float> doubleValue = LivingEvents.LIVING_DAMAGED.invoker().livingDamaged(hmmm$instance, damageSource, f);
 		//a damage source cannot be altered that late
 		hmmm$damagedTempDamage = sanitizeFloat(doubleValue.getB());

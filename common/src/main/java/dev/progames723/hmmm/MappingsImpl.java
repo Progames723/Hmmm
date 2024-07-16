@@ -1,5 +1,7 @@
 package dev.progames723.hmmm;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class MappingsImpl implements MappingsExtended {
@@ -93,4 +95,16 @@ public abstract class MappingsImpl implements MappingsExtended {
 		}
 		return string;
 	}
+	
+	public abstract String mapClassName(Class<?> a);
+	
+	public abstract String mapField(Field a, String descriptor);
+	
+	public abstract String mapMethod(Method a, String descriptor);
+	
+	public abstract String unmapClassName(Class<?> b);
+	
+	public abstract String unmapField(Field b, String descriptor);
+	
+	public abstract String unmapMethod(Method b, String descriptor);
 }

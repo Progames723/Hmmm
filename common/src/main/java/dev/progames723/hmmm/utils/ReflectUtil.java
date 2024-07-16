@@ -1,5 +1,8 @@
 package dev.progames723.hmmm.utils;
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.progames723.hmmm.MappingsImpl;
+
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.AllPermission;
@@ -237,6 +240,17 @@ public class ReflectUtil {
 			if (signature != null) return signature;
 		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 		return field.getType() == void.class ? "V" : (signature = Array.newInstance(field.getType(), 0).toString()).substring(1, signature.indexOf("@"));
+	}
+	
+	@ExpectPlatform
+	private static MappingsImpl getModLoaderSpecificMappingsImpl() {
+		return null;
+	}
+	
+	public static MappingsImpl getMappingsImpl() {
+		MappingsImpl mappings = getModLoaderSpecificMappingsImpl();
+		assert mappings != null;
+		return mappings;
 	}
 	
 	//native bypassing methods will be provided

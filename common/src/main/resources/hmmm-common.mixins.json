@@ -11,8 +11,8 @@
   ],
   "client": [
   ],
-  "priority": 2000,
-  "mixinPriority": 2000,
+  "priority": 2147483647,
+  "mixinPriority": 2147483647,
   "injectors": {
     "defaultRequire": 1
   }
