@@ -9,15 +9,21 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -50,31 +56,20 @@ public abstract class LivingEntityMixin extends Entity {
 	@Unique
 	private float sanitizeFloat(@Nullable Float value) {
 		if (value == null) {
-			return 0;
+			return -1;
 		}
 		if (value.isInfinite() && value == Float.POSITIVE_INFINITY) {
 			return Float.MAX_VALUE;
 		} else if (value.isInfinite() && value == Float.NEGATIVE_INFINITY) {
 			return Float.MIN_VALUE;
 		} else if (value.isNaN()) {
-			return 0;
+			return -1;
 		}
 		return value;
 	}
 	
-	@Inject(
-			method = "hurt",
-			at = @At(
-					value = "HEAD"
-			),
-			cancellable = true
-	)
+	@Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
 	private void livingHurt(final DamageSource damageSource, final float f, CallbackInfoReturnable<Boolean> cir) {
-		if (hmmm$instance instanceof Player player) if (player.getGameProfile().getName().equals("TemporaryPlayerTemp")) {
-			hmmm$tempDamageSource = damageSource;
-			hmmm$hurtTempDamage = sanitizeFloat(f);
-			return;
-		}
 		TripleValue<Boolean, DamageSource, Float> tripleValue = LivingEvents.LIVING_HURT.invoker().livingHurt(hmmm$instance, damageSource, f);
 		hmmm$tempDamageSource = tripleValue.getB();
 		hmmm$hurtTempDamage = sanitizeFloat(tripleValue.getC());
@@ -126,7 +121,7 @@ public abstract class LivingEntityMixin extends Entity {
 			cancellable = true
 	)
 	private void livingDamaged(final DamageSource damageSource, final float f, CallbackInfo ci) {
-		if (hmmm$instance instanceof Player player) if (player.getGameProfile().getName().equals("TemporaryPlayerTemp")) {
+		if (hmmm$instance.getUUID().equals(new UUID(0L, 0L))) {
 			hmmm$damagedTempDamage = sanitizeFloat(f);
 			return;
 		}

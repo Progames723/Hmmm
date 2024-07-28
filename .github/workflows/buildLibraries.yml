@@ -1,0 +1,42 @@
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/workflows/**"
+      - "nativeLibSrc/src/**"
+  pull_request:
+    types: [ opened, reopened, synchronize, edited, ready_for_review, review_requested ]
+    paths:
+      - ".github/workflows/**"
+      - "nativeLibSrc/src/**"
+
+jobs:
+  compileWindows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v2
+        name: "Setup JDK 17"
+        with:
+          architecture: ${{matrix.arch}}
+          distribution: temurin
+          java-version: 17
+      - uses: msys2/setup-msys2@v2
+        name: "Setup MSYS2"
+        with:
+          msystem: ucrt
+          install: "mingw-w64-ucrt-x86_64-gcc"
+          platform-check-severity: fatal
+        run: |
+          cd nativeLibSrc
+          chmod +x compileWindows.sh
+          ./compileWindows.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "Windows native libraries"
+          compression-level: 9
+          retention-days: 10
+          path: ./nativeLibSrc/build/windows

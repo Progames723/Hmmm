@@ -2,6 +2,7 @@ package dev.progames723.hmmm.utils;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.progames723.hmmm.MappingsImpl;
+import org.burningwave.core.classes.*;
 
 import java.lang.reflect.*;
 import java.security.AccessController;
@@ -249,9 +250,16 @@ public class ReflectUtil {
 	
 	public static MappingsImpl getMappingsImpl() {
 		MappingsImpl mappings = getModLoaderSpecificMappingsImpl();
-		assert mappings != null;
+		assert mappings != null;//every modern mod loader supported!
 		return mappings;
 	}
 	
-	//native bypassing methods will be provided
+	public static class Bypass {
+		public static final Methods methods = Methods.create();
+		public static final Fields fields = Fields.create();
+		public static final Constructors constructors = Constructors.create();
+		public static final Classes classes = Classes.create();
+		public static final Members members = Members.create();
+		public static final Modules modules = Modules.create();
+	}
 }

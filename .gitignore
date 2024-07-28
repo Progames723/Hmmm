@@ -116,3 +116,9 @@ run/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+
+# Avoid ignoring the native library build directory it will be needed later
+!nativeLibSrc/build
+
+# But exclude the include because license shit
+nativeLibSrc/src/include

@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class MappingsImpl implements MappingsExtended {
-	private final Collection<String> from;
+	protected final Collection<String> from;
 	
-	private final Collection<String> to;
+	protected final Collection<String> to;
 	
 	public MappingsImpl() {
 		from = Collections.emptyList();

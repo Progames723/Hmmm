@@ -7,34 +7,10 @@ import org.spongepowered.asm.bridge.RemapperAdapterFML;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
 
 public class MappingsForgeImpl extends MappingsImpl {
 	public MappingsForgeImpl() {
 		super();
-	}
-	
-	public MappingsForgeImpl(Collection<String> in, Collection<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsForgeImpl(String[] in, String[] out) {
-		super(in, out);
-	}
-	
-	public MappingsForgeImpl(Enumeration<String> in, Enumeration<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsForgeImpl(Iterator<String> in, Iterator<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsForgeImpl(Map<String, String> mappingMap) {
-		super(mappingMap);
 	}
 	
 	@Override

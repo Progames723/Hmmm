@@ -10,7 +10,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 @SuppressWarnings("unused")
@@ -66,31 +65,19 @@ public class MinecraftUtil {
 			return damage;
 		}
 		
-		public static float damageReduction(float damage, DamageSource source, LivingEntity entity) {//good method name
+		public static float calculate(float damage, DamageSource source, LivingEntity entity) {//good method name
 			if (!entity.isInvulnerableTo(source) && !entity.isInvulnerable() && !entity.isDeadOrDying()) {
-				if (source.is(DamageTypeTags.IS_FIRE) && entity.hasEffect(MobEffects.FIRE_RESISTANCE)) {
-					damage = 0.0f;
-					return damage;
-				}
-				if (source.is(DamageTypeTags.IS_FREEZING) && entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
-					damage *= 5.0f;
-				}
-				if (source.is(DamageTypeTags.DAMAGES_HELMET) && entity.hasItemInSlot(EquipmentSlot.HEAD)) {
-					damage *= 0.75f;
-				}
+				if (source.is(DamageTypeTags.IS_FIRE) && entity.hasEffect(MobEffects.FIRE_RESISTANCE)) return 0.0f;
+				if (source.is(DamageTypeTags.IS_FREEZING) && entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) damage *= 5.0f;
+				if (source.is(DamageTypeTags.DAMAGES_HELMET) && entity.hasItemInSlot(EquipmentSlot.HEAD)) damage *= 0.75f;
+				
 				if (entity.invulnerableTime > 10.0f && !source.is(DamageTypeTags.BYPASSES_COOLDOWN)) {
-					if (damage <= ((LivingEntityAccess) entity).getLastHurt()) {
-						damage = 0.0f;
-						return damage;
-					}
+					if (damage <= ((LivingEntityAccess) entity).getLastHurt()) return 0.0f;
 					damage = actuallyHurtDamageReduction(damage - ((LivingEntityAccess) entity).getLastHurt(), source, entity);
 				} else {
 					damage = actuallyHurtDamageReduction(damage, source, entity);
 				}
-			} else {
-				damage = 0.0f;
-				return damage;
-			}
+			} else return 0.0f;
 			return damage;
 		}
 	}

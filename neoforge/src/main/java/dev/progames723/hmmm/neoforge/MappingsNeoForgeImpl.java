@@ -34,26 +34,6 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 		super();
 	}
 	
-	public MappingsNeoForgeImpl(Collection<String> in, Collection<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsNeoForgeImpl(String[] in, String[] out) {
-		super(in, out);
-	}
-	
-	public MappingsNeoForgeImpl(Enumeration<String> in, Enumeration<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsNeoForgeImpl(Iterator<String> in, Iterator<String> out) {
-		super(in, out);
-	}
-	
-	public MappingsNeoForgeImpl(Map<String, String> mappingMap) {
-		super(mappingMap);
-	}
-	
 	@Override
 	public String mapClassName(Class<?> b) {
 		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.CLASS, b.getName());
@@ -95,24 +75,20 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 		@Nullable
 		public List<String> getNamespaces() {
 			initializeMetadata();
-			
 			return namespaces;
 		}
 		
 		public MappingTree getMappings() {
 			initializeMappings();
-			
 			return mappings;
 		}
 		
 		private void initializeMetadata() {
 			if (!this.initializedMetadata) {
 				URLConnection connection = this.openMappings();
-				
 				try {
 					if (connection != null) {
 						BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-						
 						try {
 							MappingFormat format = this.readMappingFormat(reader);
 							switch (format) {
@@ -131,16 +107,13 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 							} catch (Throwable var5) {
 								var6.addSuppressed(var5);
 							}
-							
 							throw var6;
 						}
-						
 						reader.close();
 					}
 				} catch (IOException var7) {
 					throw new RuntimeException("Error reading mapping metadata", var7);
 				}
-				
 				this.initializedMetadata = true;
 			}
 		}
@@ -152,7 +125,6 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 				if (connection != null) {
 					try {
 						BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-						
 						try {
 							long time = System.currentTimeMillis();
 							this.mappings = new MemoryMappingTree();
@@ -168,7 +140,6 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 								default:
 									throw new UnsupportedOperationException("Unsupported mapping format: " + format);
 							}
-							
 							HmmmLibrary.LOGGER.debug(MarkerFactory.getMarker("Mappings"), "Loading mappings took %d ms", new Object[]{System.currentTimeMillis() - time});
 						} catch (Throwable var8) {
 							try {

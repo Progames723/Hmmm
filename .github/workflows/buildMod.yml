@@ -4,8 +4,14 @@ on:
   workflow_dispatch:
   push:
     branches: ["master"]
+    paths-ignore:
+      - ".github/workflows/**"
+      - "nativeLibSrc/**"
   pull_request:
     types: [ opened, reopened, synchronize, edited, ready_for_review, review_requested ]
+    paths-ignore:
+      - ".github/workflows/**"
+      - "nativeLibSrc/**"
 
 jobs:
   build_fabric:
