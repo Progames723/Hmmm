@@ -30,6 +30,7 @@ jobs:
           msystem: ucrt
           install: "mingw-w64-ucrt-x86_64-gcc"
           platform-check-severity: fatal
+      - name: "Run commands"
         run: |
           cd nativeLibSrc
           chmod +x compileWindows.sh
