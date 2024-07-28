@@ -27,7 +27,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         name: "Setup MSYS2"
         with:
-          msystem: ucrt
+          msystem: UCRT64
           install: "mingw-w64-ucrt-x86_64-gcc"
           platform-check-severity: fatal
       - name: "Run commands"
