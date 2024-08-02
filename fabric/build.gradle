@@ -26,6 +26,9 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+
+    include "org.burningwave:core:12.65.1"
+    api "org.burningwave:core:12.65.1"
 }
 
 processResources {

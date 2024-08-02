@@ -16,26 +16,27 @@ public class PlatformUtil {
 	}
 	
 	public static Architecture getArchitecture() {
+		if (instance == null) instance = new PlatformUtil(Architecture.getArchitecture());
 		return instance.architecture;
 	}
 	
 	static void initArchitecture(Architecture architecture) {
-		if (instance == null) new PlatformUtil(architecture);
+		if (instance == null) instance = new PlatformUtil(architecture);
 	}
 	
 	/**
 	 * Every architecture that is supported by jre(jdk) 17
 	 */
 	public enum Architecture {
-		X86(false),
+		X86(true),
 		X64(true),
-		AARCH64(true),
+		AARCH64(false),
 		ARM(false),
-		SPARCV9(true),
-		S390X(true),
-		RISCV64(true),
-		PPC64(true),
-		PPC64LE(true),
+		SPARCV9(false),
+		S390X(false),
+		RISCV64(false),
+		PPC64(false),
+		PPC64LE(false),
 		UNKNOWN(false);
 		
 		Architecture(boolean isSupported) {
@@ -44,8 +45,18 @@ public class PlatformUtil {
 		
 		final boolean isSupported;
 		
-		public static String getStringArchitecture() {
-			return System.getProperty("os.name");
+		public static Architecture getArchitecture() {
+			return getArchitecture(System.getProperty("os.arch"));
+		}
+		
+		public static Architecture getArchitecture(String arch) {//the list that i compiled myself
+			return switch (arch) {
+				case "x64", "x86_64", "amd64" -> Architecture.X64;
+				case "x86", "x86_32", "i386", "i486", "i586", "i686" -> Architecture.X86;
+				case "aarch64", "armv8", "armv9" -> Architecture.AARCH64;
+				case "armv7", "arm" -> Architecture.ARM;
+				default -> Architecture.UNKNOWN;
+			};
 		}
 	}
 }

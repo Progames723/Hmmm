@@ -511,20 +511,13 @@ public final class MemoryMappingTree implements VisitableMappingTree {
 
 	@Override
 	public void visitComment(MappedElementKind targetKind, String comment) {
-		Entry<?> entry;
-
-		switch (targetKind) {
-		case CLASS:
-			entry = currentClass;
-			break;
-		case METHOD:
-			entry = currentMethod;
-			break;
-		default:
-			entry = currentEntry;
-		}
-
-		if (entry == null) throw new UnsupportedOperationException("Tried to visit comment before owning target");
+		Entry<?> entry = switch (targetKind) {
+            case CLASS -> currentClass;
+            case METHOD -> currentMethod;
+            default -> currentEntry;
+        };
+        
+        if (entry == null) throw new UnsupportedOperationException("Tried to visit comment before owning target");
 		entry.setComment(comment);
 	}
 

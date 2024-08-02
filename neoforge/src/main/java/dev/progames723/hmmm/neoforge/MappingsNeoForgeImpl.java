@@ -22,7 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.List;
 import java.util.zip.ZipError;
 
 public class MappingsNeoForgeImpl extends MappingsImpl {
@@ -140,7 +140,7 @@ public class MappingsNeoForgeImpl extends MappingsImpl {
 								default:
 									throw new UnsupportedOperationException("Unsupported mapping format: " + format);
 							}
-							HmmmLibrary.LOGGER.debug(MarkerFactory.getMarker("Mappings"), "Loading mappings took %d ms", new Object[]{System.currentTimeMillis() - time});
+//							HmmmLibrary.LOGGER.debug(MarkerFactory.getMarker("Mappings"), "Loading mappings took %d ms", new Object[]{System.currentTimeMillis() - time});
 						} catch (Throwable var8) {
 							try {
 								reader.close();

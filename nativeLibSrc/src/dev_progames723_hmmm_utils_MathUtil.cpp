@@ -1,8 +1,8 @@
 #include <jni.h>
-#include <math.h>
 
 #include "dev_progames723_hmmm_utils_MathUtil.h"
 
+extern "C" {
 static JNINativeMethod methods[] = {
     {"fastSqrt", "(D)D", (void *)&Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt},
     {"fastInvSqrt", "(D)D", (void *)&Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__D},
@@ -44,12 +44,20 @@ static double fast_sqrt(double x)
   return -1;
 }
 
-extern "C" {
 /*
  * on load stuff
  * absolutely necessary for it to function
 */
 JNIEXPORT jint JNICALL JNI_OnLoad_mathUtil
+  (JavaVM *vm, void *reserved)
+{
+  return JNI_VERSION_10;
+}
+
+/*
+ * failsafe load method
+*/
+JNIEXPORT jint JNICALL JNI_OnLoad_libmathUtil
   (JavaVM *vm, void *reserved)
 {
   return JNI_VERSION_10;

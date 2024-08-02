@@ -9,9 +9,7 @@ dependencies {
     implementation "io.github.llamalad7:mixinextras-fabric:0.3.6"
 
     //yes
-    include "org.burningwave:core:12.65.1"
-
-
+    api "org.burningwave:core:12.65.1"
 }
 
 architectury {
