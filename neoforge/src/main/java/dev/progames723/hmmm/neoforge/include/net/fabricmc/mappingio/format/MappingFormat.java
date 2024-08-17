@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.format;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format;
 
 import org.jetbrains.annotations.Nullable;
 

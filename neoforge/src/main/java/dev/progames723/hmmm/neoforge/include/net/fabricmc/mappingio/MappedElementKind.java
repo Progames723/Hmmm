@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
-
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio;
 
 /**
- * {@link MappingTree} that can be visited.
+ * A kind of element that can be mapped.
  */
-public interface VisitableMappingTree extends MappingTree, MappingVisitor {
+public enum MappedElementKind {
+	CLASS(0),
+	FIELD(1),
+	METHOD(1),
+	METHOD_ARG(2),
+	METHOD_VAR(2);
+
+	MappedElementKind(int level) {
+		this.level = level;
+	}
+
+	public final int level;
 }

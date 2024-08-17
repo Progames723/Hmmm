@@ -1,7 +1,5 @@
 package dev.progames723.hmmm;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -43,32 +41,32 @@ public class BaseMappingsImpl extends MappingsImpl {
 	}
 	
 	@Override
-	public String mapClassName(Class<?> a) {
+	public String mapClassName(String className) {
 		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
 	}
 	
 	@Override
-	public String mapField(Field a, String descriptor) {
+	public String mapField(String className, String field, String descriptor) {
 		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
 	}
 	
 	@Override
-	public String mapMethod(Method a, String descriptor) {
+	public String mapMethod(String className, String method, String descriptor) {
+		return "";
+	}
+	
+	@Override
+	public String unmapClassName(String className) {
 		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
 	}
 	
 	@Override
-	public String unmapClassName(Class<?> b) {
+	public String unmapField(String className, String field, String descriptor) {
 		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
 	}
 	
 	@Override
-	public String unmapField(Field b, String descriptor) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
-	}
-	
-	@Override
-	public String unmapMethod(Method b, String descriptor) {
+	public String unmapMethod(String className, String method, String descriptor) {
 		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
 	}
 }

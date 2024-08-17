@@ -1,7 +1,5 @@
 package dev.progames723.hmmm;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public abstract class MappingsImpl implements MappingsExtended {
@@ -96,15 +94,33 @@ public abstract class MappingsImpl implements MappingsExtended {
 		return string;
 	}
 	
-	public abstract String mapClassName(Class<?> a);
+	/**
+	 * mapping a class to obfuscated(whatever is used)
+	 */
+	public abstract String mapClassName(String className);
 	
-	public abstract String mapField(Field a, String descriptor);
+	/**
+	 * mapping a field to obfuscated(whatever is used)
+	 */
+	public abstract String mapField(String className, String field, String descriptor);
 	
-	public abstract String mapMethod(Method a, String descriptor);
+	/**
+	 * mapping a method to obfuscated(whatever is used)
+	 */
+	public abstract String mapMethod(String className, String method, String descriptor);
 	
-	public abstract String unmapClassName(Class<?> b);
+	/**
+	 * unmapping a class from obfuscated(whatever is used)
+	 */
+	public abstract String unmapClassName(String className);
 	
-	public abstract String unmapField(Field b, String descriptor);
+	/**
+	 * unmapping a field from obfuscated(whatever is used)
+	 */
+	public abstract String unmapField(String className, String field, String descriptor);
 	
-	public abstract String unmapMethod(Method b, String descriptor);
+	/**
+	 * unmapping a method from obfuscated(whatever is used)
+	 */
+	public abstract String unmapMethod(String className, String method, String descriptor);
 }

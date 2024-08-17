@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MappingTree.MethodMapping;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MappingTreeView.MethodMappingView;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree.MappingTree.MethodMapping;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree.MappingTreeView.MethodMappingView;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 

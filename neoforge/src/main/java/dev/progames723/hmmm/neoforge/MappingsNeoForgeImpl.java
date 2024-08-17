@@ -1,67 +1,65 @@
 package dev.progames723.hmmm.neoforge;
 
-import cpw.mods.modlauncher.api.INameMappingService;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.MappingsImpl;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.adapter.FilteringMappingVisitor;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.MappingFormat;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny.Tiny1FileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny.Tiny2FileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MappingTree;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MemoryMappingTree;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingReader;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.adapter.FilteringMappingVisitor;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.MappingFormat;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.tiny.Tiny1FileReader;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.tiny.Tiny2FileReader;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree.MappingTree;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree.MemoryMappingTree;
 import dev.progames723.hmmm.neoforge.mappings.MixinIntermediaryDevRemapper;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.MarkerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 import java.util.zip.ZipError;
 
 public class MappingsNeoForgeImpl extends MappingsImpl {
-	private static final MappingTree mappings = new MappingConfiguration().mappings;
+	private static final MemoryMappingTree mappings = (MemoryMappingTree) new MappingConfiguration().getMappings();
 	
-	private static final MixinIntermediaryDevRemapper remapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "named", "intermediary");
+	private static final MixinIntermediaryDevRemapper mapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "named", "intermediary");
+	
+	private static final MixinIntermediaryDevRemapper unmapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "intermediary", "named");
 	
 	public MappingsNeoForgeImpl() {
 		super();
 	}
 	
 	@Override
-	public String mapClassName(Class<?> b) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.CLASS, b.getName());
+	public String mapClassName(String className) {
+		return mappings.mapClassName(className, mappings.getNamespaceId("named"), mappings.getNamespaceId("intermediary"));
 	}
 	
 	@Override
-	public String mapField(Field b, String descriptor) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, b.getName());
+	public String mapField(String className, String field, String descriptor) {
+		return mapper.mapFieldName(className, field, descriptor);
 	}
 	
 	@Override
-	public String mapMethod(Method b, String descriptor) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, b.getName());
+	public String mapMethod(String className, String method, String descriptor) {
+		return mapper.mapMethodName(className, method, descriptor);
 	}
 	
 	@Override
-	public String unmapClassName(Class<?> b) {
-		return mappings.mapClassName(b.getName().replace('.', '/'), mappings.getNamespaceId("named"), mappings.getNamespaceId("intermediary")).replace('/', '.');
+	public String unmapClassName(String className) {
+		return mappings.mapClassName(className, mappings.getNamespaceId("intermediary"), mappings.getNamespaceId("named"));
 	}
 	
 	@Override
-	public String unmapField(Field a, String descriptor) {
-		return remapper.mapFieldName(a.getDeclaringClass().getName(), a.getName(), descriptor);
+	public String unmapField(String className, String field, String descriptor) {
+		return unmapper.mapFieldName(className, field, descriptor);
 	}
 	
 	@Override
-	public String unmapMethod(Method a, String descriptor) {
-		return remapper.mapMethodName(a.getDeclaringClass().getName(), a.getName(), descriptor);
+	public String unmapMethod(String className, String method, String descriptor) {
+		return unmapper.mapMethodName(className, method, descriptor);
 	}
 	
 	private static class MappingConfiguration {

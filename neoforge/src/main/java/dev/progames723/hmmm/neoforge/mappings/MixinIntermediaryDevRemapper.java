@@ -1,6 +1,6 @@
 package dev.progames723.hmmm.neoforge.mappings;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MappingTree;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree.MappingTree;
 import org.spongepowered.asm.mixin.transformer.ClassInfo;
 
 import java.util.*;

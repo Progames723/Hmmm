@@ -5,41 +5,38 @@ import dev.progames723.hmmm.MappingsImpl;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.spongepowered.asm.bridge.RemapperAdapterFML;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 public class MappingsForgeImpl extends MappingsImpl {
-	public MappingsForgeImpl() {
-		super();
+	private static final RemapperAdapterFML remapper = (RemapperAdapterFML) RemapperAdapterFML.create();
+	
+	public MappingsForgeImpl() {super();}
+	
+	@Override
+	public String unmapClassName(String className) {
+		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.CLASS, className);
 	}
 	
 	@Override
-	public String mapClassName(Class<?> b) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.CLASS, b.getName());
+	public String unmapField(String className, String field, String descriptor) {
+		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, field);
 	}
 	
 	@Override
-	public String mapField(Field b, String descriptor) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.FIELD, b.getName());
+	public String unmapMethod(String className, String method, String descriptor) {
+		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, method);
 	}
 	
 	@Override
-	public String mapMethod(Method b, String descriptor) {
-		return ObfuscationReflectionHelper.remapName(INameMappingService.Domain.METHOD, b.getName());
+	public String mapClassName(String className) {
+		return remapper.map(className);
 	}
 	
 	@Override
-	public String unmapClassName(Class<?> a) {
-		return RemapperAdapterFML.create().map(a.getName());
+	public String mapField(String className, String field, String descriptor) {
+		return remapper.mapFieldName(className, field, descriptor);
 	}
 	
 	@Override
-	public String unmapField(Field a, String descriptor) {
-		return RemapperAdapterFML.create().mapFieldName(a.getDeclaringClass().getName(), a.getName(), descriptor);
-	}
-	
-	@Override
-	public String unmapMethod(Method a, String descriptor) {
-		return RemapperAdapterFML.create().mapMethodName(a.getDeclaringClass().getName(), a.getName(), descriptor);
+	public String mapMethod(String className, String method, String descriptor) {
+		return remapper.mapMethodName(className, method, descriptor);
 	}
 }

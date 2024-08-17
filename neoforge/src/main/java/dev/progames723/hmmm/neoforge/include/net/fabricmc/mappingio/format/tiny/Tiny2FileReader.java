@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.format.tiny;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.tiny;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappedElementKind;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingFlag;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.ColumnFileReader;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.format.MappingFormat;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappedElementKind;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingFlag;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingVisitor;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.ColumnFileReader;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.MappingFormat;
 
 import java.io.IOException;
 import java.io.Reader;

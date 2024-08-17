@@ -22,12 +22,13 @@ public class MinecraftUtil {
         private DamageReduction() {throw new RuntimeException();}
         
         public static float getDamageAfterArmorAbsorb(DamageSource damageSource, float f, LivingEntity entity) {
-            return damageSource.is(DamageTypeTags.BYPASSES_ARMOR)
-            ? f //no explanations needed
-            : f * (1.0F - Mth.clamp(
-            /*clamped value*/(float) entity.getArmorValue() - f / (2.0F + (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS) / 4.0F),
-            /*    min value*/(float) entity.getArmorValue() * 0.2F,
-            /*    max value*/20.0F) / 25.0F);//maximum damage reduction is 80% btw
+            //no explanations needed
+            return !damageSource.is(DamageTypeTags.BYPASSES_ARMOR) ?
+                    f * (1.0F - Mth.clamp(
+                    /*clamped value*/(float) entity.getArmorValue() - f / (2.0F + (float) entity.getAttributeValue(Attributes.ARMOR_TOUGHNESS) / 4.0F),
+                    /*    min value*/(float) entity.getArmorValue() * 0.2F,
+                    /*    max value*/20.0F) / 25.0F) :
+                    f;//maximum damage reduction is 80% btw
         }
         
         public static float getDamageAfterMagicAbsorb(DamageSource damageSource, float f, LivingEntity entity) {
@@ -35,20 +36,19 @@ public class MinecraftUtil {
             boolean bypassesEffects = damageSource.is(DamageTypeTags.BYPASSES_EFFECTS);
             boolean bypassesResistance = damageSource.is(DamageTypeTags.BYPASSES_RESISTANCE);
             boolean bypassesEnchantments = damageSource.is(DamageTypeTags.BYPASSES_ENCHANTMENTS);
-            if (!bypassesEffects) {
-                if (!bypassesResistance && entity.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
-                    MobEffectInstance instance = entity.getEffect(MobEffects.DAMAGE_RESISTANCE);
-                    assert instance != null;
-                    int j = (5 - (instance.getAmplifier() + 1)) * 5;
-                    float g = f * (float)j;
-                    f = Math.max(g / 25.0F, 0.0F);
-                }
-                
-                if (!bypassesEnchantments) {
-                    int i = EnchantmentHelper.getDamageProtection(entity.getArmorSlots(), damageSource);
-                    f *= (1.0F - Mth.clamp((float) i, 0.0F, 20.0F) / 25.0F);
-                    
-                }
+            if (bypassesEffects) return f;
+            
+            if (!bypassesResistance && entity.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
+                MobEffectInstance instance = entity.getEffect(MobEffects.DAMAGE_RESISTANCE);
+                assert instance != null;
+                int j = (5 - (instance.getAmplifier() + 1)) * 5;
+                float g = f * (float)j;
+                f = Math.max(g / 25.0F, 0.0F);
+            }
+            
+            if (!bypassesEnchantments) {
+                int i = EnchantmentHelper.getDamageProtection(entity.getArmorSlots(), damageSource);
+                f *= (1.0F - Mth.clamp((float) i, 0.0F, 20.0F) / 25.0F);
             }
             return f;
         }
@@ -73,7 +73,7 @@ public class MinecraftUtil {
             if (damagesHelmetAndHasHelmet) damage *= 0.75f;
             
             if (hasIFrames)
-                return damage > ((LivingEntityAccess) entity).getLastHurt() ?
+                return damage > ((LivingEntityAccess) entity).getLastHurt() ?//do i really need a comment for this?
                         actuallyHurtDamageReduction(damage - ((LivingEntityAccess) entity).getLastHurt(), source, entity) :
                         0.0f;
             return actuallyHurtDamageReduction(damage, source, entity);

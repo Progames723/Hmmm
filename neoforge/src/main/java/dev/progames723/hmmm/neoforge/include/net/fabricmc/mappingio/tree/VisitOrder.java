@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.tree.MappingTreeView.*;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Visitation order configuration for {@link MappingTreeView#accept(dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor, VisitOrder)}.
+ * Visitation order configuration for {@link MappingTreeView#accept(MappingVisitor, VisitOrder)}.
  */
 public final class VisitOrder {
 	private VisitOrder() {
@@ -42,23 +42,23 @@ public final class VisitOrder {
 	
 	// application
 
-	public <T extends ClassMappingView> Collection<T> sortClasses(Collection<T> classes) {
+	public <T extends MappingTreeView.ClassMappingView> Collection<T> sortClasses(Collection<T> classes) {
 		return sort(classes, classComparator);
 	}
 
-	public <T extends FieldMappingView> Collection<T> sortFields(Collection<T> fields) {
+	public <T extends MappingTreeView.FieldMappingView> Collection<T> sortFields(Collection<T> fields) {
 		return sort(fields, fieldComparator);
 	}
 
-	public <T extends MethodMappingView> Collection<T> sortMethods(Collection<T> methods) {
+	public <T extends MappingTreeView.MethodMappingView> Collection<T> sortMethods(Collection<T> methods) {
 		return sort(methods, methodComparator);
 	}
 
-	public <T extends MethodArgMappingView> Collection<T> sortMethodArgs(Collection<T> args) {
+	public <T extends MappingTreeView.MethodArgMappingView> Collection<T> sortMethodArgs(Collection<T> args) {
 		return sort(args, methodArgComparator);
 	}
 
-	public <T extends MethodVarMappingView> Collection<T> sortMethodVars(Collection<T> vars) {
+	public <T extends MappingTreeView.MethodVarMappingView> Collection<T> sortMethodVars(Collection<T> vars) {
 		return sort(vars, methodVarComparator);
 	}
 
@@ -79,11 +79,11 @@ public final class VisitOrder {
 		return methodVarsFirst;
 	}
 
-	private Comparator<ClassMappingView> classComparator;
-	private Comparator<FieldMappingView> fieldComparator;
-	private Comparator<MethodMappingView> methodComparator;
-	private Comparator<MethodArgMappingView> methodArgComparator;
-	private Comparator<MethodVarMappingView> methodVarComparator;
+	private Comparator<MappingTreeView.ClassMappingView> classComparator;
+	private Comparator<MappingTreeView.FieldMappingView> fieldComparator;
+	private Comparator<MappingTreeView.MethodMappingView> methodComparator;
+	private Comparator<MappingTreeView.MethodArgMappingView> methodArgComparator;
+	private Comparator<MappingTreeView.MethodVarMappingView> methodVarComparator;
 	private boolean methodsFirst;
 	private boolean methodVarsFirst;
 }

@@ -6,9 +6,6 @@ import net.fabricmc.loader.api.MappingResolver;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import net.fabricmc.loader.impl.util.mappings.MixinIntermediaryDevRemapper;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 public class MappingsFabricImpl extends MappingsImpl {
 	private static final MappingResolver resolver = FabricLoader.getInstance().getMappingResolver();
 	
@@ -19,32 +16,32 @@ public class MappingsFabricImpl extends MappingsImpl {
 	}
 	
 	@Override
-	public String mapClassName(Class<?> a) {
-		return resolver.mapClassName("intermediary", a.getName());
+	public String mapClassName(String className) {
+		return resolver.mapClassName("intermediary", className);
 	}
 	
 	@Override
-	public String mapField(Field a, String descriptor) {
-		return resolver.mapFieldName("intermediary", a.getDeclaringClass().getName(), a.getName(), descriptor);
+	public String mapField(String className, String field, String descriptor) {
+		return resolver.mapFieldName("intermediary", className, field, descriptor);
 	}
 	
 	@Override
-	public String mapMethod(Method a, String descriptor) {
-		return resolver.mapMethodName("intermediary", a.getDeclaringClass().getName(), a.getName(), descriptor);
+	public String mapMethod(String className, String method, String descriptor) {
+		return resolver.mapMethodName("intermediary", className, method, descriptor);
 	}
 	
 	@Override
-	public String unmapClassName(Class<?> b) {
-		return resolver.unmapClassName("intermediary", b.getName());
+	public String unmapClassName(String className) {
+		return resolver.unmapClassName("named", className);
 	}
 	
 	@Override
-	public String unmapField(Field b, String descriptor) {
-		return remapper.mapFieldName(b.getDeclaringClass().getName(), b.getName(), descriptor);
+	public String unmapField(String className, String field, String descriptor) {
+		return remapper.mapFieldName(className, field, descriptor);
 	}
 	
 	@Override
-	public String unmapMethod(Method b, String descriptor) {
-		return remapper.mapMethodName(b.getDeclaringClass().getName(), b.getName(), descriptor);
+	public String unmapMethod(String className, String method, String descriptor) {
+		return remapper.mapMethodName(className, method, descriptor);
 	}
 }

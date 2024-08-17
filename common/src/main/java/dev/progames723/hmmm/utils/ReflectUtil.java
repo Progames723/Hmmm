@@ -250,11 +250,12 @@ public class ReflectUtil {
 	
 	public static MappingsImpl getMappingsImpl() {
 		MappingsImpl mappings = getModLoaderSpecificMappingsImpl();
-		assert mappings != null;//every modern mod loader supported!
+		//every modern mod loader should be supported!
+		if (mappings == null) throw new AssertionError("Method wasnt transformed!");
 		return mappings;
 	}
 	
-	public static class Bypass {
+	public static class Bypass {//well mostly
 		public static final Methods methods = Methods.create();
 		public static final Fields fields = Fields.create();
 		public static final Constructors constructors = Constructors.create();

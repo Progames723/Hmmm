@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.tree;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.tree;
 
 import org.jetbrains.annotations.Nullable;
 

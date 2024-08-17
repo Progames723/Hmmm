@@ -10,6 +10,10 @@
     "LivingEntityMixin"
   ],
   "client": [
+    "ClientMainMixin"
+  ],
+  "server": [
+    "ServerMainMixin"
   ],
   "priority": 2147483647,
   "mixinPriority": 2147483647,

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package dev.progames723.hmmm.include.net.fabricmc.mappingio.adapter;
+package dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.adapter;
 
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappedElementKind;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingFlag;
-import dev.progames723.hmmm.include.net.fabricmc.mappingio.MappingVisitor;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappedElementKind;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingFlag;
+import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingVisitor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
