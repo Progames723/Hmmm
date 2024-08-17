@@ -5,7 +5,6 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import dev.progames723.hmmm.utils.MathUtil;
 import dev.progames723.hmmm.utils.PlatformUtil;
-import dev.progames723.hmmm.utils.ReflectUtil;
 import dev.progames723.hmmm.utils.TestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +13,7 @@ import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
 
+@SuppressWarnings("JavaReflectionMemberAccess")
 public class HmmmLibrary {
 	public static final String MOD_ID = "hmmm";
 	public static final Logger LOGGER = LoggerFactory.getLogger("HmmmLibrary");
@@ -25,8 +25,8 @@ public class HmmmLibrary {
 	static {
 		boolean tempTestArg;
 		try {
-			tempTestArg = Platform.getEnvironment() == Env.CLIENT ? ReflectUtil.getField(net.minecraft.client.main.Main.class, "test_hmmm").getBoolean(null) : ReflectUtil.getField(net.minecraft.server.Main.class, "test_hmmm").getBoolean(null);
-		} catch (IllegalAccessException e) {
+			tempTestArg = Platform.getEnvironment() == Env.CLIENT ? net.minecraft.client.main.Main.class.getDeclaredField("test_hmmm").getBoolean(null) : net.minecraft.server.Main.class.getDeclaredField("test_hmmm").getBoolean(null);
+		} catch (Exception e) {
 			tempTestArg = false;
 		}
 		testArg = tempTestArg;
