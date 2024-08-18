@@ -17,7 +17,7 @@ public abstract class ClientMainMixin {
 	@Unique
 	private static boolean test_hmmm;
 	
-	@Inject(method = "main", at = @At("HEAD"))
+	@Inject(method = "main", at = @At("HEAD"), remap = false)
 	private static void containsArg(String[] strings, CallbackInfo ci) {
 		test_hmmm = Arrays.asList(strings).contains("test_hmmm");
 	}
