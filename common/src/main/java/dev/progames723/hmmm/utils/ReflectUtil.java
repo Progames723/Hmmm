@@ -215,8 +215,9 @@ public class ReflectUtil {
 		return null;
 	}
 	
+	@SuppressWarnings("OptionalGetWithoutIsPresent")//its always present
 	public static Class<?> getCallerClass() {//should work
-		return StackWalker.getInstance(Set.of(StackWalker.Option.values())).getCallerClass();
+		return StackWalker.getInstance(Set.of(StackWalker.Option.values())).walk(s -> s.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst()).get();
 	}
 	
 	public static String getMethodDescriptor(Method method) {

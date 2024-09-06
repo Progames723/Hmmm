@@ -17,7 +17,10 @@ subprojects {
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
         // The following line declares the mojmap mappings, you may use other mappings as well
-        mappings loom.officialMojangMappings()
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-$rootProject.minecraft_version:2023.12.10@zip")
+        }
 
         api "org.burningwave:core:12.65.1"
         // The following line declares the yarn mappings you may select this one as well.
@@ -44,6 +47,10 @@ allprojects {
         maven { url "https://maven.architectury.dev/" }
         maven { url "https://maven.minecraftforge.net/" }
         maven { url "https://repo.spongepowered.org/repository/maven-public/" }
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
         mavenCentral()
     }
 

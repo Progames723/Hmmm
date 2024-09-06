@@ -3,6 +3,7 @@ package dev.progames723.hmmm;
 import dev.architectury.event.EventHandler;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
+import dev.progames723.hmmm.events.event.runner.EventHelper;
 import dev.progames723.hmmm.utils.MathUtil;
 import dev.progames723.hmmm.utils.PlatformUtil;
 import dev.progames723.hmmm.utils.TestUtil;
@@ -48,6 +49,7 @@ public class HmmmLibrary {
 		EventHandler.init();
 		MathUtil.loadLibrary();
 		LOGGER.info("Running system architecture: {}", PlatformUtil.getArchitecture());
+		EventHelper.initEvents();
 		if (testArg) TestUtil.testAll();
 		LOGGER.info("Initialized HmmmLibrary!");
 	}

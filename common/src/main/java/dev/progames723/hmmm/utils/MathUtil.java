@@ -205,7 +205,7 @@ public class MathUtil {
 		x = Double.longBitsToDouble(i);
 		
 		x = x * (1.5 - (x2 * x * x));
-		x = x * (1.5 - (x2 * x * x));
+//		x = x * (1.5 - (x2 * x * x));
 		
 		return x;
 	}
@@ -218,7 +218,7 @@ public class MathUtil {
 		x = Float.intBitsToFloat(i);
 		
 		x = x * (1.5f - (x2 * x * x));
-		x = x * (1.5f - (x2 * x * x));
+//		x = x * (1.5f - (x2 * x * x));
 		
 		return x;
 	}

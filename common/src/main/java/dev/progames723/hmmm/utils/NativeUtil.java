@@ -63,7 +63,7 @@ public class NativeUtil {
 		outputStream.close();
 		inputStream.close();
 		try {
-			System.load(fileLocation);
+			System.load(fileLocationWithFileName);
 		} catch (UnsatisfiedLinkError e) {
 			actualFile.delete();
 			workingDirectory.delete();
