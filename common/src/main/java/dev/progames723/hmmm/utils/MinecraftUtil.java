@@ -1,16 +1,26 @@
 package dev.progames723.hmmm.utils;
 
 import dev.progames723.hmmm.mixin.LivingEntityAccess;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class MinecraftUtil {
@@ -77,6 +87,41 @@ public class MinecraftUtil {
                         actuallyHurtDamageReduction(damage - ((LivingEntityAccess) entity).getLastHurt(), source, entity) :
                         0.0f;
             return actuallyHurtDamageReduction(damage, source, entity);
+        }
+        
+        public static float test(float damage, DamageSource source, LivingEntity entity) {
+            if (entity.saveWithoutId(new CompoundTag()).contains("isClone")) return -1;
+            LivingEntity cloned = (LivingEntity) Entities.cloneEntity(entity);
+            float totalHealth = cloned.getHealth() + cloned.getAbsorptionAmount();
+            cloned.hurt(source, damage);
+            float afterHurt = cloned.getHealth() + cloned.getAbsorptionAmount();
+            cloned.discard();
+            return totalHealth - afterHurt;
+        }
+    }
+    
+    public static class Entities {
+        public Entities() {throw new RuntimeException();}
+        
+        public static Entity cloneEntity(Entity entity) {
+            if (entity.level().isClientSide) return null;
+            ServerLevel level = (ServerLevel) entity.level();//should be true
+            CompoundTag nbt = new CompoundTag();
+			nbt = entity.saveWithoutId(nbt);
+	        nbt.putString("id", EntityType.getKey(entity.getType()).toString());
+            if (nbt.contains("isClone")) return entity;
+            nbt.putBoolean("isClone", true);
+            if (nbt.hasUUID("UUID")) nbt.putUUID("UUID", UUID.randomUUID());
+            Optional<Entity> optional = EntityType.create(nbt, level);
+            if (optional.isEmpty()) throw new RuntimeException("Optional empty!");
+            Entity clone = optional.get();
+            if (clone instanceof Player p) p.setCustomName(Component.literal("TEMPORARY_PLAYER_" + new Random().nextInt(101)));
+            if (clone instanceof LivingEntity e) {
+                e.setInvisible(true);
+                e.teleportRelative(0, 10000, 0);
+            }
+            clone.getType().create(entity.level());
+	        return clone;
         }
     }
 }

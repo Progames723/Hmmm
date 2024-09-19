@@ -1,10 +1,8 @@
 package dev.progames723.hmmm.mixin;
 
-import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.event.LivingEvents;
 import dev.progames723.hmmm.event.utils.DoubleValue;
 import dev.progames723.hmmm.event.utils.TripleValue;
-import dev.progames723.hmmm.events.event.DamagedEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -75,20 +71,6 @@ public abstract class LivingEntityMixin extends Entity {
 	@Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
 	private void livingHurt(final DamageSource damageSource, final float f, CallbackInfoReturnable<Boolean> cir) {
 		TripleValue<Boolean, DamageSource, Float> tripleValue = LivingEvents.LIVING_HURT.invoker().livingHurt(hmmm$instance, damageSource, f);
-		Constructor<DamagedEvent> constructor;
-		try {
-			constructor = DamagedEvent.class.getDeclaredConstructor(LivingEntity.class, Entity.class, Entity.class, float.class);
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
-		constructor.setAccessible(true);
-		DamagedEvent damagedEvent;
-		try {
-			damagedEvent = constructor.newInstance(hmmm$instance, damageSource.getEntity(), damageSource.getDirectEntity(), f);
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
-		}
-		HmmmLibrary.LOGGER.info("DamagedEvent invoked! Damage before: {}, after: {}", f, damagedEvent.getDamage());
 		hmmm$tempDamageSource = tripleValue.getB();
 		hmmm$hurtTempDamage = sanitizeFloat(tripleValue.getC());
 		if (!tripleValue.getA() || tripleValue.getA() == null) {
@@ -276,17 +258,14 @@ public abstract class LivingEntityMixin extends Entity {
 	private void beforeEffectRemoved(MobEffect mobEffect, CallbackInfoReturnable<Boolean> cir) {
 		MobEffectInstance mobEffectInstance = this.activeEffects.get(mobEffect);
 		Boolean the = LivingEvents.LIVING_BEFORE_EFFECT_REMOVED.invoker().livingBeforeEffectRemoved(hmmm$instance, mobEffectInstance);
-		if (the != null){
-			if (the) {
-				MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(mobEffect);
-				if (mobeffectinstance != null) {
-					this.onEffectRemoved(mobeffectinstance);
-					cir.setReturnValue(true);
-				} else {
-					cir.setReturnValue(false);
-				}
-			}
-			cir.setReturnValue(the);
+		if (the == null) return;
+		if (the) {
+			MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(mobEffect);
+			if (mobeffectinstance != null) {
+				this.onEffectRemoved(mobeffectinstance);
+				cir.setReturnValue(true);
+			} else cir.setReturnValue(false);
 		}
+		cir.setReturnValue(the);
 	}
 }

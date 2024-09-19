@@ -1,6 +1,7 @@
 package dev.progames723.hmmm.utils;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.MappingsImpl;
 import org.burningwave.core.classes.*;
 
@@ -97,7 +98,7 @@ public class ReflectUtil {
 	}
 	
 	public static void tryToMakeItAccessible(AccessibleObject object) {
-		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
+//		throwExceptionIfWrongClassPackage(checkClassPackage(object.getClass()));
 		AccessibleObject finalObject = object;
 		PrivilegedAction<AccessibleObject> action = () -> {
 			finalObject.setAccessible(true);
@@ -110,15 +111,18 @@ public class ReflectUtil {
 			try {
 				AccessController.doPrivileged(action, AccessController.getContext(), new AllPermission());
 			} catch (InaccessibleObjectException | SecurityException exc) {
-				throw new RuntimeException(exc);//nah too bad if it didnt work
+				//last attempt
+				try {
+					if (object instanceof Method method) Bypass.METHODS.setAccessible(method, true);
+					if (object instanceof Field field) Bypass.FIELDS.setAccessible(field, true);
+					if (object instanceof Constructor<?> constructor) Bypass.CONSTRUCTORS.setAccessible(constructor, true);
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+				throw new RuntimeException("Impossible to set accessible");
 			}
 		}
 	}
-	
-	private static void test() {
-		System.out.println("Test passed ig");
-	}
-	
 	
 	private static boolean checkClassPackage(String className) {
 		Class<?> clazz;
@@ -215,12 +219,11 @@ public class ReflectUtil {
 		return null;
 	}
 	
-	@SuppressWarnings("OptionalGetWithoutIsPresent")//its always present
 	public static Class<?> getCallerClass() {//should work
-		return StackWalker.getInstance(Set.of(StackWalker.Option.values())).walk(s -> s.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst()).get();
+		return StackWalker.getInstance(Set.of(StackWalker.Option.values())).getCallerClass();
 	}
 	
-	public static String getMethodDescriptor(Method method) {
+	public static String getMethodSignature(Method method) {
 		String signature;
 		try {
 			Method signatureMethod = Method.class.getDeclaredMethod("getGenericSignature");
@@ -233,7 +236,7 @@ public class ReflectUtil {
 		return stringBuilder.append(")").append(method.getReturnType() == void.class ? "V" : (signature = Array.newInstance(method.getReturnType(), 0).toString()).substring(1, signature.indexOf("@"))).toString();
 	}
 	
-	public static String getFieldDescriptor(Field field) {
+	public static String getFieldSignature(Field field) {
 		String signature;
 		try {
 			Method signatureMethod = Field.class.getDeclaredMethod("getGenericSignature");
@@ -256,12 +259,48 @@ public class ReflectUtil {
 		return mappings;
 	}
 	
+	public static void bypassModuleReflectionRestrictions(Module moduleToBypass) {
+		if (!HmmmLibrary.unsafeReflect) throw new RuntimeException("Please use the \"enable_unsafe_reflection_hmmm\" flag in minecraft launch arguments to access this");
+		
+		
+		String[] packagesToOpen = moduleToBypass.getPackages().toArray(new String[0]);
+		
+		Class<? extends Module> module = moduleToBypass.getClass();
+		Method theBypass = Bypass.METHODS.findFirstAndMakeItAccessible(module, "implAddExportsOrOpens", String.class, Module.class, boolean.class, boolean.class);
+		for (String s : packagesToOpen) {
+			Bypass.METHODS.invoke(
+				moduleToBypass,//obvious
+				theBypass,
+				//actual params now
+				/*package name*/s,
+				/*module*/Bypass.FIELDS.<Module>getStatic(Bypass.FIELDS.findOneAndMakeItAccessible(Module.class, "EVERYONE_MODULE")),
+				/*open*/true,
+				/*syncVM*/true
+			);
+		}
+	}
+	
 	public static class Bypass {//well mostly
-		public static final Methods methods = Methods.create();
-		public static final Fields fields = Fields.create();
-		public static final Constructors constructors = Constructors.create();
-		public static final Classes classes = Classes.create();
-		public static final Members members = Members.create();
-		public static final Modules modules = Modules.create();
+		public static final Methods METHODS;
+		public static final Fields FIELDS;
+		public static final Constructors CONSTRUCTORS;
+		public static final Classes CLASSES;
+		public static final Members MEMBERS;
+		
+		static {
+			if (HmmmLibrary.unsafeReflect) {
+				METHODS = Methods.create();
+				FIELDS = Fields.create();
+				CONSTRUCTORS = Constructors.create();
+				CLASSES = Classes.create();
+				MEMBERS = Members.create();
+			} else {
+				METHODS = null;
+				FIELDS = null;
+				CONSTRUCTORS = null;
+				CLASSES = null;
+				MEMBERS = null;
+			}
+		}
 	}
 }

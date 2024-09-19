@@ -87,7 +87,7 @@ public class MathUtil {
 				try {
 					registerNatives();
 				} catch (UnsatisfiedLinkError e) {
-					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Native methods not compiled correctly!", e);
+					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Native METHODS not compiled correctly!", e);
 				}
 			}
 		}
@@ -139,7 +139,7 @@ public class MathUtil {
 	}
     
     /*
-    wrapper methods to make sure that java doesnt die if you have an unsupported os
+    wrapper METHODS to make sure that java doesnt die if you have an unsupported os
     or if i didnt compile it correctly 
     */
 	

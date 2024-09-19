@@ -81,8 +81,8 @@ public final class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				DoubleValue<?, ?> doubleValue = (DoubleValue<?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (doubleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
-				if (doubleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
+				if (!isGood(doubleValue.getA(), defaultReturn.getA())) {throw new NullPointerException();}
+				if (!isGood(doubleValue.getB(), defaultReturn.getB())) {throw new NullPointerException();}
 				return doubleValue;
 			}
 			return defaultReturn;
@@ -99,9 +99,9 @@ public final class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				TripleValue<?, ?, ?> tripleValue = (TripleValue<?, ?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (tripleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
-				if (tripleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
-				if (tripleValue.getC() == null ^ defaultReturn.getC() == null) {throw new NullPointerException();}
+				if (!isGood(tripleValue.getA(), defaultReturn.getA())) {throw new NullPointerException();}
+				if (!isGood(tripleValue.getB(), defaultReturn.getB())) {throw new NullPointerException();}
+				if (!isGood(tripleValue.getC(), defaultReturn.getC())) {throw new NullPointerException();}
 				return tripleValue;
 			}
 			return defaultReturn;
@@ -118,13 +118,18 @@ public final class EventFactoryUtil {//no fabric port ig :(
 		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
 			for (var listener : listeners) {
 				QuadrupleValue<?, ?, ?, ?> quadrupleValue = (QuadrupleValue<?, ?, ?, ?>) Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (quadrupleValue.getA() == null ^ defaultReturn.getA() == null) {throw new NullPointerException();}
-				if (quadrupleValue.getB() == null ^ defaultReturn.getB() == null) {throw new NullPointerException();}
-				if (quadrupleValue.getC() == null ^ defaultReturn.getC() == null) {throw new NullPointerException();}
-				if (quadrupleValue.getD() == null ^ defaultReturn.getD() == null) {throw new NullPointerException();}
+				if (!isGood(quadrupleValue.getA(), defaultReturn.getA())) {throw new NullPointerException();}
+				if (!isGood(quadrupleValue.getB(), defaultReturn.getB())) {throw new NullPointerException();}
+				if (!isGood(quadrupleValue.getC(), defaultReturn.getC())) {throw new NullPointerException();}
+				if (!isGood(quadrupleValue.getD(), defaultReturn.getD())) {throw new NullPointerException();}
 				return quadrupleValue;
 			}
 			return defaultReturn;
 		}));
+	}
+	
+	private static boolean isGood(Object value, Object defaultValue) {
+		if (defaultValue == null) return true;
+		return value != null;
 	}
 }
