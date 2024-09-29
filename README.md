@@ -13,6 +13,7 @@ still cool nonetheless
 - [ ] Make forge like event system (10%)
   - [x] Forge like events (100%)
   - [x] Ability to use events as arguments(i forgot that this is java fml) (100%)
+  - [ ] Ability to use multiple event arguments (12.5%)
   - [ ] Annotation thing (0%)
   - [ ] Mannual registering if fails (0%)
   - [ ] Automatic event regestering (0%)
