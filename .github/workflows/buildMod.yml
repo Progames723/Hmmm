@@ -9,9 +9,15 @@ on:
       - "nativeLibSrc/**"
   pull_request:
     types: [ opened, reopened, synchronize, edited, ready_for_review, review_requested ]
-    paths-ignore:
-      - ".github/workflows/**"
-      - "nativeLibSrc/**"
+    paths:
+      - "common/**"
+      - "fabric/**"
+      - "forge/**"
+      - "neoforge/**"
+      - "quilt/**"
+      - "build.gradle"
+      - "settings.gradle"
+      - "gradle.properties"
 
 jobs:
   build_fabric:
