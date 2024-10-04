@@ -2,6 +2,7 @@ package dev.progames723.hmmm.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,10 +15,10 @@ import java.util.Arrays;
 @Mixin(Main.class)
 @Environment(EnvType.SERVER)
 public abstract class ServerMainMixin {
-	@Unique
+	@Unique @DontObfuscate
 	private static boolean test_hmmm;
 	
-	@Unique
+	@Unique @DontObfuscate
 	private static boolean enableUnsafeReflect;
 	
 	@Inject(method = "main", at = @At("HEAD"), remap = false)

@@ -18,6 +18,10 @@ public class MathUtil {
 	
 	private static native void registerNatives();
 	
+	static {
+		loadLibrary();//if somehow not invoked
+	}
+	
 	/**
 	 * damn
 	 */
@@ -126,8 +130,8 @@ public class MathUtil {
 		return roundTo(output, 3);//rounding to the 0.001!
 	}
 	
-	public static double roundTo(double value, long powerOf10) {//no way this actually works
-		return Math.round(value * Math.pow(10.0, powerOf10)) / Math.pow(10.0, powerOf10);
+	public static double roundTo(double value, long tenthPower) {//no way this actually works
+		return Math.round(value * Math.pow(10.0, tenthPower)) / Math.pow(10.0, tenthPower);
 	}
 	
 	public static double clamp(double value, double min, double max) {
@@ -139,7 +143,7 @@ public class MathUtil {
 	}
     
     /*
-    wrapper METHODS to make sure that java doesnt die if you have an unsupported os
+    wrapper methods to make sure that java doesnt die if you have an unsupported os
     or if i didnt compile it correctly 
     */
 	

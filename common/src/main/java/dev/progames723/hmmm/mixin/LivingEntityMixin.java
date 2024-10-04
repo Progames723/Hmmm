@@ -2,6 +2,7 @@ package dev.progames723.hmmm.mixin;
 
 import dev.progames723.hmmm.event.LivingEvents;
 import dev.progames723.hmmm.event.utils.DoubleValue;
+import dev.progames723.hmmm.internal.EventUtils;
 import dev.progames723.hmmm.event.utils.TripleValue;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -15,15 +16,11 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
-import java.util.UUID;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -36,6 +33,8 @@ public abstract class LivingEntityMixin extends Entity {
 	@Shadow protected abstract void onEffectRemoved(MobEffectInstance arg);
 	
 	@Shadow @Nullable public abstract MobEffectInstance removeEffectNoUpdate(MobEffect arg);
+	
+	@Shadow public abstract void remove(RemovalReason reason);
 	
 	@Unique private final LivingEntity hmmm$instance = (LivingEntity) (Object) this;
 	
@@ -55,28 +54,39 @@ public abstract class LivingEntityMixin extends Entity {
 	
 	@Unique
 	private float sanitizeFloat(@Nullable Float value) {
-		if (value == null) {
-			return -1;
-		}
-		if (value.isInfinite() && value == Float.POSITIVE_INFINITY) {
-			return Float.MAX_VALUE;
-		} else if (value.isInfinite() && value == Float.NEGATIVE_INFINITY) {
-			return Float.MIN_VALUE;
-		} else if (value.isNaN()) {
-			return -1;
-		}
+		if (value == null || value.isNaN()) return -1;
+		
+		if (value.isInfinite() && value == Float.POSITIVE_INFINITY) return Float.MAX_VALUE;
+		else if (value.isInfinite() && value == Float.NEGATIVE_INFINITY) return Float.MIN_NORMAL;//oops
+		
 		return value;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Unique
+	private <T> T sanitize(T value, T defaultValue) {
+		if (value instanceof Double d) return (T) (Object) sanitizeFloat(d.floatValue());
+		if (value instanceof Float f) return (T) (Object) sanitizeFloat(f);
+		return value == null ? defaultValue : value;
 	}
 	
 	@Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
 	private void livingHurt(final DamageSource damageSource, final float f, CallbackInfoReturnable<Boolean> cir) {
-		TripleValue<Boolean, DamageSource, Float> tripleValue = LivingEvents.LIVING_HURT.invoker().livingHurt(hmmm$instance, damageSource, f);
-		hmmm$tempDamageSource = tripleValue.getB();
+		var event = LivingEvents.LIVING_HURT.invoker().livingHurt(
+			EventUtils.createVoidLivingEntityEvent(
+			new TripleValue<>(true, damageSource, f),
+			hmmm$instance
+			)
+		);
+//		TripleValue<Boolean, DamageSource, Float> tripleValue = LivingEvents.LIVING_HURT.invoker().livingHurt(hmmm$instance, damageSource, f);
+		var tripleValue = event.getValue();
+		if (tripleValue == null) return;
+		hmmm$tempDamageSource = sanitize(tripleValue.getB(), damageSource);
 		hmmm$hurtTempDamage = sanitizeFloat(tripleValue.getC());
-		if (!tripleValue.getA() || tripleValue.getA() == null) {
+		if (!sanitize(tripleValue.getA(), true)) {
 			cir.setReturnValue(false);
 		}
-		if (tripleValue.getC() == null || (hmmm$hurtTempDamage <= 0.0f && hmmm$hurtTempDamage != -1.0f)) {
+		if (hmmm$hurtTempDamage <= 0.0f && hmmm$hurtTempDamage != -1.0f) {
 			cir.setReturnValue(false);
 		}
 	}
@@ -114,24 +124,25 @@ public abstract class LivingEntityMixin extends Entity {
 	@Inject(
 			method = "actuallyHurt",
 			at = @At(
-					value = "INVOKE",
-					target = "Lnet/minecraft/world/entity/LivingEntity;getAbsorptionAmount()F",
-					ordinal = 1
+				value = "INVOKE_ASSIGN",
+				target = "Lnet/minecraft/world/entity/LivingEntity;setAbsorptionAmount(F)V",
+				ordinal = 0
 			),
 			cancellable = true
 	)
 	private void livingDamaged(final DamageSource damageSource, final float f, CallbackInfo ci) {
-		if (hmmm$instance.getUUID().equals(new UUID(0L, 0L))) {
-			hmmm$damagedTempDamage = sanitizeFloat(f);
-			return;
-		}
-		DoubleValue<Boolean, Float> doubleValue = LivingEvents.LIVING_DAMAGED.invoker().livingDamaged(hmmm$instance, damageSource, f);
+//		DoubleValue<Boolean, Float> doubleValue = LivingEvents.LIVING_DAMAGED.invoker().livingDamaged(hmmm$instance, damageSource, f);
+		var event = LivingEvents.LIVING_DAMAGED.invoker().livingDamaged(
+			EventUtils.createLivingEntityEvent(new DoubleValue<>(true, f), hmmm$instance)
+		);
+		var doubleValue = event.getValue();
 		//a damage source cannot be altered that late
+		if (doubleValue == null) return;
 		hmmm$damagedTempDamage = sanitizeFloat(doubleValue.getB());
-		if (!doubleValue.getA() || doubleValue.getA() == null) {
+		if (!sanitize(doubleValue.getA(), true)) {
 			ci.cancel();
 		}
-		if (doubleValue.getB() == null || (hmmm$damagedTempDamage <= 0.0f && hmmm$damagedTempDamage != -1.0f)) {
+		if (hmmm$damagedTempDamage <= 0.0f && hmmm$damagedTempDamage != -1.0f) {
 			ci.cancel();
 		}
 	}
@@ -154,18 +165,18 @@ public abstract class LivingEntityMixin extends Entity {
 	
 	@Inject(method = "tick", at = @At(value = "HEAD"))
 	private void livingEarlyTick(CallbackInfo ci) {
-		LivingEvents.LIVING_EARLY_TICK.invoker().livingEarlyTick(hmmm$instance);
+		LivingEvents.LIVING_EARLY_TICK.invoker().livingEarlyTick(EventUtils.createVoidLivingEntityEvent(hmmm$instance));
 	}
 	
 	@Inject(method = "tick", at = @At(value = "TAIL"))
 	private void livingLateTick(CallbackInfo ci) {
-		LivingEvents.LIVING_LATE_TICK.invoker().livingLateTick(hmmm$instance);
+		LivingEvents.LIVING_LATE_TICK.invoker().livingLateTick(EventUtils.createVoidLivingEntityEvent(hmmm$instance));
 	}
 	
 	@ModifyArg(method = "tickEffects", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"))
 	private Object livingEffectTick(final Object key) {
 		if (key instanceof MobEffectInstance instance) {
-			LivingEvents.LIVING_EFFECT_TICK.invoker().livingEffectTick(hmmm$instance, instance);
+			LivingEvents.LIVING_EFFECT_TICK.invoker().livingEffectTick(EventUtils.createVoidLivingEntityEvent(instance, hmmm$instance));
 		}
 		return key;//doesnt modify anything
 	}
@@ -178,14 +189,18 @@ public abstract class LivingEntityMixin extends Entity {
 			)
 	)
 	private MobEffectInstance livingBeforeEffectExpired(final MobEffectInstance arg) {
-		LivingEvents.LIVING_BEFORE_EFFECT_EXPIRED.invoker().livingBeforeEffectExpired(hmmm$instance, arg);
+		LivingEvents.LIVING_BEFORE_EFFECT_EXPIRED.invoker().livingBeforeEffectExpired(EventUtils.createVoidLivingEntityEvent(arg, hmmm$instance));
 		return arg;
 	}
 	
 	@Inject(method = "canBeAffected", at = @At(value = "HEAD"), cancellable = true)
 	private void beforeEffectApplied(final MobEffectInstance mobEffectInstance, CallbackInfoReturnable<Boolean> cir) {
-		DoubleValue<Boolean, MobEffectInstance> the = LivingEvents.LIVING_BEFORE_EFFECT_APPLIED.invoker().livingBeforeEffectApplied(hmmm$instance, mobEffectInstance);
-		hmmm$effectAppliedTempEffect = the.getB();
+		var event = LivingEvents.LIVING_BEFORE_EFFECT_APPLIED.invoker().livingBeforeEffectApplied(
+			EventUtils.createLivingEntityEvent(mobEffectInstance, hmmm$instance)
+		);
+		var the = event.getValue();
+		if (the == null) return;
+		hmmm$effectAppliedTempEffect = sanitize(the.getB(), mobEffectInstance);
 		if (the.getA() != null) {
 			cir.setReturnValue(the.getA());
 		}
@@ -212,8 +227,12 @@ public abstract class LivingEntityMixin extends Entity {
 			cancellable = true
 	)
 	private void beforeEffectAdded(MobEffectInstance mobEffectInstance, @Nullable Entity entity, CallbackInfoReturnable<Boolean> cir) {
-		DoubleValue<Boolean, MobEffectInstance> the = LivingEvents.LIVING_BEFORE_EFFECT_ADDED.invoker().livingBeforeEffectAdded(hmmm$instance, mobEffectInstance);
-		hmmm$effectAddedTempEffect = the.getB();
+		var event = LivingEvents.LIVING_BEFORE_EFFECT_ADDED.invoker().livingBeforeEffectAdded(
+			EventUtils.createVoidLivingEntityEvent(new DoubleValue<>(true, mobEffectInstance), hmmm$instance)
+		);
+		DoubleValue<Boolean, MobEffectInstance> the = event.getValue();
+		if (the == null) return;
+		hmmm$effectAddedTempEffect = sanitize(the.getB(), mobEffectInstance);
 		if (the.getA() != null) {
 			if (the.getA()) {
 				if (hmmm$effectAddedTempEffect != null && hmmm$effectAddedTempEffect != mobEffectInstance) {
@@ -227,7 +246,6 @@ public abstract class LivingEntityMixin extends Entity {
 					this.onEffectUpdated(mobeffectinstance, true, entity);
 				}
 				mobEffectInstance.onEffectStarted(hmmm$instance);
-				cir.setReturnValue(true);
 			}
 			cir.setReturnValue(the.getA());
 		}
@@ -257,15 +275,19 @@ public abstract class LivingEntityMixin extends Entity {
 	)
 	private void beforeEffectRemoved(MobEffect mobEffect, CallbackInfoReturnable<Boolean> cir) {
 		MobEffectInstance mobEffectInstance = this.activeEffects.get(mobEffect);
-		Boolean the = LivingEvents.LIVING_BEFORE_EFFECT_REMOVED.invoker().livingBeforeEffectRemoved(hmmm$instance, mobEffectInstance);
+		var event = LivingEvents.LIVING_BEFORE_EFFECT_REMOVED.invoker().livingBeforeEffectRemoved(
+			EventUtils.createVoidLivingEntityEvent(new DoubleValue<>(true, mobEffectInstance), hmmm$instance)
+		);
+		var the = event.getValue();
 		if (the == null) return;
-		if (the) {
+		the.setA(sanitize(the.getA(), true));
+		if (the.getA()) {
 			MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(mobEffect);
 			if (mobeffectinstance != null) {
 				this.onEffectRemoved(mobeffectinstance);
 				cir.setReturnValue(true);
 			} else cir.setReturnValue(false);
 		}
-		cir.setReturnValue(the);
+		cir.setReturnValue(the.getA());
 	}
 }

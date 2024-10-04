@@ -39,9 +39,7 @@ public class PlatformUtil {
 		PPC64LE(false),
 		UNKNOWN(false);
 		
-		Architecture(boolean isSupported) {
-			this.isSupported = isSupported;
-		}
+		Architecture(boolean isSupported) {this.isSupported = isSupported;}
 		
 		final boolean isSupported;
 		

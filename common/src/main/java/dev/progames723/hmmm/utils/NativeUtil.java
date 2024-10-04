@@ -18,7 +18,6 @@ public class NativeUtil {
 		if (!file.isAbsolute()) throw new RuntimeException("File path not absolute!");
 		File tempDirectory;
 		try {
-			String tmpDirsLocation = System.getProperty("java.io.tmpdir");
 			Path path = Paths.get(FileUtils.getTempDirectory().getAbsolutePath(), String.valueOf(Instant.now().getEpochSecond()));
 			tempDirectory = Files.createDirectory(path).toFile();
 		} catch (IOException e) {
@@ -42,7 +41,7 @@ public class NativeUtil {
 				dirChar = '\\';
 			}
 			case LINUX -> fileName = fileName.contains(".so") ? fileName : fileName + ".so";
-			//i will support only if i get a mac for free or other people compile
+			//i will support only if i get a mac for free or other people compile it for me
 //			case OSX -> fileName = fileName.contains(".dylib") ? fileName : fileName + ".dylib";
 			default -> throw new RuntimeException("Unsupported os!");
 		}
@@ -69,5 +68,7 @@ public class NativeUtil {
 			workingDirectory.delete();
 			throw e;
 		}
+		actualFile.deleteOnExit();
+		workingDirectory.deleteOnExit();
 	}
 }

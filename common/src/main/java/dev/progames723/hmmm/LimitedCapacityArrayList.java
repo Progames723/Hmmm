@@ -2,61 +2,66 @@ package dev.progames723.hmmm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class LimitedCapacityArrayList<E> extends ArrayList<E> {//idk but funny
-	private final long MAX_CAPACITY;
+	private final long maxCapacity;
 	
 	public LimitedCapacityArrayList(long maxCapacity) {
 		super();
-		this.MAX_CAPACITY = maxCapacity;
+		this.maxCapacity = maxCapacity;
 	}
 	
 	public LimitedCapacityArrayList(long maxCapacity, int initialCapacity) {
 		super(initialCapacity);
-		this.MAX_CAPACITY = maxCapacity;
+		this.maxCapacity = maxCapacity;
 	}
 	
 	public LimitedCapacityArrayList() {
 		super();
-		MAX_CAPACITY = Long.MAX_VALUE;
+		maxCapacity = Long.MAX_VALUE;
 	}
 	
 	public LimitedCapacityArrayList(Collection<? extends E> collection) {
 		super(collection);
-		MAX_CAPACITY = Long.MAX_VALUE;
+		maxCapacity = Long.MAX_VALUE;
 	}
 	
 	public LimitedCapacityArrayList(Collection<? extends E> collection, long maxCapacity) {
 		super(collection);
 		if (maxCapacity < collection.size()) {
-			throw new RuntimeException("Max capacity cannot be less than the collection size");
+			throw new HmmmException("Max capacity cannot be less than the collection size");
 		}
-		this.MAX_CAPACITY = maxCapacity;
+		this.maxCapacity = maxCapacity;
 	}
 	
 	@Override
 	public void ensureCapacity(int minCapacity) {
-		if (MAX_CAPACITY > super.size()) {
+		if (maxCapacity > super.size()) {
 			super.ensureCapacity(minCapacity);
 		} else {
-			throw new RuntimeException("List capacity exceeded");
+			throw new HmmmException("List capacity exceeded");
 		}
 	}
 	
 	private boolean checkCapacity() {
-		return size()+1 <= MAX_CAPACITY;
+		return size() + 1 <= maxCapacity;
+	}
+	
+	private boolean checkCapacity(Collection<? extends E> collection) {
+		return size() + collection.size() + 1 <= maxCapacity;
 	}
 	
 	private void throwExceptionIfCapacityExceeded() {
 		if (!checkCapacity()) {
-			throw new RuntimeException("List capacity exceeded, %1$s out of %2$s possible elements".formatted(size()+1, MAX_CAPACITY));
+			throw new HmmmException("List capacity exceeded, %1$s out of %2$s possible elements".formatted(size()+1, maxCapacity));
 		}
 	}
 	
 	private void throwExceptionIfCapacityExceeded(Collection<? extends E> collection) {
-		if (!(size() <= MAX_CAPACITY + collection.size())) {
-			throw new RuntimeException("List capacity exceeded, %1$s out of %2$s possible elements".formatted(size()+collection.size(), MAX_CAPACITY));
+		if (!checkCapacity(collection)) {
+			throw new HmmmException("List capacity exceeded, %1$s out of %2$s possible elements".formatted(size()+collection.size(), maxCapacity));
 		}
 	}
 	
@@ -73,15 +78,26 @@ public class LimitedCapacityArrayList<E> extends ArrayList<E> {//idk but funny
 	}
 	
 	@Override
-	public boolean addAll(Collection<? extends E> c) {
-		throwExceptionIfCapacityExceeded(c);
-		return super.addAll(c);
+	public boolean addAll(Collection<? extends E> collection) {
+		throwExceptionIfCapacityExceeded(collection);
+		return super.addAll(collection);
 	}
 	
 	@Override
-	public boolean addAll(int index, Collection<? extends E> c) {
-		throwExceptionIfCapacityExceeded(c);
-		return super.addAll(index, c);
+	public boolean addAll(int index, Collection<? extends E> collection) {
+		throwExceptionIfCapacityExceeded(collection);
+		return super.addAll(index, collection);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof LimitedCapacityArrayList<?> list) return super.equals(list) && list.maxCapacity == this.maxCapacity;
+		return super.equals(o);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), maxCapacity);
 	}
 }
 
