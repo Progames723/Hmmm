@@ -24,10 +24,10 @@ use_gxx: make_obj compile
 use_clangxx: clang_make_obj clang_compile
 
 make_obj:
-	$(CXX) -c $(CXXFLAGS) $(SOURCES) -o $(OBJ) -static -fPIC -lgmp -lgmpxx
+	$(CXX) -c $(CXXFLAGS) $(SOURCES) -o $(OBJ) -static -lgmp -lgmpxx
 
 clang_make_obj:
-	$(CXX_2) -c -o $(OBJ) $(CXXFLAGS) $(SOURCES) -fPIC -static -lgmp -lgmpxx
+	$(CXX_2) -c -o $(OBJ) $(CXXFLAGS) $(SOURCES) -static -lgmp -lgmpxx
 
 compile:
 	$(CXX) -shared $(CXXFLAGS) $(OBJ) -o $(OUT) -Wl,--add-stdcall-alias
