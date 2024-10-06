@@ -53,7 +53,7 @@ jobs:
       - name: Build
         run: |
           cd nativeLibSrc
-          make -f ./windows/Makefile
+          make -f ./linux/Makefile
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
