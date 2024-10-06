@@ -17,10 +17,10 @@ jobs:
     steps:
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: UCRT64
+          msystem: CLANG64
           update: true
           install: >-
-            gcc
+            clang
             gmp
             make
       - uses: actions/setup-java@v4
@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: |
           cd nativeLibSrc
-          make -f ./windows/Makefile
+          make -f ./windows/Makefile use_clangxx
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
