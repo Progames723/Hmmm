@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include "dev_progames723_hmmm_utils_MathUtil.h"
+#include "../headers/dev_progames723_hmmm_utils_MathUtil.h"
 
 extern "C" {
 static JNINativeMethod methods[] = {
@@ -48,7 +48,7 @@ static double fast_sqrt(double x)
  * on load stuff
  * absolutely necessary for it to function
 */
-JNIEXPORT jint JNICALL JNI_OnLoad_mathUtil
+JNIEXPORT jint JNICALL JNI_OnLoad_libHmmm
   (JavaVM *vm, void *reserved)
 {
   return JNI_VERSION_10;
@@ -57,14 +57,14 @@ JNIEXPORT jint JNICALL JNI_OnLoad_mathUtil
 /*
  * failsafe load method
 */
-JNIEXPORT jint JNICALL JNI_OnLoad_libmathUtil
+JNIEXPORT jint JNICALL JNI_OnLoad_libhmmm
   (JavaVM *vm, void *reserved)
 {
   return JNI_VERSION_10;
 }
 
 /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    registerNatives
  * Signature: ()V
  */
@@ -75,7 +75,7 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_MathUtil_registerNatives
   }
 
 /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    fastSqrt
  * Signature: (D)D
  */
@@ -86,7 +86,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt
   }
 
 /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    fastInvSqrt
  * Signature: (D)D
  */
@@ -108,7 +108,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__
   }
 
 /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    fastInvSqrt
  * Signature: (F)F
  */
@@ -130,7 +130,7 @@ JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__F
   }
 
   /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    fastPow
  * Signature: (DD)D
  */
@@ -141,7 +141,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastPow
   }
 
 /*
- * Class:     dev_progames723_hmmm_utils_MathUtil
+ * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    nthRoot
  * Signature: (DD)D
  */

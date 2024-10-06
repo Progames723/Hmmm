@@ -1,0 +1,55 @@
+name: Build native libraries
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ["nativeLibSrc/**"]
+  pull_request:
+    types: [ opened, reopened, synchronize, edited, ready_for_review, review_requested ]
+    paths: ["nativeLibSrc/**"]
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            gcc
+            gmp
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cd nativeLibSrc
+          make -f ./windows/Makefile
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hmmm-native-lib
+          path: ./nativeLibSrc/libHmmm.dll
+          retention-days: 7
+          compression-level: 9
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          sudo apt update
+          sudo apt install gcc
+          sudo apt install libgmp10
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cd nativeLibSrc
+          make -f ./windows/Makefile
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hmmm-native-lib
+          path: ./nativeLibSrc/libHmmm.dll
+          retention-days: 7
+          compression-level: 9

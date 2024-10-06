@@ -1,7 +1,7 @@
 package dev.progames723.hmmm.internal;
 
 import dev.progames723.hmmm.HmmmException;
-import dev.progames723.hmmm.event.api.ClassEventListener;
+import dev.progames723.hmmm.event.api.EventHandler;
 import dev.progames723.hmmm.event.api.EventListener;
 import dev.progames723.hmmm.event.events.LivingEntityEvent;
 import dev.progames723.hmmm.utils.ReflectUtil;
@@ -63,7 +63,7 @@ public class EventUtils {
 		PathHelper helper = ComponentContainer.getInstance().getPathHelper();
 		try (ClassCriteria criteria = ClassCriteria.create()) {
 			return ComponentContainer.getInstance().getClassHunter().findBy(SearchConfig
-					.byCriteria(criteria.allThoseThatMatch(clazz -> clazz.getDeclaredAnnotation(ClassEventListener.class) != null))
+					.byCriteria(criteria.allThoseThatMatch(clazz -> clazz.getDeclaredAnnotation(EventListener.class) != null))
 					.addPaths(helper.getAllPaths())
 				).getClasses();
 		}
@@ -77,7 +77,7 @@ public class EventUtils {
 		static {
 			Collection<Method> collection = new ArrayList<>();
 			for (Class<?> clazz : getClasses()) {
-				for (Method method : clazz.getDeclaredMethods()) if (method.getDeclaredAnnotation(EventListener.class) != null) collection.add(method);
+				for (Method method : clazz.getDeclaredMethods()) if (method.getDeclaredAnnotation(EventHandler.class) != null) collection.add(method);
 			}
 			eventMethods = collection;
 		}

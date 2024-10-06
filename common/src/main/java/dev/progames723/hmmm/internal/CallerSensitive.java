@@ -44,6 +44,7 @@ public @interface CallerSensitive {
 		private Utils() {}
 		
 		public static void throwExceptionIfNotAllowed(Class<?> caller) {
+			if (caller == null) throw new HmmmException(ReflectUtil.getCallerClass());
 			CallerSensitive instance = ReflectUtil.getCallerClass().getAnnotation(CallerSensitive.class);
 			
 			String packageName = caller.getPackageName();

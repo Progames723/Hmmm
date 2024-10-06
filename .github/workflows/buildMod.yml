@@ -3,10 +3,15 @@ name: Build Mod Jar's
 on:
   workflow_dispatch:
   push:
-    branches: ["master"]
-    paths-ignore:
-      - ".github/workflows/**"
-      - "nativeLibSrc/**"
+    paths:
+      - "common/**"
+      - "fabric/**"
+      - "forge/**"
+      - "neoforge/**"
+      - "quilt/**"
+      - "build.gradle"
+      - "settings.gradle"
+      - "gradle.properties"
   pull_request:
     types: [ opened, reopened, synchronize, edited, ready_for_review, review_requested ]
     paths:
