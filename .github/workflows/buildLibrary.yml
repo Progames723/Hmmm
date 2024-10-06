@@ -25,7 +25,7 @@ jobs:
             make
       - uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'oracle'
       - uses: actions/checkout@v4
       - name: Build
@@ -35,7 +35,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hmmm-native-lib
+          name: hmmm-native-windows
           path: ./nativeLibSrc/libHmmm.dll
           retention-days: 7
           compression-level: 9
@@ -44,7 +44,7 @@ jobs:
     steps:
       - uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'oracle'
       - run: |
           sudo apt update
@@ -58,7 +58,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hmmm-native-lib
+          name: hmmm-native-linux
           path: ./nativeLibSrc/libHmmm.so
           retention-days: 7
           compression-level: 9
