@@ -22,6 +22,7 @@ jobs:
           install: >-
             gcc
             gmp
+            make
       - uses: actions/setup-java@v4
         with:
           java-version: 17
