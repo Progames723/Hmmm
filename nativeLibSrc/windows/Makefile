@@ -31,16 +31,16 @@ use_gxx: make_obj compile
 use_clangxx: clang_make_obj clang_compile
 
 make_obj:
-	$(CXX) -c $(CXXFLAGS) $(SOURCES) -o $(OBJ) -static -lgmp -lgmpxx -D__int64="long long"
+	$(CXX) -c $(CXXFLAGS) $(SOURCES) -o $(OBJ) -static -lgmp -lgmpxx -D__int64="long long" -O3
 
 clang_make_obj:
-	$(CXX_2) -c -o $(OBJ) $(CXXFLAGS) $(SOURCES) -static -lgmp -lgmpxx -D__int64="long long"
+	$(CXX_2) -c -o $(OBJ) $(CXXFLAGS) $(SOURCES) -static -lgmp -lgmpxx -D__int64="long long" -O3
 
 compile:
-	$(CXX) -shared $(CXXFLAGS) $(OBJ) -o $(OUT) -Wl,--add-stdcall-alias
+	$(CXX) -shared $(CXXFLAGS) $(OBJ) -o $(OUT) -O3 -Wl,--add-stdcall-alias
 
 clang_compile:
-	$(CXX_2) -shared -o $(OUT) $(OBJ) $(CXXFLAGS) -Wl,--add-stdcall-alias
+	$(CXX_2) -shared -o $(OUT) $(OBJ) $(CXXFLAGS) -O3 -Wl,--add-stdcall-alias
 
 clean:
 	rm $(OBJ) && rm $(OUT)
