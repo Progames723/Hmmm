@@ -18,3 +18,4 @@ still cool nonetheless
   - [ ] Mannual registering if fails (0%)
   - [ ] Automatic event regestering (0%)
 - [ ] Add `quilt.mod.json` for QFAPI compatability
+- [ ] Make better use of JNI (15%)
