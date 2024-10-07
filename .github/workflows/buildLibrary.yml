@@ -11,9 +11,6 @@ on:
 jobs:
   build_windows:
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - uses: msys2/setup-msys2@v2
         with:
@@ -23,12 +20,14 @@ jobs:
             clang
             gmp
             make
+            awk
       - uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: 'temurin'
       - uses: actions/checkout@v4
       - name: Build
+#        shell: msys2 {0}
         run: |
           cd nativeLibSrc
           make -f ./windows/Makefile

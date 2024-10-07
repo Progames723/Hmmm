@@ -4,9 +4,16 @@ CXX = g++
 
 CXX_2 = clang++
 
-JAVA = $(shell echo "${JAVA_HOME}")
+JAVA = $(shell echo "${JAVA_HOME}" | sed -e 's/^./\L&\E/' | sed 's/^/\//' | sed 's/^\(.\)\(.\)\(.\)\(.*\)/\/\2\4/' | tr '\\' '/')#msys quirks lol
+JAVA_CYGWIN = $(shell echo "${JAVA_HOME}" | sed -e 's/^./\L&\E/' | sed 's/^/\//' | sed 's/^\(.\)\(.\)\(.\)\(.*\)/\/cygdrive\/\2\4/' | tr '\\' '/')#cygwin lol
 
-override CXXFLAGS += -I$(JAVA)/include -I$(JAVA)/include/win32 -O3
+CYGWIN_EXISTS = $(shell [[ -d $(JAVA_CYGWIN) ]] && echo 1 || echo 0)
+
+ifeq (CYGWIN_EXISTS, 1)
+override CXXFLAGS += -I"$(JAVA_CYGWIN)\include" -I"$(JAVA_CYGWIN)\include\win32" -O3
+else
+override CXXFLAGS += -I"$(JAVA)\include" -I"$(JAVA)\include\win32" -O3
+endif
 
 SOURCES = $(shell find .. -name '*.cpp' -print | tr '\n' ' ')
 HEADERS = $(shell find .. -name '*.h' -print | tr '\n' ' ')
