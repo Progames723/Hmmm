@@ -16,7 +16,7 @@ OBJ = $(shell find .. -name '*.o' -print | tr '\n' ' ')
 OUT = hmmm.dll
 
 ifeq (JAVA_EXISTS, 0)
-override JAVA = $(shell echo "${JAVA_HOME}")//should work for regular winows shell
+override JAVA = $(shell echo "${JAVA_HOME}")#should work for regular winows shell
 endif
 
 ifeq (CYGWIN_EXISTS, 1)
@@ -26,10 +26,10 @@ override CXXFLAGS += -I"$(JAVA)\include" -I"$(JAVA)\include\win32" -I"$(HEADERS)
 endif
 
 make_obj:
-	$(CXX) -c $(CXXFLAGS) $(SOURCES) -static -D__int64="long long" -D__int64_t="long long" -lmpfr -lgmp -lgmpxx
+	$(CXX) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long"
 
 clang_make_obj:
-	$(CXX_2) -c $(CXXFLAGS) $(SOURCES) -static -D__int64="long long" -D__int64_t="long long" -lmpfr -lgmp -lgmpxx
+	$(CXX_2) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long"
 
 compile:
 	$(CXX) -shared $(CXXFLAGS) $(OBJ) -o $(OUT) -D_JNI_IMPLEMENTATION_ -Wl,--kill-at,--add-stdcall-alias -lmpfr -lgmp -lgmpxx
