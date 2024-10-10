@@ -26,10 +26,10 @@ override CXXFLAGS += -I"$(JAVA)\include" -I"$(JAVA)\include\win32" -I"$(HEADERS)
 endif
 
 make_obj:
-	$(CXX) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long"
+	$(CXX) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long" -D__int64="__int64_t"
 
 clang_make_obj:
-	$(CXX_2) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long"
+	$(CXX_2) -c $(CXXFLAGS) $(SOURCES) -static -lmpfr -lgmp -lgmpxx -D__int64_t="long long" -D__int64="__int64_t"
 
 compile:
 	$(CXX) -shared $(CXXFLAGS) $(OBJ) -o $(OUT) -D_JNI_IMPLEMENTATION_ -Wl,--kill-at,--add-stdcall-alias -lmpfr -lgmp -lgmpxx
