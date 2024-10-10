@@ -18,7 +18,8 @@ jobs:
           update: true
           install: >-
             clang
-            gmp
+            gmp-devel
+            mpfr-devel
             make
             awk
       - uses: actions/setup-java@v4
@@ -50,6 +51,7 @@ jobs:
           sudo apt update
           sudo apt install gcc
           sudo apt install libgmp10
+          sudo apt install libmpfr-dev libmpfr-doc libmpfr4 libmpfr4-dbg
       - uses: actions/checkout@v4
       - name: Build
         run: |
