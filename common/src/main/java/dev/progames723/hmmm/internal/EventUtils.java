@@ -24,13 +24,13 @@ public class EventUtils {
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createLivingEntityEvent(T value, LivingEntity entity) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
-		return new LivingEntityEvent<>(false, value, entity);
+		return new LivingEntityEvent<>(false, false, value, entity);
 	}
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createVoidLivingEntityEvent(T value, LivingEntity entity) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
-		return new LivingEntityEvent<>(true, value, entity);
+		return new LivingEntityEvent<>(false, true, value, entity);
 	}
 	
 	@CallerSensitive

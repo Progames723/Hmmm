@@ -7,11 +7,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-JNIEXPORT jint JNICALL JNI_OnLoad_mathUtil
-  (JavaVM *vm, void *reserved);
-
-JNIEXPORT jint JNICALL JNI_OnLoad_libmathUtil
-  (JavaVM *vm, void *reserved);
 
 /*
  * Class:     dev_progames723_hmmm_utils_MathUtil

@@ -1,14 +1,16 @@
 package dev.progames723.hmmm.event.api;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Do not use as forge like events!
  */
 @ApiStatus.Experimental
-public abstract class ReturnableEvent extends Event {
+public abstract class ReturnableEvent<T> extends Event {
 	private final boolean nullable;
 	protected final boolean isVoid;
+	protected T value;
 	
 	protected ReturnableEvent(boolean isVoid, boolean isCancellable, boolean nullable) {
 		super(isCancellable);
@@ -20,5 +22,15 @@ public abstract class ReturnableEvent extends Event {
 	
 	public boolean isNullable() {
 		return nullable;
+	}
+	
+	@Nullable
+	public T getValue() {
+		return value;
+	}
+	
+	public void setValue(T value) {
+		if (isVoid) return;
+		this.value = value;
 	}
 }

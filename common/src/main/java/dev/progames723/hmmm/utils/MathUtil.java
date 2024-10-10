@@ -1,11 +1,7 @@
 package dev.progames723.hmmm.utils;
 
 import dev.progames723.hmmm.ActualSecureRandom;
-import dev.progames723.hmmm.HmmmLibrary;
-import net.minecraft.Util;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -19,82 +15,11 @@ public class MathUtil {
 	private static native void registerNatives();
 	
 	static {
-		loadLibrary();//if somehow not invoked
+		registerNatives();
 	}
 	
-	/**
-	 * damn
-	 */
-	public static void loadLibrary() {
-		if (!initialized) {
-			initialized = true;
-			InputStream linuxLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/linux/x64/libmathUtil.so");
-			InputStream windowsLibraryX86 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/windows/x86/mathUtil.dll");
-			InputStream windowsLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/windows/x64/mathUtil.dll");
-			
-			assert linuxLibraryX64 != null; assert windowsLibraryX64 != null; assert windowsLibraryX86 != null; //the great assert wall
-			
-			switch (Util.getPlatform()) {
-				case LINUX -> {
-					try {
-						NativeUtil.loadLibrary(linuxLibraryX64, "libmathUtil.so");
-//					    System.load(linuxLibraryX64.getAbsolutePath());
-						PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
-					} catch (UnsatisfiedLinkError e) {
-						PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-						HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported Linux CPU Architecture!", e);
-						works = false;
-					} catch (IOException e) {
-						works = false;
-						HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
-						PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-					}
-				}
-				case WINDOWS -> {
-					try {
-						NativeUtil.loadLibrary(windowsLibraryX64, "mathUtil.dll");
-//					    System.load("E:\\IdeaProjects\\hmmm library\\nativeLibSrc\\build\\native_libs\\mathUtil\\windows\\x64\\mathUtil.dll");
-						PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
-					} catch (UnsatisfiedLinkError e) {
-						try {
-							NativeUtil.loadLibrary(windowsLibraryX86, "mathUtil.dll");
-//							System.load(windowsLibraryX86.getAbsolutePath());
-							PlatformUtil.initArchitecture(PlatformUtil.Architecture.X86);
-						} catch (UnsatisfiedLinkError e1) {
-							HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported Windows CPU Architecture!", e1);
-							PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-							works = false;
-						} catch (IOException e1) {
-							works = false;
-							HmmmLibrary.LOGGER.error("Encountered an IO exception", e1);
-							PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-						}
-					} catch (IOException e) {
-						works = false;
-						HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
-						PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-					}
-				}
-				default -> {
-					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported OS!");
-					works = false;
-				}
-			}
-			try {
-				linuxLibraryX64.close();
-				windowsLibraryX64.close();
-				windowsLibraryX86.close();
-			} catch (IOException e) {
-				HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Cannot close some file's stream!", e);
-			}
-			if (works) {
-				try {
-					registerNatives();
-				} catch (UnsatisfiedLinkError e) {
-					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Native METHODS not compiled correctly!", e);
-				}
-			}
-		}
+	public static void init() {
+		//yes
 	}
 	
 	private MathUtil() {throw new Error("This mf really made an instance of a util class, what a shame");}//no instances allowed

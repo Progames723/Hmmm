@@ -27,10 +27,11 @@ jobs:
           distribution: 'temurin'
       - uses: actions/checkout@v4
       - name: Build
-#        shell: msys2 {0}
+        shell: msys2 {0}
         run: |
           cd nativeLibSrc
-          make -f ./windows/Makefile
+          make -f ./windows/Makefile make_obj
+          make -f ./windows/Makefile compile
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -53,7 +54,8 @@ jobs:
       - name: Build
         run: |
           cd nativeLibSrc
-          make -f ./linux/Makefile
+          make -f ./linux/Makefile make_obj
+          make -f ./linux/Makefile compile
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

@@ -1,5 +1,7 @@
 package dev.progames723.hmmm.utils;
 
+import dev.progames723.hmmm.GMP;
+import dev.progames723.hmmm.HmmmLibrary;
 import net.minecraft.Util;
 import org.apache.commons.io.FileUtils;
 
@@ -13,6 +15,9 @@ import java.nio.file.Paths;
 import java.time.Instant;
 
 public class NativeUtil {
+	private static boolean initialized = false;
+	private static boolean works = true;
+	
 	public static void loadLibrary(String absolutePath) {
 		File file = new File(absolutePath);
 		if (!file.isAbsolute()) throw new RuntimeException("File path not absolute!");
@@ -70,5 +75,68 @@ public class NativeUtil {
 		}
 		actualFile.deleteOnExit();
 		workingDirectory.deleteOnExit();
+	}
+	
+	public static void init() {
+		if (initialized) return;
+		initialized = true;
+		InputStream linuxLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/linux/x64/libmathUtil.so");
+		InputStream windowsLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/test/libHmmm.dll");
+		
+		assert linuxLibraryX64 != null; assert windowsLibraryX64 != null;
+		
+		switch (Util.getPlatform()) {
+			case LINUX -> {
+				try {
+					NativeUtil.loadLibrary(linuxLibraryX64, "libHmmm.so");
+//				    System.load(linuxLibraryX64.getAbsolutePath());
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
+				} catch (UnsatisfiedLinkError e) {
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
+					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "damn", e);
+					works = false;
+				} catch (IOException e) {
+					works = false;
+					HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
+				}
+			}
+			case WINDOWS -> {
+				try {
+//					NativeUtil.loadLibrary(windowsLibraryX64, "libHmmm.dll");
+				    System.load("E:\\IdeaProjects\\hmmm library\\nativeLibSrc\\hmmm.dll");
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
+				} catch (UnsatisfiedLinkError e) {
+					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "damn", e);
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
+					works = false;
+				}/* catch (IOException e) {
+					works = false;
+					HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
+					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
+				}*/
+			}
+			default -> {
+				HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported OS!");
+				works = false;
+			}
+		}
+		try {
+			linuxLibraryX64.close();
+			windowsLibraryX64.close();
+		} catch (IOException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Cannot close some file's stream!", e);
+		}
+		if (!works) return;
+		try {
+			GMP.init();
+		} catch (UnsatisfiedLinkError e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "the fuck", e);
+		}
+		try {
+			MathUtil.init();
+		} catch (UnsatisfiedLinkError e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "the fuck", e);
+		}
 	}
 }

@@ -7,8 +7,7 @@ import dev.progames723.hmmm.event.utils.TripleValue;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class LivingEntityEvent<T> extends ReturnableEvent {
-	@Nullable private T value;
+public class LivingEntityEvent<T> extends ReturnableEvent<T> {
 	@Nullable private final LivingEntity entity;
 	
 	public LivingEntityEvent(boolean isVoid, @Nullable T value, @Nullable LivingEntity entity) {
@@ -30,16 +29,6 @@ public class LivingEntityEvent<T> extends ReturnableEvent {
 		if (value instanceof TripleValue<?,?,?> t) return t.getA() == null || t.getB() == null || t.getC() == null;
 		if (value instanceof DoubleValue<?,?> d) return d.getA() == null || d.getB() == null;
 		return false;
-	}
-	
-	@Nullable
-	public T getValue() {
-		return value;
-	}
-	
-	public void setValue(T value) {
-		if (isVoid) return;
-		this.value = value;
 	}
 	
 	@Nullable
