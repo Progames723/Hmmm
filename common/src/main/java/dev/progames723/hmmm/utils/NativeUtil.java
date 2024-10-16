@@ -1,44 +1,28 @@
 package dev.progames723.hmmm.utils;
 
-import dev.progames723.hmmm.GMP;
+import dev.progames723.hmmm.GMPWrapper;
 import dev.progames723.hmmm.HmmmLibrary;
 import net.minecraft.Util;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 
 public class NativeUtil {
 	private static boolean initialized = false;
 	private static boolean works = true;
+	private static final String PATH;
 	
-	public static void loadLibrary(String absolutePath) {
-		File file = new File(absolutePath);
-		if (!file.isAbsolute()) throw new RuntimeException("File path not absolute!");
-		File tempDirectory;
-		try {
-			Path path = Paths.get(FileUtils.getTempDirectory().getAbsolutePath(), String.valueOf(Instant.now().getEpochSecond()));
-			tempDirectory = Files.createDirectory(path).toFile();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+	static {
+		if (System.getProperty("java.library.path") == null) {
+			System.setProperty("java.library.path", System.getProperty("java.io.tmpdir") + "/hmmm-temp-" + Instant.now().getEpochSecond() + "/");
 		}
-		try {
-			String toLoad = Files.copy(file.toPath(), tempDirectory.toPath().resolve(file.toPath().getFileName())).toFile().getAbsolutePath();
-			System.load(toLoad);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		tempDirectory.deleteOnExit();
+		PATH = System.getProperty("java.library.path");
 	}
 	
 	public static void loadLibrary(InputStream inputStream, String fileName) throws IOException {
-		String tempDirLocation = System.getProperty("java.io.tmpdir");
 		char dirChar = '/';
 		switch (Util.getPlatform()) {
 			case WINDOWS -> {
@@ -46,23 +30,23 @@ public class NativeUtil {
 				dirChar = '\\';
 			}
 			case LINUX -> fileName = fileName.contains(".so") ? fileName : fileName + ".so";
-			//i will support only if i get a mac for free or other people compile it for me
+			//i will support MacOS only if i get a mac for free or other people compile it for me
 //			case OSX -> fileName = fileName.contains(".dylib") ? fileName : fileName + ".dylib";
 			default -> throw new RuntimeException("Unsupported os!");
 		}
-		String fileLocation = tempDirLocation + dirChar + "hmmm-temp-" + Instant.now().getEpochSecond();
-		String fileLocationWithFileName = fileLocation + dirChar + fileName;
+		String fileLocationWithFileName = PATH + dirChar + fileName;
 		File actualFile = new File(fileLocationWithFileName);
-		File workingDirectory = new File(fileLocation);
+		File workingDirectory = new File(PATH);
 		FileOutputStream outputStream;
 		try {
-			outputStream = new FileOutputStream(fileLocationWithFileName);
+			outputStream = new FileOutputStream(actualFile);
 		} catch (IOException e) {
 			workingDirectory.mkdir();
 			actualFile.createNewFile();
 			//trying again
-			outputStream = new FileOutputStream(fileLocationWithFileName);
+			outputStream = new FileOutputStream(actualFile);
 		}
+		inputStream.readAllBytes();
 		inputStream.transferTo(outputStream);
 		outputStream.close();
 		inputStream.close();
@@ -81,7 +65,7 @@ public class NativeUtil {
 		if (initialized) return;
 		initialized = true;
 		InputStream linuxLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/linux/x64/libmathUtil.so");
-		InputStream windowsLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/test/libHmmm.dll");
+		InputStream windowsLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/test/hmmm.dll");
 		
 		assert linuxLibraryX64 != null; assert windowsLibraryX64 != null;
 		
@@ -103,18 +87,18 @@ public class NativeUtil {
 			}
 			case WINDOWS -> {
 				try {
-//					NativeUtil.loadLibrary(windowsLibraryX64, "libHmmm.dll");
-				    System.load("E:\\IdeaProjects\\hmmm library\\nativeLibSrc\\hmmm.dll");
+					NativeUtil.loadLibrary(windowsLibraryX64, "hmmm.dll");
+//				    System.loadLibrary("hmmm");
 					PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
 				} catch (UnsatisfiedLinkError e) {
 					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "damn", e);
 					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
 					works = false;
-				}/* catch (IOException e) {
+				} catch (IOException e) {
 					works = false;
 					HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
 					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-				}*/
+				}
 			}
 			default -> {
 				HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported OS!");
@@ -128,13 +112,9 @@ public class NativeUtil {
 			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Cannot close some file's stream!", e);
 		}
 		if (!works) return;
+		GMPWrapper.testGMP();
 		try {
-			GMP.init();
-		} catch (UnsatisfiedLinkError e) {
-			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "the fuck", e);
-		}
-		try {
-			MathUtil.init();
+			MathUtil.fastPow(1, 1);
 		} catch (UnsatisfiedLinkError e) {
 			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "the fuck", e);
 		}

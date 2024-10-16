@@ -3,13 +3,13 @@ package dev.progames723.hmmm;
 import java.lang.annotation.Native;
 import java.math.BigDecimal;
 
+/**
+ * NOT RECOMMENDED TO USE<p>
+ * please use {@link GMPWrapper} instead
+ */
 public class GMP extends Number {
-	static {
-		registerNatives();
-	}
-	
-	public static void init() {
-		//yes
+	static void test() {
+		new GMP().clear();
 	}
 	
 	@Native
@@ -29,8 +29,6 @@ public class GMP extends Number {
 	public native double doubleValue();
 	
 	public native String getAsString();
-	
-	private static native void registerNatives();
 	
 	public BigDecimal getAsBigDecimal() {
 		if (getAsString().matches("[^\\-0-9.]")) return BigDecimal.ZERO;//default impl

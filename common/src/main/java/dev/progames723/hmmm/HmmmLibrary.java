@@ -58,9 +58,9 @@ public class HmmmLibrary {
 	}
 	
 	public static void init() {
+		NativeUtil.init();
 		LOGGER.info("Initializing HmmmLibrary");
 		EventHandler.init();
-		NativeUtil.init();
 		LOGGER.info("Running system architecture: {}", PlatformUtil.getArchitecture());
 		if (TEST_ARG) TestUtil.testAll();
 		LOGGER.info("Initialized HmmmLibrary!");

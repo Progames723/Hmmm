@@ -4,7 +4,6 @@ import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.event.api.EventHandler;
 import dev.progames723.hmmm.event.api.EventListener;
 import dev.progames723.hmmm.event.events.LivingEntityEvent;
-import dev.progames723.hmmm.utils.ReflectUtil;
 import net.minecraft.world.entity.LivingEntity;
 import org.burningwave.core.assembler.ComponentContainer;
 import org.burningwave.core.classes.ClassCriteria;
@@ -15,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static dev.progames723.hmmm.utils.ReflectUtil.CALLER_CLASS;
 /**
  * mainly for mixins and stuff
  */
@@ -23,43 +23,43 @@ public class EventUtils {
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createLivingEntityEvent(T value, LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return new LivingEntityEvent<>(false, false, value, entity);
 	}
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createVoidLivingEntityEvent(T value, LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return new LivingEntityEvent<>(false, true, value, entity);
 	}
 	
 	@CallerSensitive
 	public static LivingEntityEvent<Void> createVoidLivingEntityEvent(LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return createVoidLivingEntityEvent(null, entity);
 	}
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createLivingEntityEventCancellable(T value, LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return new LivingEntityEvent<>(true, false, value, entity);
 	}
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createVoidLivingEntityEventCancellable(T value, LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return new LivingEntityEvent<>(true, true, value, entity);
 	}
 	
 	@CallerSensitive
 	public static <T> LivingEntityEvent<T> createVoidLivingEntityEventCancellable(LivingEntity entity) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		return createVoidLivingEntityEventCancellable(null, entity);
 	}
 	
 	@CallerSensitive
 	public static Collection<Class<?>> getClasses() {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 		PathHelper helper = ComponentContainer.getInstance().getPathHelper();
 		try (ClassCriteria criteria = ClassCriteria.create()) {
 			return ComponentContainer.getInstance().getClassHunter().findBy(SearchConfig
@@ -84,7 +84,7 @@ public class EventUtils {
 		
 		@CallerSensitive
 		public void init() {
-			CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.getCallerClass());
+			CallerSensitive.Utils.throwExceptionIfNotAllowed(CALLER_CLASS.getCallerClass());
 			//runs static initialization
 		}
 	}

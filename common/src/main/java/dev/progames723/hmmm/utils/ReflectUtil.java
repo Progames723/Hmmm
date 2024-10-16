@@ -21,7 +21,7 @@ import java.util.*;
 public class ReflectUtil {
 	private static boolean reflectionUsed = false;
 	public static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
-	public static final StackWalker CALLER_CLASS_STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+	public static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	
 	private ReflectUtil() {throw new HmmmException();}
 	
@@ -244,7 +244,7 @@ public class ReflectUtil {
 	
 	public static Class<?> getCallerClass() {//should work
 		try {
-			return CALLER_CLASS_STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst().orElseThrow());
+			return CALLER_CLASS.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst().orElseThrow());
 		} catch (Exception e) {
 			throw new HmmmError(ReflectUtil.class, "Something went wrong when getting caller class! Please do not inject this into #main() methods!");
 		}

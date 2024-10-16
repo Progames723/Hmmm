@@ -12,16 +12,6 @@ public class MathUtil {
 	
 	private static final SecureRandom actualSecureRandom = ActualSecureRandom.createSecureRandom();
 	
-	private static native void registerNatives();
-	
-	static {
-		registerNatives();
-	}
-	
-	public static void init() {
-		//yes
-	}
-	
 	private MathUtil() {throw new Error("This mf really made an instance of a util class, what a shame");}//no instances allowed
 	
 	public static long percent(long number, long max) {return (number / max) * 100;}

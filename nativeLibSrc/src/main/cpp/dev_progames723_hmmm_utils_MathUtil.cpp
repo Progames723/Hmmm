@@ -3,15 +3,7 @@
 #include "../headers/dev_progames723_hmmm_utils_MathUtil.h"
 
 extern "C" {
-static JNINativeMethod methods[] = {
-    {"fastSqrt", "(D)D", (void*)&Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt},
-    {"fastInvSqrt", "(D)D", (void*)&Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__D},
-    {"fastInvSqrt", "(F)F", (void*)&Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__F},
-    {"fastPow", "(DD)D", (void*)&Java_dev_progames723_hmmm_utils_MathUtil_fastPow},
-    {"nthRoot", "(DD)D", (void*)&Java_dev_progames723_hmmm_utils_MathUtil_nthRoot}
-};
-
-static double fast_pow(double x, double y)
+static inline constexpr double fast_pow(double x, double y)
 {
   union {
     double d;
@@ -22,7 +14,7 @@ static double fast_pow(double x, double y)
   return u.d;
 }
 
-static double fast_sqrt(double x) {
+static inline constexpr double fast_sqrt(double x) {
   if (x > 0 && x < 1) return 1 / fast_sqrt(1 / x);
 
   double l = 0, r = x;
@@ -41,15 +33,6 @@ static double fast_sqrt(double x) {
   }
   return -1;
 }
-
-/*
- * Class:     dev.progames723.hmmm.utils.MathUtil
- * Method:    registerNatives
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_MathUtil_registerNatives(JNIEnv *env, jclass cls) {
-    env->RegisterNatives(cls, methods, sizeof(methods)/sizeof(methods[0]));
-  }
 
 /*
  * Class:     dev.progames723.hmmm.utils.MathUtil

@@ -10,14 +10,6 @@ extern "C" {
 
 /*
  * Class:     dev_progames723_hmmm_utils_MathUtil
- * Method:    registerNatives
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_MathUtil_registerNatives
-  (JNIEnv *, jclass);
-
-/*
- * Class:     dev_progames723_hmmm_utils_MathUtil
  * Method:    fastSqrt
  * Signature: (D)D
  */
