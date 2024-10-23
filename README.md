@@ -4,7 +4,7 @@ This library is mainly made for my mods, buy you can use it in your mod!
 ## How to use in your mods
 Go to my [maven](https://github.com/Progames723/maven) repo
 
-### first ever mod to use JNI
+### first ever library to use JNI
 im going insane 
 
 # TODO

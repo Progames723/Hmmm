@@ -7,6 +7,8 @@ import java.math.RoundingMode;
 public class GMPWrapper {
 	/**
 	 * DO NOT MODIFY DURING RUNTIME
+	 * <p>
+	 * IF MODIFIED FROM {@code false} TO {@code true} EXPECT AN IRRECOVERABLE ERROR
 	 */
 	private static boolean isSupported = true;//assume true until false
 	private boolean isCleared = false;
