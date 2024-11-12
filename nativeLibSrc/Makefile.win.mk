@@ -16,8 +16,8 @@ endif
 all: gxx_compile gxx_link
 
 gxx_compile:
-	$(CXX) -c $(CXXFLAGS) dev_progames723_hmmm_GMP.cpp -o GMP.o -static -lgmp -lmpfr -lgmpxx -D__int64_t="long long" -D__int64="long"
-	$(CXX) -c $(CXXFLAGS) dev_progames723_hmmm_utils_MathUtil.cpp -o MathUtil.o -static -D__int64_t="long long" -D__int64="long"
+	$(CXX) -c $(CXXFLAGS) dev_progames723_hmmm_GMP.cpp -o GMP.o -static -lgmp -lmpfr -lgmpxx -D__int64_t="int64_t" -D__int64="int64_t"
+	$(CXX) -c $(CXXFLAGS) dev_progames723_hmmm_utils_MathUtil.cpp -o MathUtil.o -static -D__int64_t="int64_t" -D__int64="int64_t"
 
 gxx_link: 
 	$(CXX) $(CXXFLAGS) -o GMP.dll GMP.o -shared -lgmp -lmpfr -lgmpxx -Wl,--add-stdcall-alias
