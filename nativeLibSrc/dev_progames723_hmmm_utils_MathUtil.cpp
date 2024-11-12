@@ -1,6 +1,6 @@
 #include <jni.h>
 
-#include "../headers/dev_progames723_hmmm_utils_MathUtil.h"
+#include "dev_progames723_hmmm_utils_MathUtil.h"
 
 extern "C" {
 static inline constexpr double fast_pow(double x, double y)

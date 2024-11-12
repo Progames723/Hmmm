@@ -31,13 +31,13 @@ jobs:
         shell: msys2 {0}
         run: |
           cd nativeLibSrc
-          make -f ./windows/Makefile make_obj
-          make -f ./windows/Makefile compile
+          make -f ./Makefile.win.mk
+          make -f ./Makefile.win.mk
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: hmmm-native-windows
-          path: ./nativeLibSrc/libHmmm.dll
+          path: ./nativeLibSrc/*.dll
           retention-days: 7
           compression-level: 9
   build_linux:
@@ -56,12 +56,12 @@ jobs:
       - name: Build
         run: |
           cd nativeLibSrc
-          make -f ./linux/Makefile make_obj
-          make -f ./linux/Makefile compile
+          make -f ./Makefile.linux.mk
+          make -f ./Makefile.linux.mk
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: hmmm-native-linux
-          path: ./nativeLibSrc/libHmmm.so
+          path: ./nativeLibSrc/lib*.so
           retention-days: 7
           compression-level: 9

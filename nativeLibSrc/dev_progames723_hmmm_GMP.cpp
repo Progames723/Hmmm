@@ -3,7 +3,7 @@
 #include <mpfr.h>
 #include <regex>
 #include <string>
-#include <../headers/dev_progames723_hmmm_GMP.h>
+#include "dev_progames723_hmmm_GMP.h"
 
 extern "C" {
 #undef dev_progames723_hmmm_GMP_serialVersionUID
