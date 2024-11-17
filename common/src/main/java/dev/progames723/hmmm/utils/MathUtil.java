@@ -1,18 +1,29 @@
 package dev.progames723.hmmm.utils;
 
 import dev.progames723.hmmm.ActualSecureRandom;
+import dev.progames723.hmmm.HmmmError;
+import dev.progames723.hmmm.internal.CallerSensitive;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class MathUtil {
-	private static boolean works = false;
-	private static boolean initialized = false;
+	private static final Supplier<SecureRandom> actualSecureRandom = ActualSecureRandom::createSecureRandom;
 	
-	private static final SecureRandom actualSecureRandom = ActualSecureRandom.createSecureRandom();
+	private static native void registerNatives();
 	
-	private MathUtil() {throw new Error("This mf really made an instance of a util class, what a shame");}//no instances allowed
+	static {
+		try {
+			registerNatives();
+		} catch (UnsatisfiedLinkError ignored) {
+			NativeUtil.works = false;
+		}
+	}
+	
+	@CallerSensitive
+	private MathUtil() {throw new HmmmError(ReflectUtil.CALLER_CLASS.getCallerClass(), "This mf really made an instance of a util class, what a shame");}//no instances allowed
 	
 	public static long percent(long number, long max) {return (number / max) * 100;}
 	
@@ -22,20 +33,20 @@ public class MathUtil {
 		double i = new Random().nextDouble();
 		if (percent > 1) percent = 1;
 		if (percent <= 0) return false;
-		return ActualSecureRandom.createSecureRandom().nextBoolean() ? i <= percent : i >= percent;
+		return actualSecureRandom.get().nextBoolean() ? i <= percent : i >= percent;
 	}
 	
 	public static boolean chance(long percent) {
 		int i = new Random().nextInt(101);
-		return ActualSecureRandom.createSecureRandom().nextBoolean() ? i <= percent : i >= percent;
+		return actualSecureRandom.get().nextBoolean() ? i <= percent : i >= percent;
 	}
 	
 	public static long randomRange(long min, long max) {
-		return new Random().nextLong((max - min) + 1) + min;
+		return actualSecureRandom.get().nextLong((max - min) + 1) + min;
 	}
 	
 	public static double randomRange(double min, double max) {
-		return new Random().nextDouble((max - min) + 1) + min;
+		return actualSecureRandom.get().nextDouble((max - min) + 1) + min;
 	}
 	
 	public static double unExponentialFormula(double value, double divisor, double maxValue) {//great name

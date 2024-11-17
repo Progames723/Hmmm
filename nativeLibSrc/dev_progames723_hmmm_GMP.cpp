@@ -9,6 +9,35 @@ extern "C" {
 #undef dev_progames723_hmmm_GMP_serialVersionUID
 #define dev_progames723_hmmm_GMP_serialVersionUID -8742448824652078965i64
 
+const static JNINativeMethod methods[] {
+  {"intValue", "()I", (void*)&intValue},
+  {"longValue", "()J", (void*)&longValue},
+  {"floatValue", "()F", (void*)&floatValue},
+  {"doubleValue", "()D", (void*)&doubleValue},
+  {"getAsString", "()Ljava/lang/String;", (void*)&getAsString},
+  {"create", "(D)V", (void*)&createD},
+  {"create", "(Ljava/lang/String;)V", (void*)&createString},
+  {"multiply", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&multiplyGMP},
+  {"multiply", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&multiplyString},
+  {"divide", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&divideGMP},
+  {"divide", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&divideString},
+  {"pow", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&powGMP},
+  {"pow", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&powString},
+  {"sqrt", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPsqrt},
+  {"add", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&addGMP},
+  {"add", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&addString},
+  {"subtract", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&subtractGMP},
+  {"subtract", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&subtractString},
+  {"ceil", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPceil},
+  {"floor", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPfloor},
+  {"abs", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPabs},
+  {"truncate", "()Ldev/progames723/hmmm/GMP;", (void*)&truncate},
+  {"set", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&setGMP},
+  {"set", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&setString},
+  {"clear", "()V", (void*)&clear},
+  {"equals", "(Ljava/lang/Object;)Z", (void*)&equals}
+};
+
 static inline mpf_class getGMP(const char* str) {
   mpf_class temp; temp = str;
   return temp;
@@ -33,11 +62,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
   return JNI_VERSION_10;
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad_libHmmm(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad_libGMP(JavaVM *vm, void *reserved) {
   return JNI_VERSION_10;
 }
 
-JNIEXPORT jint JNICALL JNI_OnLoad_hmmm(JavaVM *vm, void *reserved) {
+JNIEXPORT jint JNICALL JNI_OnLoad_GMP(JavaVM *vm, void *reserved) {
   return JNI_VERSION_10;
 }
 
@@ -45,12 +74,16 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
   var.~__gmp_expr();
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload_libHmmm(JavaVM *vm, void *reserved) {
+JNIEXPORT void JNICALL JNI_OnUnload_libGMP(JavaVM *vm, void *reserved) {
   var.~__gmp_expr();
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload_hmmm(JavaVM *vm, void *reserved) {
+JNIEXPORT void JNICALL JNI_OnUnload_GMP(JavaVM *vm, void *reserved) {
   var.~__gmp_expr();
+}
+
+JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_registerNatives(JNIEnv *env, jclass cls) {
+  env->RegisterNatives(cls, methods, sizeof(methods) / sizeof(methods[0]));
 }
 
 /*
@@ -58,7 +91,7 @@ JNIEXPORT void JNICALL JNI_OnUnload_hmmm(JavaVM *vm, void *reserved) {
  * Method:    intValue
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_dev_progames723_hmmm_GMP_intValue(JNIEnv *env, jobject o) {
+JNIEXPORT jint JNICALL intValue(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -72,7 +105,7 @@ JNIEXPORT jint JNICALL Java_dev_progames723_hmmm_GMP_intValue(JNIEnv *env, jobje
  * Method:    longValue
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_dev_progames723_hmmm_GMP_longValue(JNIEnv *env, jobject o) {
+JNIEXPORT jlong JNICALL longValue(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -86,7 +119,7 @@ JNIEXPORT jlong JNICALL Java_dev_progames723_hmmm_GMP_longValue(JNIEnv *env, job
  * Method:    floatValue
  * Signature: ()F
  */
-JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_GMP_floatValue(JNIEnv *env, jobject o) {
+JNIEXPORT jfloat JNICALL floatValue(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -100,7 +133,7 @@ JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_GMP_floatValue(JNIEnv *env, j
  * Method:    doubleValue
  * Signature: ()D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_GMP_doubleValue(JNIEnv *env, jobject o) {
+JNIEXPORT jdouble JNICALL doubleValue(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -114,7 +147,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_GMP_doubleValue(JNIEnv *env,
  * Method:    getAsString
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_dev_progames723_hmmm_GMP_getAsString(JNIEnv *env, jobject o) {
+JNIEXPORT jstring JNICALL getAsString(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -128,7 +161,7 @@ JNIEXPORT jstring JNICALL Java_dev_progames723_hmmm_GMP_getAsString(JNIEnv *env,
  * Method:    create
  * Signature: (D)V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__D(JNIEnv *env, jobject o, jdouble d) {
+JNIEXPORT void JNICALL createD(JNIEnv *env, jobject o, jdouble d) {
   var = static_cast<double>(d);
 }
 
@@ -137,7 +170,7 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__D(JNIEnv *env, jobj
  * Method:    create
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT void JNICALL createString(JNIEnv *env, jobject o, jstring str) {
   std::string s = env->GetStringUTFChars(str, JNI_FALSE);
   if (std::regex_match(s, std::regex("[^\\-0-9.]"))) var = 0;
   else var = s;
@@ -148,7 +181,7 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__Ljava_lang_String_2
  * Method:    multiply
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL multiplyGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -165,7 +198,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ldev_progames7
  * Method:    multiply
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL multiplyString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -184,7 +217,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ljava_lang_Str
  * Method:    divide
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL divideGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -201,7 +234,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ldev_progames723
  * Method:    divide
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL divideString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -220,7 +253,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ljava_lang_Strin
  * Method:    pow
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL powGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -245,7 +278,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ldev_progames723_hm
  * Method:    pow
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL powString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -272,7 +305,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ljava_lang_String_2
  * Method:    sqrt
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_sqrt(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL GMPsqrt(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -290,7 +323,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_sqrt(JNIEnv *env, jobjec
  * Method:    add
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL addGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -307,7 +340,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ldev_progames723_hm
  * Method:    add
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL addString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -326,7 +359,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ljava_lang_String_2
  * Method:    subtract
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL subtractGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -343,7 +376,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ldev_progames7
  * Method:    subtract
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL subtractString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -362,7 +395,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ljava_lang_Str
  * Method:    ceil
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_ceil(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL GMPceil(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -380,7 +413,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_ceil(JNIEnv *env, jobjec
  * Method:    floor
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_floor(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL GMPfloor(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -398,7 +431,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_floor(JNIEnv *env, jobje
  * Method:    abs
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_abs(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL GMPabs(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -415,7 +448,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_abs(JNIEnv *env, jobject
  * Method:    truncate
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_truncate(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL truncate(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -433,7 +466,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_truncate(JNIEnv *env, jo
  * Method:    clear
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_clear(JNIEnv *env, jobject o) {
+JNIEXPORT void JNICALL clear(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot free a \"nullptr\"!");
     env->ExceptionClear();
@@ -450,7 +483,7 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_clear(JNIEnv *env, jobject 
  * Method:    set
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ldev_progames723_hmmm_GMP_2(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jobject JNICALL setGMP(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -468,7 +501,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ldev_progames723_hm
  * Method:    set
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ljava_lang_String_2(JNIEnv *env, jobject o, jstring str) {
+JNIEXPORT jobject JNICALL setString(JNIEnv *env, jobject o, jstring str) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();
@@ -483,7 +516,7 @@ JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ljava_lang_String_2
  * Method:    equals
  * Signature: (Ljava/lang/Object;)Z;
  */
-JNIEXPORT jboolean JNICALL Java_dev_progames723_hmmm_GMP_equals(JNIEnv *env, jobject o, jobject obj) {
+JNIEXPORT jboolean JNICALL equals(JNIEnv *env, jobject o, jobject obj) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();

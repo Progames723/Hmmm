@@ -3,7 +3,28 @@
 #include "dev_progames723_hmmm_utils_MathUtil.h"
 
 extern "C" {
-static inline constexpr double fast_pow(double x, double y)
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+  return JNI_VERSION_10;
+}
+
+JNIEXPORT jint JNICALL JNI_OnLoad_libMathUtil(JavaVM *vm, void *reserved) {
+  return JNI_VERSION_10;
+}
+
+JNIEXPORT jint JNICALL JNI_OnLoad_MathUtil(JavaVM *vm, void *reserved) {
+  return JNI_VERSION_10;
+}
+
+const static JNINativeMethod methods[] = {
+  {"fastSqrt", "(D)D", (void*)&fastSqrt},
+  {"fastInvSqrt", "(D)D", (void*)&dFastInvSqrt},
+  {"fastInvSqrt", "(F)F", (void*)&fFastInvSqrt},
+  {"fastPow", "(DD)D", (void*)&fastPow},
+  {"nthRoot", "(DD)D", (void*)&nthRoot}
+};
+
+static inline double fast_pow(double x, double y)
 {
   union {
     double d;
@@ -14,7 +35,7 @@ static inline constexpr double fast_pow(double x, double y)
   return u.d;
 }
 
-static inline constexpr double fast_sqrt(double x) {
+static inline double fast_sqrt(double x) {
   if (x > 0 && x < 1) return 1 / fast_sqrt(1 / x);
 
   double l = 0, r = x;
@@ -34,12 +55,16 @@ static inline constexpr double fast_sqrt(double x) {
   return -1;
 }
 
+JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_MathUtil_registerNatives(JNIEnv *env, jclass cls) {
+  env->RegisterNatives(cls, methods, sizeof(methods) / sizeof(methods[0]));
+}
+
 /*
  * Class:     dev.progames723.hmmm.utils.MathUtil
  * Method:    fastSqrt
  * Signature: (D)D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt(JNIEnv *env, jclass cls, jdouble j_double) {
+JNIEXPORT jdouble JNICALL fastSqrt(JNIEnv *env, jclass cls, jdouble j_double) {
     return fast_sqrt(j_double);
   }
 
@@ -48,7 +73,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastSqrt(JNIE
  * Method:    fastInvSqrt
  * Signature: (D)D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__D(JNIEnv *env, jclass cls, jdouble j_double) {
+JNIEXPORT jdouble JNICALL dFastInvSqrt(JNIEnv *env, jclass cls, jdouble j_double) {
     double y = j_double;
     double x2 = y * 0.5;
 
@@ -68,7 +93,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__
  * Method:    fastInvSqrt
  * Signature: (F)F
  */
-JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__F(JNIEnv *env, jclass cls, jfloat j_float) {
+JNIEXPORT jfloat JNICALL fFastInvSqrt(JNIEnv *env, jclass cls, jfloat j_float) {
     float x2 = j_float * 0.5F;
     float y = j_float;
 
@@ -88,7 +113,7 @@ JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastInvSqrt__F
  * Method:    fastPow
  * Signature: (DD)D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastPow(JNIEnv *env, jclass cls, jdouble x, jdouble y) {
+JNIEXPORT jdouble JNICALL fastPow(JNIEnv *env, jclass cls, jdouble x, jdouble y) {
     return fast_pow(x, y);
   }
 
@@ -97,7 +122,7 @@ JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_fastPow(JNIEn
  * Method:    nthRoot
  * Signature: (DD)D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_utils_MathUtil_nthRoot(JNIEnv *env, jclass cls, jdouble x, jdouble y) {
+JNIEXPORT jdouble JNICALL nthRoot(JNIEnv *env, jclass cls, jdouble x, jdouble y) {
     return fast_pow(x, 1 / y);
   }
 }

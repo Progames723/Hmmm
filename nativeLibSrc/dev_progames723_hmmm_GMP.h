@@ -11,185 +11,192 @@ extern "C" {
 #define dev_progames723_hmmm_GMP_serialVersionUID -8742448824652078965i64
 /*
  * Class:     dev_progames723_hmmm_GMP
+ * Method:    registerNatives
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_registerNatives(JNIEnv *, jclass);
+
+/*
+ * Class:     dev_progames723_hmmm_GMP
  * Method:    intValue
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_dev_progames723_hmmm_GMP_intValue(JNIEnv *, jobject);
+JNIEXPORT jint JNICALL intValue(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    longValue
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_dev_progames723_hmmm_GMP_longValue(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL longValue(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    floatValue
  * Signature: ()F
  */
-JNIEXPORT jfloat JNICALL Java_dev_progames723_hmmm_GMP_floatValue(JNIEnv *, jobject);
+JNIEXPORT jfloat JNICALL floatValue(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    doubleValue
  * Signature: ()D
  */
-JNIEXPORT jdouble JNICALL Java_dev_progames723_hmmm_GMP_doubleValue(JNIEnv *, jobject);
+JNIEXPORT jdouble JNICALL doubleValue(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    getAsString
  * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_dev_progames723_hmmm_GMP_getAsString(JNIEnv *, jobject);
+JNIEXPORT jstring JNICALL getAsString(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    create
  * Signature: (D)V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__D(JNIEnv *, jobject, jdouble);
+JNIEXPORT void JNICALL createD(JNIEnv *, jobject, jdouble);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    create
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_create__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL createString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    multiply
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL multiplyGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    multiply
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_multiply__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL multiplyString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    divide
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL divideGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    divide
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_divide__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL divideString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    pow
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL powGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    pow
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_pow__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL powString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    sqrt
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_sqrt(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL GMPsqrt(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    add
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL addGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    add
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_add__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL addString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    subtract
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL subtractGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    subtract
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_subtract__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL subtractString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    ceil
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_ceil(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL GMPceil(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    floor
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_floor(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL GMPfloor(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    abs
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_abs(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL GMPabs(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    truncate
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_truncate(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL truncate(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    clear
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_dev_progames723_hmmm_GMP_clear(JNIEnv *, jobject);
+JNIEXPORT void JNICALL clear(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    set
  * Signature: (Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ldev_progames723_hmmm_GMP_2(JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL setGMP(JNIEnv *, jobject, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    set
  * Signature: (Ljava/lang/String;)Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL Java_dev_progames723_hmmm_GMP_set__Ljava_lang_String_2(JNIEnv *, jobject, jstring);
+JNIEXPORT jobject JNICALL setString(JNIEnv *, jobject, jstring);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
  * Method:    equals
  * Signature: (Ljava/lang/Object;)Z
  */
-JNIEXPORT jboolean JNICALL Java_dev_progames723_hmmm_GMP_equals(JNIEnv *, jobject, jobject);
+JNIEXPORT jboolean JNICALL equals(JNIEnv *, jobject, jobject);
 
 #ifdef __cplusplus
 }

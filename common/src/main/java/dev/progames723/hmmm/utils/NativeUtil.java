@@ -1,18 +1,25 @@
 package dev.progames723.hmmm.utils;
 
+import com.sun.jna.Platform;
+import dev.progames723.hmmm.GMP;
 import dev.progames723.hmmm.GMPWrapper;
+import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
+import dev.progames723.hmmm.internal.CallerSensitive;
 import net.minecraft.Util;
+import org.burningwave.core.classes.Methods;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.lang.reflect.Method;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
+@SuppressWarnings("ReassignedVariable")
 public class NativeUtil {
 	private static boolean initialized = false;
-	private static boolean works = true;
+	static boolean works = true;
 	private static final String PATH;
 	
 	static {
@@ -22,101 +29,121 @@ public class NativeUtil {
 		PATH = System.getProperty("java.library.path");
 	}
 	
-	public static void loadLibrary(InputStream inputStream, String fileName) throws IOException {
+	public static void loadLibrary(InputStream stream, String fileName) throws IOException {
+		char dirChar = '/';
+		final String unmodifiedFilename = fileName;
+		switch (Util.getPlatform()) {
+			case WINDOWS -> {
+				fileName = fileName.contains(".dll") ? fileName : fileName + ".dll";
+				dirChar = '\\';
+			}
+			case LINUX -> {
+				fileName = fileName.startsWith("lib") ? fileName : "lib" + fileName;
+				fileName = fileName.contains(".so") ? fileName : fileName + ".so";
+			}
+			//i will support MacOS only if i get a mac for free or other people compile it for me
+//			case OSX -> {
+//				fileName = fileName.startsWith("lib") ? fileName : "lib" + fileName;
+//				fileName = fileName.contains(".dylib") ? fileName : fileName + ".dylib";
+//			}
+			default -> throw new RuntimeException("Unsupported os!");
+		}
+		File actualFile = new File(PATH + dirChar + fileName);
+		FileOutputStream outputStream;
+		try {
+			outputStream = new FileOutputStream(actualFile);
+		} catch (FileNotFoundException e) {
+			actualFile.createNewFile();
+			outputStream = new FileOutputStream(actualFile);
+		}
+		stream.transferTo(outputStream);
+		try {
+			System.loadLibrary(fileName);
+		} catch (UnsatisfiedLinkError e) {
+			loadLibraryFallback(stream, unmodifiedFilename);
+			return;
+		}
+		stream.close();
+	}
+	
+	public static void loadLibraryFallback(InputStream stream, String fileName) throws IOException {
 		char dirChar = '/';
 		switch (Util.getPlatform()) {
 			case WINDOWS -> {
 				fileName = fileName.contains(".dll") ? fileName : fileName + ".dll";
 				dirChar = '\\';
 			}
-			case LINUX -> fileName = fileName.contains(".so") ? fileName : fileName + ".so";
+			case LINUX -> {
+				fileName = fileName.startsWith("lib") ? fileName : "lib" + fileName;
+				fileName = fileName.contains(".so") ? fileName : fileName + ".so";
+			}
 			//i will support MacOS only if i get a mac for free or other people compile it for me
-//			case OSX -> fileName = fileName.contains(".dylib") ? fileName : fileName + ".dylib";
+//			case OSX -> {
+//				fileName = fileName.startsWith("lib") ? fileName : "lib" + fileName;
+//				fileName = fileName.contains(".dylib") ? fileName : fileName + ".dylib";
+//			}
 			default -> throw new RuntimeException("Unsupported os!");
 		}
-		String fileLocationWithFileName = PATH + dirChar + fileName;
-		File actualFile = new File(fileLocationWithFileName);
-		File workingDirectory = new File(PATH);
-		FileOutputStream outputStream;
+		File actualFile = new File(PATH + dirChar + fileName);
 		try {
-			outputStream = new FileOutputStream(actualFile);
-		} catch (IOException e) {
-			workingDirectory.mkdir();
-			actualFile.createNewFile();
-			//trying again
-			outputStream = new FileOutputStream(actualFile);
-		}
-		inputStream.readAllBytes();
-		inputStream.transferTo(outputStream);
-		outputStream.close();
-		inputStream.close();
-		try {
-			System.load(fileLocationWithFileName);
+			System.load(actualFile.getAbsolutePath());
 		} catch (UnsatisfiedLinkError e) {
-			actualFile.delete();
-			workingDirectory.delete();
-			throw e;
+			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unable to load library: %s".formatted(fileName), e);
+			works = false;
 		}
-		actualFile.deleteOnExit();
-		workingDirectory.deleteOnExit();
+		stream.close();
 	}
 	
 	public static void init() {
 		if (initialized) return;
 		initialized = true;
-		InputStream linuxLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/mathUtil/linux/x64/libmathUtil.so");
-		InputStream windowsLibraryX64 = Thread.currentThread().getContextClassLoader().getResourceAsStream("native_libs/test/hmmm.dll");
-		
-		assert linuxLibraryX64 != null; assert windowsLibraryX64 != null;
-		
-		switch (Util.getPlatform()) {
-			case LINUX -> {
-				try {
-					NativeUtil.loadLibrary(linuxLibraryX64, "libHmmm.so");
-//				    System.load(linuxLibraryX64.getAbsolutePath());
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
-				} catch (UnsatisfiedLinkError e) {
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "damn", e);
-					works = false;
-				} catch (IOException e) {
-					works = false;
-					HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-				}
+		Methods methods = Methods.create();
+		Method method;
+		try {
+			method = ClassLoader.class.getDeclaredMethod("getBuiltinPlatformClassLoader");
+		} catch (NoSuchMethodException e) {
+			works = false;
+			throw new HmmmException(e);
+		}
+		methods.setAccessible(method, true);
+		ClassLoader classLoader = methods.invoke(null, method);
+		Map<String, InputStream> libraryStreams = new HashMap<>(5);
+		if (Platform.isIntel()) {
+			if (Platform.isLinux()) {
+				libraryStreams.put("MathUtil", classLoader.getResourceAsStream("native_libs/mathUtil/linux/x64/libMathUtil.so"));
+				libraryStreams.put("GMP", classLoader.getResourceAsStream("native_libs/GMP/linux/x64/libGMP.so"));
+				libraryStreams.put("NativeReflectUtil", classLoader.getResourceAsStream("native_libs/nativeReflectUtil/linux/x64/libNativeReflectUtil.so"));
 			}
-			case WINDOWS -> {
-				try {
-					NativeUtil.loadLibrary(windowsLibraryX64, "hmmm.dll");
-//				    System.loadLibrary("hmmm");
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.X64);
-				} catch (UnsatisfiedLinkError e) {
-					HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "damn", e);
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-					works = false;
-				} catch (IOException e) {
-					works = false;
-					HmmmLibrary.LOGGER.error("Encountered an IO exception", e);
-					PlatformUtil.initArchitecture(PlatformUtil.Architecture.getArchitecture());
-				}
+			if (Platform.isWindows()) {
+				libraryStreams.put("MathUtil", classLoader.getResourceAsStream("native_libs/mathUtil/windows/x64/MathUtil.dll"));
+				libraryStreams.put("GMP", classLoader.getResourceAsStream("native_libs/GMP/windows/x64/GMP.dll"));
+				libraryStreams.put("NativeReflectUtil", classLoader.getResourceAsStream("native_libs/nativeReflectUtil/windows/x64/NativeReflectUtil.dll"));
 			}
-			default -> {
-				HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Unsupported OS!");
+		}
+		libraryStreams.forEach((string, inputStream) -> {
+			try {
+				loadLibrary(inputStream, string);
+				inputStream.close();
+			} catch (IOException e) {
+				HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "An IOException occured!", e);
 				works = false;
 			}
-		}
-		try {
-			linuxLibraryX64.close();
-			windowsLibraryX64.close();
-		} catch (IOException e) {
-			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "Cannot close some file's stream!", e);
-		}
+		});
+		libraryStreams.clear();
 		if (!works) return;
 		GMPWrapper.testGMP();
 		try {
 			MathUtil.fastPow(1, 1);
 		} catch (UnsatisfiedLinkError e) {
 			HmmmLibrary.LOGGER.error(HmmmLibrary.NATIVE, "the fuck", e);
+			works = false;
 		}
+	}
+	
+	@CallerSensitive(allowedClasses = GMP.class)
+	@ApiStatus.Internal
+	public static void setWorks(boolean value) {
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
+		works = value;
 	}
 }
