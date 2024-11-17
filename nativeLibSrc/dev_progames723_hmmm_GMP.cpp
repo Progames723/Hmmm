@@ -31,7 +31,7 @@ const static JNINativeMethod methods[] {
   {"ceil", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPceil},
   {"floor", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPfloor},
   {"abs", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPabs},
-  {"truncate", "()Ldev/progames723/hmmm/GMP;", (void*)&truncate},
+  {"truncate", "()Ldev/progames723/hmmm/GMP;", (void*)&GMPtruncate},
   {"set", "(Ldev/progames723/hmmm/GMP;)Ldev/progames723/hmmm/GMP;", (void*)&setGMP},
   {"set", "(Ljava/lang/String;)Ldev/progames723/hmmm/GMP;", (void*)&setString},
   {"clear", "()V", (void*)&clear},
@@ -448,7 +448,7 @@ JNIEXPORT jobject JNICALL GMPabs(JNIEnv *env, jobject o) {
  * Method:    truncate
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL truncate(JNIEnv *env, jobject o) {
+JNIEXPORT jobject JNICALL GMPtruncate(JNIEnv *env, jobject o) {
   #ifndef var
     env->FatalError("Cannot use \"var\" after #clear() call!");
     env->ExceptionClear();

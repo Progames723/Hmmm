@@ -168,7 +168,7 @@ JNIEXPORT jobject JNICALL GMPabs(JNIEnv *, jobject);
  * Method:    truncate
  * Signature: ()Ldev/progames723/hmmm/GMP;
  */
-JNIEXPORT jobject JNICALL truncate(JNIEnv *, jobject);
+JNIEXPORT jobject JNICALL GMPtruncate(JNIEnv *, jobject);
 
 /*
  * Class:     dev_progames723_hmmm_GMP
