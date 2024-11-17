@@ -5,22 +5,22 @@
 extern "C" {
 
 const static JNINativeMethod methods[] = {
-    {"getIntField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)I", &getIntField0},
-    {"getLongField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)J", &getLongField0},
-    {"getFloatField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)F", &getFloatField0},
-    {"getDoubleField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)D", &getDoubleField0},
-    {"getShortField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)S", &getShortField0},
-    {"getByteField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)B", &getByteField0},
-    {"getCharField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)C", &getCharField0},
-    {"getBooleanField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)Z", &getBooleanField0},
-    {"setIntField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;I)V", &setIntField0},
-    {"setLongField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;J)V", &setLongField0},
-    {"setFloatField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;F)V", &setFloatField0},
-    {"setDoubleField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;D)V", &setDoubleField0},
-    {"setShortField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;S)V", &setShortField0},
-    {"setByteField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;B)V", &setByteField0},
-    {"setCharField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;C)V", &setCharField0},
-    {"setBooleanField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;Z)V", &setBooleanField0},
+    {"getIntField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)I", (void*)&getIntField0},
+    {"getLongField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)J", (void*)&getLongField0},
+    {"getFloatField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)F", (void*)&getFloatField0},
+    {"getDoubleField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)D", (void*)&getDoubleField0},
+    {"getShortField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)S", (void*)&getShortField0},
+    {"getByteField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)B", (void*)&getByteField0},
+    {"getCharField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)C", (void*)&getCharField0},
+    {"getBooleanField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)Z", (void*)&getBooleanField0},
+    {"setIntField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;I)V", (void*)&setIntField0},
+    {"setLongField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;J)V", (void*)&setLongField0},
+    {"setFloatField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;F)V", (void*)&setFloatField0},
+    {"setDoubleField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;D)V", (void*)&setDoubleField0},
+    {"setShortField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;S)V", (void*)&setShortField0},
+    {"setByteField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;B)V", (void*)&setByteField0},
+    {"setCharField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;C)V", (void*)&setCharField0},
+    {"setBooleanField0", "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;Z)V", (void*)&setBooleanField0},
 };
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
