@@ -1,6 +1,5 @@
 #include <jni.h>
 #include "dev_progames723_hmmm_utils_NativeReflectUtil_Primitives.h"
-#include "jniUtils.h"
 
 extern "C" {
 
@@ -50,10 +49,11 @@ JNIEXPORT void JNICALL Java_dev_progames723_hmmm_utils_NativeReflectUtil_00024Pr
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)I
  */
 JNIEXPORT jint JNICALL getIntField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jint ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
-    ret = isStatic(objectInstance) ? env->GetStaticIntField(clazz, fieldID) : env->GetIntField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
+    ret = isStatic ? env->GetStaticIntField(clazz, fieldID) : env->GetIntField(objectInstance, fieldID);
     return ret;
 }
 
@@ -63,9 +63,10 @@ JNIEXPORT jint JNICALL getIntField0(JNIEnv *env, jclass cls, jstring fieldName, 
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;I)V
  */
 JNIEXPORT void JNICALL setIntField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jint value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
-    if (isStatic(objectInstance)) env->SetStaticIntField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
+    if (isStatic) env->SetStaticIntField(clazz, fieldID, value);
     else env->SetIntField(objectInstance, fieldID, value);
 }
 
@@ -75,10 +76,11 @@ JNIEXPORT void JNICALL setIntField0(JNIEnv *env, jclass cls, jstring fieldName, 
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)J
  */
 JNIEXPORT jlong JNICALL getLongField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jlong ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
-    ret = isStatic(objectInstance) ? env->GetStaticLongField(clazz, fieldID) : env->GetLongField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "I") : env->GetFieldID(clazz, cName, "I");
+    ret = isStatic ? env->GetStaticLongField(clazz, fieldID) : env->GetLongField(objectInstance, fieldID);
     return ret;
 }
 
@@ -88,9 +90,10 @@ JNIEXPORT jlong JNICALL getLongField0(JNIEnv *env, jclass cls, jstring fieldName
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;J)V
  */
 JNIEXPORT void JNICALL setLongField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jlong value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "J") : env->GetFieldID(clazz, cName, "J");
-    if (isStatic(objectInstance)) env->SetStaticLongField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "J") : env->GetFieldID(clazz, cName, "J");
+    if (isStatic) env->SetStaticLongField(clazz, fieldID, value);
     else env->SetLongField(objectInstance, fieldID, value);
 }
 
@@ -100,10 +103,11 @@ JNIEXPORT void JNICALL setLongField0(JNIEnv *env, jclass cls, jstring fieldName,
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)F
  */
 JNIEXPORT jfloat JNICALL getFloatField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jfloat ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "F") : env->GetFieldID(clazz, cName, "F");
-    ret = isStatic(objectInstance) ? env->GetStaticFloatField(clazz, fieldID) : env->GetFloatField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "F") : env->GetFieldID(clazz, cName, "F");
+    ret = isStatic ? env->GetStaticFloatField(clazz, fieldID) : env->GetFloatField(objectInstance, fieldID);
     return ret;
 }
 
@@ -113,9 +117,10 @@ JNIEXPORT jfloat JNICALL getFloatField0(JNIEnv *env, jclass cls, jstring fieldNa
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;F)V
  */
 JNIEXPORT void JNICALL setFloatField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jfloat value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "F") : env->GetFieldID(clazz, cName, "F");
-    if (isStatic(objectInstance)) env->SetStaticFloatField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "F") : env->GetFieldID(clazz, cName, "F");
+    if (isStatic) env->SetStaticFloatField(clazz, fieldID, value);
     else env->SetFloatField(objectInstance, fieldID, value);
 }
 
@@ -125,10 +130,11 @@ JNIEXPORT void JNICALL setFloatField0(JNIEnv *env, jclass cls, jstring fieldName
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)D
  */
 JNIEXPORT jdouble JNICALL getDoubleField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jdouble ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "D") : env->GetFieldID(clazz, cName, "D");
-    ret = isStatic(objectInstance) ? env->GetStaticDoubleField(clazz, fieldID) : env->GetDoubleField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "D") : env->GetFieldID(clazz, cName, "D");
+    ret = isStatic ? env->GetStaticDoubleField(clazz, fieldID) : env->GetDoubleField(objectInstance, fieldID);
     return ret;
 }
 
@@ -138,9 +144,10 @@ JNIEXPORT jdouble JNICALL getDoubleField0(JNIEnv *env, jclass cls, jstring field
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;D)V
  */
 JNIEXPORT void JNICALL setDoubleField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jdouble value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "D") : env->GetFieldID(clazz, cName, "D");
-    if (isStatic(objectInstance)) env->SetStaticDoubleField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "D") : env->GetFieldID(clazz, cName, "D");
+    if (isStatic) env->SetStaticDoubleField(clazz, fieldID, value);
     else env->SetDoubleField(objectInstance, fieldID, value);
 }
 
@@ -150,10 +157,11 @@ JNIEXPORT void JNICALL setDoubleField0(JNIEnv *env, jclass cls, jstring fieldNam
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)S
  */
 JNIEXPORT jshort JNICALL getShortField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jshort ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "S") : env->GetFieldID(clazz, cName, "S");
-    ret = isStatic(objectInstance) ? env->GetStaticShortField(clazz, fieldID) : env->GetShortField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "S") : env->GetFieldID(clazz, cName, "S");
+    ret = isStatic ? env->GetStaticShortField(clazz, fieldID) : env->GetShortField(objectInstance, fieldID);
     return ret;
 }
 
@@ -163,9 +171,10 @@ JNIEXPORT jshort JNICALL getShortField0(JNIEnv *env, jclass cls, jstring fieldNa
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;S)V
  */
 JNIEXPORT void JNICALL setShortField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jshort value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "S") : env->GetFieldID(clazz, cName, "S");
-    if (isStatic(objectInstance)) env->SetStaticShortField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "S") : env->GetFieldID(clazz, cName, "S");
+    if (isStatic) env->SetStaticShortField(clazz, fieldID, value);
     else env->SetShortField(objectInstance, fieldID, value);
 }
 
@@ -175,10 +184,11 @@ JNIEXPORT void JNICALL setShortField0(JNIEnv *env, jclass cls, jstring fieldName
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)B
  */
 JNIEXPORT jbyte JNICALL getByteField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jlong ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "B") : env->GetFieldID(clazz, cName, "B");
-    ret = isStatic(objectInstance) ? env->GetStaticByteField(clazz, fieldID) : env->GetByteField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "B") : env->GetFieldID(clazz, cName, "B");
+    ret = isStatic ? env->GetStaticByteField(clazz, fieldID) : env->GetByteField(objectInstance, fieldID);
     return ret;
 }
 
@@ -188,9 +198,10 @@ JNIEXPORT jbyte JNICALL getByteField0(JNIEnv *env, jclass cls, jstring fieldName
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;B)V
  */
 JNIEXPORT void JNICALL setByteField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jbyte value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "B") : env->GetFieldID(clazz, cName, "B");
-    if (isStatic(objectInstance)) env->SetStaticByteField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "B") : env->GetFieldID(clazz, cName, "B");
+    if (isStatic) env->SetStaticByteField(clazz, fieldID, value);
     else env->SetByteField(objectInstance, fieldID, value);
 }
 
@@ -200,10 +211,11 @@ JNIEXPORT void JNICALL setByteField0(JNIEnv *env, jclass cls, jstring fieldName,
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)C
  */
 JNIEXPORT jchar JNICALL getCharField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jlong ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "C") : env->GetFieldID(clazz, cName, "C");
-    ret = isStatic(objectInstance) ? env->GetStaticCharField(clazz, fieldID) : env->GetCharField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "C") : env->GetFieldID(clazz, cName, "C");
+    ret = isStatic ? env->GetStaticCharField(clazz, fieldID) : env->GetCharField(objectInstance, fieldID);
     return ret;
 }
 
@@ -213,9 +225,10 @@ JNIEXPORT jchar JNICALL getCharField0(JNIEnv *env, jclass cls, jstring fieldName
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;C)V
  */
 JNIEXPORT void JNICALL setCharField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jchar value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "C") : env->GetFieldID(clazz, cName, "C");
-    if (isStatic(objectInstance)) env->SetStaticCharField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "C") : env->GetFieldID(clazz, cName, "C");
+    if (isStatic) env->SetStaticCharField(clazz, fieldID, value);
     else env->SetCharField(objectInstance, fieldID, value);
 }
 
@@ -225,10 +238,11 @@ JNIEXPORT void JNICALL setCharField0(JNIEnv *env, jclass cls, jstring fieldName,
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)Z
  */
 JNIEXPORT jboolean JNICALL getBooleanField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance) {
+    bool isStatic = objectInstance != NULL;
     jlong ret;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "Z") : env->GetFieldID(clazz, cName, "Z");
-    ret = isStatic(objectInstance) ? env->GetStaticBooleanField(clazz, fieldID) : env->GetBooleanField(objectInstance, fieldID);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "Z") : env->GetFieldID(clazz, cName, "Z");
+    ret = isStatic ? env->GetStaticBooleanField(clazz, fieldID) : env->GetBooleanField(objectInstance, fieldID);
     return ret;
 }
 
@@ -238,9 +252,10 @@ JNIEXPORT jboolean JNICALL getBooleanField0(JNIEnv *env, jclass cls, jstring fie
  * Signature: (Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;Z)V
  */
 JNIEXPORT void JNICALL setBooleanField0(JNIEnv *env, jclass cls, jstring fieldName, jclass clazz, jobject objectInstance, jboolean value) {
+    bool isStatic = objectInstance != NULL;
     const char* cName = env->GetStringUTFChars(fieldName, JNI_FALSE);
-    jfieldID fieldID = isStatic(objectInstance) ? env->GetStaticFieldID(clazz, cName, "Z") : env->GetFieldID(clazz, cName, "Z");
-    if (isStatic(objectInstance)) env->SetStaticBooleanField(clazz, fieldID, value);
+    jfieldID fieldID = isStatic ? env->GetStaticFieldID(clazz, cName, "Z") : env->GetFieldID(clazz, cName, "Z");
+    if (isStatic) env->SetStaticBooleanField(clazz, fieldID, value);
     else env->SetBooleanField(objectInstance, fieldID, value);
 }
 
