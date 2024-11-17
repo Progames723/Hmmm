@@ -7,11 +7,11 @@
 extern "C" {
 #endif
 
-static constexpr inline void throwJavaException(JNIEnv *env);
+static inline void throwJavaException(JNIEnv *env);
 
-static constexpr inline void throwJavaError(JNIEnv *env);
+static inline void throwJavaError(JNIEnv *env);
 
-static constexpr inline bool isStatic(jobject objectInstance);
+static inline bool isStatic(jobject objectInstance);
 
 #ifdef __cplusplus
 }

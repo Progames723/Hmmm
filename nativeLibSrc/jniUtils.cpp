@@ -1,7 +1,7 @@
 #include "jniUtils.h"
 
 extern "C" {
-    static constexpr inline void throwJavaException(JNIEnv *env) {
+    static inline void throwJavaException(JNIEnv *env) {
         jthrowable exception = env->ExceptionOccurred();
         env->ExceptionClear();
         jclass exceptionClass = env->FindClass("dev/progames723/hmmm/HmmmException");
@@ -9,8 +9,7 @@ extern "C" {
         jthrowable o = (jthrowable) env->NewObject(exceptionClass, methodID, NULL, env->NewStringUTF("Exception when executing method!"), exception);
         env->Throw(o);
     }
-
-    static constexpr inline void throwJavaError(JNIEnv *env) {
+    static inline void throwJavaError(JNIEnv *env) {
         jthrowable exception = env->ExceptionOccurred();
         env->ExceptionClear();
         jclass exceptionClass = env->FindClass("dev/progames723/hmmm/HmmmError");
@@ -19,7 +18,7 @@ extern "C" {
         env->Throw(o);
     }
 
-    static constexpr inline bool isStatic(jobject objectInstance) {
+    static inline bool isStatic(jobject objectInstance) {
         return objectInstance != NULL;
     }
 }
