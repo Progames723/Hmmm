@@ -59,8 +59,4 @@ public class PersistentEntityVariable<T extends Tag> {
 	public static <T extends Tag> PersistentEntityVariable<T> create(String name, Entity entity, T variable) {
 		return new PersistentEntityVariable<>(name, entity, variable);
 	}
-	
-	static class test {
-		static PersistentEntityVariable variable = PersistentEntityVariable.create(null, new ListTag());
-	}
 }
