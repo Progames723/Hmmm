@@ -15,26 +15,26 @@ public @interface CallerSensitive {
 	//my own spin on caller sensitive shit
 	
 	/**
-	 * prioritized over forbidden!!!
 	 * wildcards allowed
 	 * @return overridden allowed caller classes
 	 */
 	Class<?>[] allowedClasses() default {};
 	
 	/**
+	 * overrides allowed classes!
 	 * wildcards allowed
 	 * @return overridden forbidden caller classes
 	 */
 	Class<?>[] forbiddenClasses() default {};
 	
 	/**
-	 * prioritized over forbidden!!!
 	 * wildcards allowed
 	 * @return overridden allowed caller packages
 	 */
 	String[] allowedPackages() default {};
 	
 	/**
+	 * overrides allowed classes!
 	 * wildcards allowed
 	 * @return overridden forbidden caller packages
 	 */
@@ -43,8 +43,9 @@ public @interface CallerSensitive {
 	class Utils {
 		private Utils() {}
 		
+		@CallerSensitive
 		public static void throwExceptionIfNotAllowed(Class<?> caller) {
-			if (caller == null) throw new HmmmException(ReflectUtil.getCallerClass());
+			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
 			CallerSensitive instance = ReflectUtil.CALLER_CLASS.getCallerClass().getAnnotation(CallerSensitive.class);
 			
 			String packageName = caller.getPackageName();
@@ -56,14 +57,13 @@ public @interface CallerSensitive {
 			
 			boolean isInModule = packageName.startsWith("dev.progames723.hmmm");
 			
+			if (forbiddenClasses.contains(caller)) throw new HmmmException(caller);
+			if (forbiddenPackages.contains(packageName)) throw new HmmmException(caller);
+			
 			if (allowedClasses.contains(caller)) return;
 			if (allowedPackages.contains(packageName)) return;
 			
 			if (!isInModule) throw new HmmmException(caller);
-			
-			if (forbiddenClasses.contains(caller)) throw new HmmmException(caller);
-			if (forbiddenPackages.contains(packageName)) throw new HmmmException(caller);
-			
 		}
 	}
 }

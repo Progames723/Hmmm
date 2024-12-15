@@ -7,6 +7,8 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.Random;
 
+//TODO add the ability to store anything
+//TODO rewrite this shi
 public class PersistentEntityVariable<T extends Tag> {
 	private final T baseVariable;
 	private final Entity entity;

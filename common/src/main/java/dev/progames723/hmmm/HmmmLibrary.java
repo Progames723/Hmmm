@@ -2,15 +2,18 @@ package dev.progames723.hmmm;
 
 import dev.architectury.event.EventHandler;
 import dev.architectury.utils.EnvExecutor;
-import dev.progames723.hmmm.utils.NativeUtil;
+import dev.progames723.hmmm.networking.Networking;
 import dev.progames723.hmmm.utils.PlatformUtil;
 import dev.progames723.hmmm.utils.TestUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class HmmmLibrary {
@@ -58,8 +61,20 @@ public class HmmmLibrary {
 	}
 	
 	public static void init() {
-		NativeUtil.init();
+//		NativeUtil.init();
 		LOGGER.info("Initializing HmmmLibrary");
+		try {
+			var test = new Object() {public static final boolean test = true;};
+			ByteBuf buf = Unpooled.buffer();
+			new Networking.ObjectToByteEncoder().encode(null, test, buf);
+			ArrayList<Object> list = new ArrayList<>();
+			new Networking.ByteToObjectDecoder().decode(null, buf, list);
+			var test2 = list.get(0);
+			test2.getClass().getField("test");
+			LOGGER.info("Success!");
+		} catch (Exception e) {
+			LOGGER.error("Error happened during conversion to or from byte array!", e);
+		}
 		EventHandler.init();
 		LOGGER.info("Running system architecture: {}", PlatformUtil.getArchitecture());
 		if (TEST_ARG) TestUtil.testAll();

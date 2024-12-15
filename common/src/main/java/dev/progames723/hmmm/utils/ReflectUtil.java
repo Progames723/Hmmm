@@ -13,6 +13,7 @@ import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.PrivilegedAction;
 import java.util.*;
+import java.util.function.Supplier;
 
 /**
  * only useful for mods without mixins, otherwise redundant
@@ -22,6 +23,7 @@ public class ReflectUtil {
 	private static boolean reflectionUsed = false;
 	public static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
 	public static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+	public static final Supplier<Class<?>> TRUE_CALLER_CLASS = () -> STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst().orElseThrow());
 	
 	private ReflectUtil() {throw new HmmmException();}
 	
@@ -45,8 +47,8 @@ public class ReflectUtil {
 	
 	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... types) {
 		try {
-			warnOnReflection();
-			throwExceptionIfNotOpenForReflection(getCallerClass(), clazz);
+			warnOnReflection(CALLER_CLASS.getCallerClass());
+			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
 			Constructor<?> constructor = clazz.getDeclaredConstructor(types);
 			tryToMakeItAccessible(constructor);
 			return constructor;
@@ -58,9 +60,9 @@ public class ReflectUtil {
 	}
 	
 	public static Object invokeConstructor(Constructor<?> constructor, Object... args) {
-		warnOnReflection();
+		warnOnReflection(CALLER_CLASS.getCallerClass());
 		try {
-			throwExceptionIfNotOpenForReflection(getCallerClass(), constructor.getDeclaringClass());
+			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), constructor.getDeclaringClass());
 			tryToMakeItAccessible(constructor);
 			return constructor.newInstance(args);
 		}
@@ -126,7 +128,7 @@ public class ReflectUtil {
 	}
 	
 	public static void tryToMakeItAccessible(AccessibleObject object) {
-		warnOnReflection();
+		warnOnReflection(CALLER_CLASS.getCallerClass());
 		AccessibleObject finalObject = object;
 		PrivilegedAction<AccessibleObject> action = () -> {
 			finalObject.setAccessible(true);
@@ -141,12 +143,13 @@ public class ReflectUtil {
 			AccessController.doPrivileged(action, AccessController.getContext(), new AllPermission());
 		} catch (Exception exc) {
 			//last attempt
+			//effectively forces availability
 			try {
 				if (object instanceof Method method) Bypass.METHODS.setAccessible(method, true);
 				if (object instanceof Field field) Bypass.FIELDS.setAccessible(field, true);
 				if (object instanceof Constructor<?> constructor) Bypass.CONSTRUCTORS.setAccessible(constructor, true);
 			} catch (Exception ex) {
-				throw new HmmmException(ex);
+				throw new HmmmException("Impossible to set accessible", ex);
 			}
 			throw new HmmmException("Impossible to set accessible");
 		}
@@ -157,10 +160,10 @@ public class ReflectUtil {
 			throw new HmmmError(caller, "Module not open for reflection!");
 	}
 	
-	private static void warnOnReflection() {
+	private static void warnOnReflection(Class<?> caller) {
 		if (!reflectionUsed) {
 			reflectionUsed = true;
-			HmmmLibrary.LOGGER.warn(HmmmLibrary.REFLECT, "Reflection used! Only shows up once every run. Do not report issues caused by reflection. Caller: %s".formatted(getCallerClass()));
+			HmmmLibrary.LOGGER.warn(HmmmLibrary.REFLECT, "Reflection used! Only shows up once every run. Do not report issues caused by reflection. Caller: %s".formatted(caller));
 		}
 	}
 	
@@ -180,9 +183,9 @@ public class ReflectUtil {
 	
 	public static Object getFieldValue(Object from, String fieldName) {
 		try {
-			warnOnReflection();
+			warnOnReflection(CALLER_CLASS.getCallerClass());
 			Class<?> clazz = from instanceof Class<?> ? (Class<?>) from : from.getClass();
-			throwExceptionIfNotOpenForReflection(getCallerClass(), clazz);
+			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
 			Field field = getField(clazz, fieldName);
 			if (field == null) return null;
 			tryToMakeItAccessible(field);
@@ -196,11 +199,11 @@ public class ReflectUtil {
 	
 	public static boolean setFieldValue(Object of, String fieldName, Object value) {
 		try {
-			warnOnReflection();
+			warnOnReflection(CALLER_CLASS.getCallerClass());
 			boolean isStatic = of instanceof Class;
 			Class<?> clazz = isStatic ? (Class<?>) of : of.getClass();
 			
-			throwExceptionIfNotOpenForReflection(getCallerClass(), clazz);
+			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
 			
 			Field field = getField(clazz, fieldName);
 			if (field == null) return false;
@@ -230,8 +233,8 @@ public class ReflectUtil {
 	}
 	
 	public static Object invokeMethod(Method method, Object object, Object... param) {
-		warnOnReflection();
-		throwExceptionIfNotOpenForReflection(getCallerClass(), method.getDeclaringClass());
+		warnOnReflection(CALLER_CLASS.getCallerClass());
+		throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), method.getDeclaringClass());
 		tryToMakeItAccessible(method);
 		try {
 			return method.invoke(object, param);
@@ -242,6 +245,12 @@ public class ReflectUtil {
 		return null;
 	}
 	
+	/**
+	 * @deprecated please dont use this as it's easy to mixin and change the return value of this method <p>
+	 * use {@link ReflectUtil#CALLER_CLASS}'s {@link StackWalker#getCallerClass()} instead!
+	 * @return a {@link Class} that called the method that invoked this method
+	 */
+	@Deprecated
 	public static Class<?> getCallerClass() {//should work
 		try {
 			return CALLER_CLASS.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst().orElseThrow());
@@ -251,7 +260,7 @@ public class ReflectUtil {
 	}
 	
 	public static String getMethodSignature(Method method) {
-		warnOnReflection();
+		warnOnReflection(CALLER_CLASS.getCallerClass());
 		String signature;
 		try {
 			Method signatureMethod = Method.class.getDeclaredMethod("getGenericSignature");
@@ -265,7 +274,7 @@ public class ReflectUtil {
 	}
 	
 	public static String getFieldSignature(Field field) {
-		warnOnReflection();
+		warnOnReflection(CALLER_CLASS.getCallerClass());
 		String signature;
 		try {
 			Method signatureMethod = Field.class.getDeclaredMethod("getGenericSignature");
@@ -275,7 +284,7 @@ public class ReflectUtil {
 		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 		return field.getType() == void.class ? "V" : (signature = Array.newInstance(field.getType(), 0).toString()).substring(1, signature.indexOf("@"));
 	}
-	
+//
 	@ExpectPlatform
 	private static MappingsImpl getModLoaderSpecificMappingsImpl() {
 		return null;
@@ -290,7 +299,7 @@ public class ReflectUtil {
 	
 	public static void bypassModuleReflectionRestrictions(Module moduleToBypass) {
 		if (!HmmmLibrary.UNSAFE_REFLECT) throw new HmmmException("Please use the \"enable_unsafe_reflection_hmmm\" flag in minecraft launch arguments to access this");
-		warnOnReflection();
+		warnOnReflection(CALLER_CLASS.getCallerClass());
 		
 		assert Bypass.FIELDS != null; assert Bypass.CONSTRUCTORS != null; assert Bypass.METHODS != null; assert Bypass.CLASSES != null; assert Bypass.MEMBERS != null;
 		
@@ -334,6 +343,6 @@ public class ReflectUtil {
 			}
 		}
 		
-		private Bypass() {throw new HmmmException(getCallerClass());}
+		private Bypass() {throw new HmmmException(CALLER_CLASS.getCallerClass());}
 	}
 }

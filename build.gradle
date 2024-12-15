@@ -1,4 +1,5 @@
 plugins {
+	id 'java'
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
 }
@@ -22,6 +23,8 @@ subprojects {
 			parchment("org.parchmentmc.data:parchment-$rootProject.minecraft_version:2023.12.10@zip")
 		}
 
+		api "com.esotericsoftware.kryo:kryo5:5.6.2"
+
 		api "org.burningwave:core:12.65.1"
 
 		// The following line declares the yarn mappings you may select this one as well.
@@ -30,7 +33,7 @@ subprojects {
 }
 
 allprojects {
-	apply plugin: "java"
+	apply plugin: 'java'
 	apply plugin: "architectury-plugin"
 	apply plugin: "maven-publish"
 
@@ -46,8 +49,11 @@ allprojects {
 		// for more information about repositories.
 		maven { url "https://maven.fabricmc.net/" }
 		maven { url "https://maven.architectury.dev/" }
+		maven { url "https://maven.google.com/" }
+		maven { url "https://files.minecraftforge.net" }
 		maven { url "https://maven.minecraftforge.net/" }
 		maven { url "https://repo.spongepowered.org/repository/maven-public/" }
+		maven { url "https://maven.google.com/" }
 		maven {
 			name = 'ParchmentMC'
 			url = 'https://maven.parchmentmc.org'
