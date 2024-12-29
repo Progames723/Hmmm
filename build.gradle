@@ -54,10 +54,7 @@ allprojects {
 		maven { url "https://maven.minecraftforge.net/" }
 		maven { url "https://repo.spongepowered.org/repository/maven-public/" }
 		maven { url "https://maven.google.com/" }
-		maven {
-			name = 'ParchmentMC'
-			url = 'https://maven.parchmentmc.org'
-		}
+		maven { url "https://maven.parchmentmc.org" }
 		mavenCentral()
 	}
 

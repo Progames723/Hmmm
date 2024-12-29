@@ -10,10 +10,11 @@
     "LivingEntityMixin"
   ],
   "client": [
-    "ClientMainMixin"
+    "client.ClientMainMixin",
+    "client.OptionInstanceAccess"
   ],
   "server": [
-    "ServerMainMixin"
+    "server.ServerMainMixin"
   ],
   "priority": 2147483647,
   "mixinPriority": 2147483647,
