@@ -1,21 +1,25 @@
 package dev.progames723.hmmm.event.api;
 
 import dev.progames723.hmmm.HmmmException;
+import dev.progames723.hmmm.HmmmLibrary;
+import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Do not use as forge like events!
  */
 @ApiStatus.Experimental
 public abstract class Event {
+	private final AtomicLong eventCancelViolations = new AtomicLong(0);
 	private final boolean isCancellable;
-	private TriBoolean isCancelled;
+	private EventResult eventResult;
 	
 	protected Event(boolean isCancellable) {
 		this.isCancellable = isCancellable;
-		isCancelled = TriBoolean.DEFAULT;
+		eventResult = EventResult.PASS;
 	}
 	
 	public boolean isCancellable() {
@@ -25,14 +29,42 @@ public abstract class Event {
 	/**
 	 * please override this for other things
 	 */
-	public void setCancelled(TriBoolean value) {
-		if (!isCancellable && value.equals(TriBoolean.FALSE)) throw new HmmmException("Cannot cancel a non-cancellable event!");
-		if (value == null) throw new HmmmException("Cannot use null to set Event#isCanceled");
-		isCancelled = value;
+	public void setEventResult(EventResult value) {
+		if (value == null) throw new NullPointerException("Cannot use null in Event#isCanceled()!");
+		if (!isCancellable && value.cancelsEvents) {
+			if (eventCancelViolations.get() < 15) {
+				HmmmLibrary.LOGGER.warn("Cancellable event violation! {} violations.", eventCancelViolations.incrementAndGet() , new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get())));
+			} else {
+				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get()));
+			}
+		}
+		eventResult = value;
 	}
 	
-	public TriBoolean isCancelled() {
+	public boolean isCancelled() {
 		//sanity checks because that shit is very possible
-		return Objects.requireNonNullElse(isCancelled, TriBoolean.DEFAULT);
+		return Objects.requireNonNullElse(eventResult, EventResult.PASS).cancelsEvents;
+	}
+	
+	public enum EventResult {
+		SUCCESS(true, true),
+		FAILURE(false, true),
+		PASS(null, false);
+		
+		private final Boolean representation;
+		private final boolean cancelsEvents;
+		
+		EventResult(Boolean representation, boolean cancelsEvents) {
+			this.representation = representation;
+			this.cancelsEvents = cancelsEvents;
+		}
+		
+		public Boolean representation() {
+			return representation;
+		}
+		
+		public boolean cancelsEvents() {
+			return cancelsEvents;
+		}
 	}
 }

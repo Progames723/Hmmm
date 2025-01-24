@@ -12,16 +12,6 @@ import java.util.function.Supplier;
 public class MathUtil {
 	private static final Supplier<SecureRandom> actualSecureRandom = ActualSecureRandom::createSecureRandom;
 	
-	private static native void registerNatives();
-	
-	static {
-		try {
-			registerNatives();
-		} catch (UnsatisfiedLinkError ignored) {
-			NativeUtil.works = false;
-		}
-	}
-	
 	@CallerSensitive
 	private MathUtil() {throw new HmmmError(ReflectUtil.CALLER_CLASS.getCallerClass(), "This mf really made an instance of a util class, what a shame");}//no instances allowed
 	
@@ -67,65 +57,6 @@ public class MathUtil {
 	public static long clamp(long value, long min, long max) {
 		return Math.max(Math.min(value, max), min);
 	}
-    
-    /*
-    wrapper methods to make sure that java doesnt die if you have an unsupported os
-    or if i didnt compile it correctly 
-    */
-	
-	public static double safeSqrt(double x) {
-		try {
-			return fastSqrt(x);
-		} catch (UnsatisfiedLinkError ignored) {
-			return Math.sqrt(x);
-		}
-	}
-	
-	public static double safeInvSqrt(double x) {
-		try {
-			return fastInvSqrt(x);
-		} catch (UnsatisfiedLinkError ignored) {
-			return javaFastInvSqrt(x);
-		}
-	}
-	
-	public static float safeInvSqrt(float x) {
-		try {
-			return fastInvSqrt(x);
-		} catch (UnsatisfiedLinkError ignored) {
-			return javaFastInvSqrt(x);
-		}
-	}
-	
-	public static double safePow(double x, double b) {
-		try {
-			return fastPow(x, b);
-		} catch (UnsatisfiedLinkError ignored) {
-			return Math.pow(x, b);
-		}
-	}
-	
-	public static double safeNthRoot(double a, double x) {
-		try {
-			return nthRoot(a, x);
-		} catch (UnsatisfiedLinkError ignored) {
-			return Math.pow(x, 1 / a);
-		}
-	}
-	
-	//do not use unless you are 100000000000000% sure
-	
-	public static native double fastSqrt(double x);//so uh Math.sqrt() uses assembly whenever possible so this is quite redundant
-	
-	public static native double fastInvSqrt(double x);
-	
-	public static native float fastInvSqrt(float x);
-	
-	public static native double fastPow(double num, double b);
-	
-	public static native double nthRoot(double a, double num);
-	
-	//you can use this tho
 	
 	public static double javaFastInvSqrt(double x) {
 		double x2 = x * 0.5;
