@@ -81,7 +81,7 @@ public abstract class LivingEntityMixin extends Entity {
 		if (tripleValue == null) return;
 		hmmm$tempDamageSource = sanitize(tripleValue.getA(), damageSource);
 		hmmm$hurtTempDamage = sanitizeFloat(tripleValue.getB());
-		if (!sanitize(event.isCancelled().value(), true)) {
+		if (event.isCancelled()) {
 			cir.setReturnValue(false);
 		}
 		if (hmmm$hurtTempDamage <= 0.0f && hmmm$hurtTempDamage != -1.0f) {
@@ -134,7 +134,7 @@ public abstract class LivingEntityMixin extends Entity {
 		var fl = event.getValue();
 		//a damage source cannot be altered that late
 		hmmm$damagedTempDamage = sanitizeFloat(fl);
-		if (!sanitize(event.isCancelled().value(), true)) {
+		if (event.isCancelled()) {
 			ci.cancel();
 		}
 		if (hmmm$damagedTempDamage <= 0.0f && hmmm$damagedTempDamage != -1.0f) {
@@ -195,8 +195,8 @@ public abstract class LivingEntityMixin extends Entity {
 		var the = event.getValue();
 		if (the == null) return;
 		hmmm$effectAppliedTempEffect = sanitize(the, mobEffectInstance);
-		if (event.isCancelled().value() != null) {
-			cir.setReturnValue(event.isCancelled().value());
+		if (event.getEventResult().cancelsEvents()) {
+			cir.setReturnValue(event.getEventResult().representation());
 		}
 	}
 	
@@ -224,7 +224,7 @@ public abstract class LivingEntityMixin extends Entity {
 		var event = EventUtils.createVoidLivingEntityEvent(mobEffectInstance, hmmm$instance);
 		LivingEvents.LIVING_BEFORE_EFFECT_ADDED.invoker().livingBeforeEffectAdded(event);
 		MobEffectInstance the = event.getValue();
-		Boolean a = event.isCancelled().value();
+		Boolean a = event.getEventResult().representation();
 		if (the == null) return;
 		hmmm$effectAddedTempEffect = sanitize(the, mobEffectInstance);
 		if (a != null) {
@@ -273,7 +273,7 @@ public abstract class LivingEntityMixin extends Entity {
 		LivingEvents.LIVING_BEFORE_EFFECT_REMOVED.invoker().livingBeforeEffectRemoved(event);
 		var the = event.getValue();
 		if (the == null) return;
-		if (event.isCancelled().value()) {
+		if (event.getEventResult().representation()) {
 			MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(mobEffect);
 			if (mobeffectinstance != null) {
 				this.onEffectRemoved(mobeffectinstance);

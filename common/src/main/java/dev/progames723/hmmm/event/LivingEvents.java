@@ -9,7 +9,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 
 public class LivingEvents {
-	public static Event<LivingHurt> LIVING_HURT = EventFactoryUtil.createEvent(new LivingEntityEvent<TripleValue<Boolean, DamageSource, Float>>(false, new TripleValue<>(true, null, -1.0f), null));
+	public static Event<LivingHurt> LIVING_HURT = EventFactoryUtil.createEvent(new LivingEntityEvent<>(false, new TripleValue<>(true, null, -1.0f), null));
 	public static Event<LivingDamaged> LIVING_DAMAGED = EventFactoryUtil.createEvent(new LivingEntityEvent<>(false, new DoubleValue<>(true, -1.0f), null));
 	public static Event<LivingEarlyTick> LIVING_EARLY_TICK = EventFactoryUtil.createVoidEvent(new LivingEntityEvent<Void>(true, null, null));
 	public static Event<LivingLateTick> LIVING_LATE_TICK = EventFactoryUtil.createVoidEvent(new LivingEntityEvent<Void>(true, null, null));

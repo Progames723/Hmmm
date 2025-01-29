@@ -15,7 +15,6 @@ import java.io.IOException;
 public class HmmmLibrary {
 	public static final String MOD_ID = "hmmm";
 	public static final Logger LOGGER = LoggerFactory.getLogger("HmmmLibrary");
-	public static final Marker NATIVE = MarkerFactory.getMarker("Native");
 	public static final Marker TEST = MarkerFactory.getMarker("Test");
 	public static final Marker REFLECT = MarkerFactory.getMarker("Reflection");
 	public static final boolean TEST_ARG;
