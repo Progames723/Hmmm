@@ -6,6 +6,8 @@ import static dev.progames723.hmmm.HmmmLibrary.LOGGER;
 import static dev.progames723.hmmm.HmmmLibrary.TEST;
 
 public class TestUtil {//tests for the mod
+	private TestUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	
 	private static final MappingsImpl mappings = ReflectUtil.getMappingsImpl();
 	
 	public static void testAll() {

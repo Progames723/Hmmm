@@ -32,25 +32,25 @@ public class HmmmError extends Error {
 	
 	@CallerSensitive
 	public HmmmError(Class<?> clazz) {
-		super("Class at fault: %s".formatted(clazz));
+		super(clazz == null ? "" : "Class at fault: %s ".formatted(clazz));
 		classAtFault = clazz;
 	}
 	
 	@CallerSensitive
 	public HmmmError(Class<?> clazz, String message) {
-		super("Class at fault: %s ".formatted(clazz) + message);
+		super(clazz == null ? "" : "Class at fault: %s ".formatted(clazz) + message);
 		classAtFault = clazz;
 	}
 	
 	@CallerSensitive
 	public HmmmError(Class<?> clazz, String message, Throwable cause) {
-		super("Class at fault: %s ".formatted(clazz) + message, cause);
+		super(clazz == null ? "" : "Class at fault: %s ".formatted(clazz) + message, cause);
 		classAtFault = clazz;
 	}
 	
 	@CallerSensitive
 	public HmmmError(Class<?> clazz, Throwable cause) {
-		super("Class at fault: %s".formatted(clazz), cause);
+		super(clazz == null ? "" : "Class at fault: %s ".formatted(clazz), cause);
 		classAtFault = clazz;
 	}
 	

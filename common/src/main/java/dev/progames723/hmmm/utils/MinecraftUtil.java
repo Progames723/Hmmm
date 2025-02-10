@@ -24,12 +24,12 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class MinecraftUtil {
-	private MinecraftUtil() {throw new RuntimeException();}
+	private MinecraftUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	
 	//everything else later
 	
 	public static class DamageReduction {
-		private DamageReduction() {throw new RuntimeException();}
+		private DamageReduction() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 		
 		public static float getDamageAfterArmorAbsorb(DamageSource damageSource, float f, LivingEntity entity) {
 			//no explanations needed

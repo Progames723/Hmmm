@@ -1,49 +1,65 @@
 package dev.progames723.hmmm.utils;
 
-import dev.progames723.hmmm.ActualSecureRandom;
-import dev.progames723.hmmm.HmmmError;
 import dev.progames723.hmmm.internal.CallerSensitive;
+import org.mariuszgromada.math.mxparser.Argument;
+import org.mariuszgromada.math.mxparser.Expression;
+import org.mariuszgromada.math.mxparser.License;
 
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class MathUtil {
-	private static final Supplier<SecureRandom> actualSecureRandom = ActualSecureRandom::createSecureRandom;
+	private static final Supplier<SecureRandom> secureRandom = SecureRandom::new;
+	
+	static {
+		//how can i make money if no one downloads my mods and there are no paywalls so idfk
+		License.iConfirmNonCommercialUse("Progames723");
+	}
 	
 	@CallerSensitive
-	private MathUtil() {throw new HmmmError(ReflectUtil.CALLER_CLASS.getCallerClass(), "This mf really made an instance of a util class, what a shame");}//no instances allowed
+	private MathUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	
-	public static long percent(long number, long max) {return (number / max) * 100;}
+	public static long percent(long number, long max) {
+		return (long) (number / (double) max) * 100;
+	}
 	
-	public static double percent(double number, double max) {return number / max;}
+	public static double percent(double number, double max) {
+		return number / max;
+	}
 	
 	public static boolean chance(double percent) {
 		double i = new Random().nextDouble();
 		if (percent > 1) percent = 1;
 		if (percent <= 0) return false;
-		return actualSecureRandom.get().nextBoolean() ? i <= percent : i >= percent;
+		return secureRandom.get().nextBoolean() ? i <= percent : i >= percent;
 	}
 	
 	public static boolean chance(long percent) {
 		int i = new Random().nextInt(101);
-		return actualSecureRandom.get().nextBoolean() ? i <= percent : i >= percent;
+		return secureRandom.get().nextBoolean() ? i <= percent : i >= percent;
 	}
 	
 	public static long randomRange(long min, long max) {
-		return actualSecureRandom.get().nextLong((max - min) + 1) + min;
+		return secureRandom.get().nextLong((max - min) + 1) + min;
 	}
 	
 	public static double randomRange(double min, double max) {
-		return actualSecureRandom.get().nextDouble((max - min) + 1) + min;
+		return secureRandom.get().nextDouble((max - min) + 1) + min;
 	}
 	
-	public static double unExponentialFormula(double value, double divisor, double maxValue) {//great name
-		if (value < 0) throw new IllegalArgumentException("value must be higher than 0");
-		else if (value == 0) return 0.0;
+	public static double saturationFunction(double value, double divisor, double maxValue) {//now i know the real name
+		if (value <= 0.0d) return 0.0d;
 		double output = (1-(1/(1+value/divisor))) * maxValue;
 		return roundTo(output, 3);//rounding to the 0.001!
+	}
+	
+	public static double invertedSaturationFunction(double value, double divisor, double maxValue) {
+		if (value <= 0.0d) return maxValue;
+		double output = -((1-(1/(1+value/divisor))) * maxValue) + maxValue;
+		return roundTo(output, 3);
 	}
 	
 	public static double roundTo(double value, long tenthPower) {//no way this actually works
@@ -51,11 +67,33 @@ public class MathUtil {
 	}
 	
 	public static double clamp(double value, double min, double max) {
+		if (Double.isNaN(value)) value = 0;
+		if (value == Double.POSITIVE_INFINITY) return max;
+		if (value == Double.NEGATIVE_INFINITY) return min;
 		return Math.max(Math.min(value, max), min);
 	}
 	
 	public static long clamp(long value, long min, long max) {
 		return Math.max(Math.min(value, max), min);
+	}
+	
+	public static double eval(String str) {
+		return new Expression(str).calculate();
+	}
+	
+	public static double evalWithArgs(String str, Argument... arguments) {
+		Expression expression = new Expression(str);
+		expression.addArguments(arguments);
+		return expression.calculate();
+	}
+	
+	public static double evalWithArgs(String str, Map<String, Double> args) {
+		Expression expression = new Expression(str);
+		args.forEach((s, d) -> {
+			if (d == null) return;
+			expression.defineArgument(s, d);
+		});
+		return expression.calculate();
 	}
 	
 	public static double javaFastInvSqrt(double x) {

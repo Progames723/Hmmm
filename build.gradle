@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id "architectury-plugin" version "3.4-SNAPSHOT"
-	id "dev.architectury.loom" version "1.6-SNAPSHOT" apply false
+	id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
 }
 
 architectury {
@@ -23,9 +23,11 @@ subprojects {
 			parchment("org.parchmentmc.data:parchment-$rootProject.minecraft_version:2023.12.10@zip")
 		}
 
-		api "com.esotericsoftware.kryo:kryo5:5.6.2"
-
 		api "org.burningwave:core:12.65.1"
+
+		api "io.github.classgraph:classgraph:4.8.179"
+
+		api 'org.mariuszgromada.math:MathParser.org-mXparser:6.1.0'
 
 		// The following line declares the yarn mappings you may select this one as well.
 		// mappings "net.fabricmc:yarn:@YARN_MAPPINGS@:v2"

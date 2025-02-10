@@ -9,9 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Do not use as forge like events!
- */
 @ApiStatus.Experimental
 public abstract class Event {
 	private final AtomicLong eventCancelViolations = new AtomicLong(0);
@@ -26,16 +23,13 @@ public abstract class Event {
 		return isCancellable;
 	}
 	
-	/**
-	 * please override this for other things
-	 */
-	public void setEventResult(EventResult value) {
+	public final void setEventResult(EventResult value) {
 		if (value == null) throw new NullPointerException("Cannot use null in Event#isCanceled()!");
 		if (!isCancellable && value.cancelsEvents()) {
-			if (eventCancelViolations.get() < 15) {
-				HmmmLibrary.LOGGER.warn("Cancellable event violation! {} violations.", eventCancelViolations.incrementAndGet() , new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get())));
+			if (eventCancelViolations.get() < 12) {
+				HmmmLibrary.LOGGER.warn("Cancellable event violation! {} violations.", eventCancelViolations.incrementAndGet(), new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get())));
 			} else {
-				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get()));
+				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.incrementAndGet()));
 			}
 		}
 		eventResult = value;
@@ -54,7 +48,7 @@ public abstract class Event {
 	public enum EventResult {
 		SUCCESS(true, true),
 		FAILURE(false, true),
-		PASS(null, false);
+		PASS(null, false);//continues execution
 		
 		private final Boolean representation;
 		private final boolean cancelsEvents;
@@ -70,6 +64,35 @@ public abstract class Event {
 		
 		public boolean cancelsEvents() {
 			return cancelsEvents;
+		}
+	}
+	
+	public enum EventPriority {
+		HIGHEST(4),
+		HIGH(3),
+		DEFAULT(2),
+		LOW(1),
+		LOWEST(0),
+		MONITOR(999, false);
+		
+		private final int priority;
+		private final boolean canModifyEvent;
+		
+		EventPriority(int priority, boolean canModifyEvent) {
+			this.canModifyEvent = canModifyEvent;
+			this.priority = priority;
+		}
+		
+		EventPriority(int priority) {
+			this(priority, true);
+		}
+		
+		public int priority() {
+			return priority;
+		}
+		
+		public boolean canModifyEvent() {
+			return canModifyEvent;
 		}
 	}
 }

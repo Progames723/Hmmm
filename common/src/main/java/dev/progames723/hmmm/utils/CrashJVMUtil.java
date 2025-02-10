@@ -8,6 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 
 @SuppressWarnings("all")
 public class CrashJVMUtil {
+	private CrashJVMUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	
 	private static final boolean hasPermission;
 	
 	static {

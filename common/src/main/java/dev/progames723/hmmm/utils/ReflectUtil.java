@@ -5,7 +5,9 @@ import dev.progames723.hmmm.HmmmError;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.MappingsImpl;
+import dev.progames723.hmmm.internal.CallerSensitive;
 import org.burningwave.core.classes.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
@@ -18,14 +20,68 @@ import java.util.function.Supplier;
 /**
  * only useful for mods without mixins, otherwise redundant
  */
-@SuppressWarnings({"unused", "removal"})
+@SuppressWarnings({"unused", "removal", "deprecation"})
 public class ReflectUtil {
 	private static boolean reflectionUsed = false;
 	public static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
 	public static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	public static final Supplier<Class<?>> TRUE_CALLER_CLASS = () -> STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst().orElseThrow());
 	
-	private ReflectUtil() {throw new HmmmException();}
+	@CallerSensitive
+	@ApiStatus.Internal
+	public static CallerSensitive getInstance() {
+		Class<?> caller = CALLER_CLASS.getCallerClass();
+		if (!caller.getPackageName().startsWith("dev.progames723.hmmm")) {
+			throw new HmmmError(caller, "tried to access internal method!");
+		}
+		Supplier<? extends RuntimeException> supplier = () -> new HmmmException(caller, "this should never happen!");
+		String methodName = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodName());
+		Class<?>[] params = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodType().parameterArray());
+		Method method;
+		CallerSensitive instance;
+		try {
+			method = caller.getDeclaredMethod(methodName, params);
+			boolean accessible = method.isAccessible();
+			if (!accessible) method.setAccessible(true);
+			instance = method.getDeclaredAnnotation(CallerSensitive.class);
+			method.setAccessible(accessible);
+		} catch (Exception e) {
+			throw supplier.get();
+		}
+		if (instance == null) {
+			throw supplier.get();
+		}
+		return instance;
+	}
+	
+	@CallerSensitive
+	@ApiStatus.Internal
+	public static CallerSensitive getInstance(Class<?> caller) {
+		String requiredPackage = "dev.progames723.hmmm";
+		if (!CALLER_CLASS.getCallerClass().getPackageName().startsWith("dev.progames723.hmmm")) {
+			throw new HmmmError(CALLER_CLASS.getCallerClass(), "tried to access internal method!");
+		}
+		Supplier<? extends RuntimeException> supplier = () -> new HmmmException(caller, "this should never happen!");
+		String methodName = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodName());
+		Class<?>[] params = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodType().parameterArray());
+		Method method;
+		CallerSensitive instance;
+		try {
+			method = caller.getDeclaredMethod(methodName, params);
+			boolean accessible = method.isAccessible();
+			if (!accessible) method.setAccessible(true);
+			instance = method.getDeclaredAnnotation(CallerSensitive.class);
+			method.setAccessible(accessible);
+		} catch (Exception e) {
+			throw supplier.get();
+		}
+		if (instance == null) {
+			throw supplier.get();
+		}
+		return instance;
+	}
+	
+	private ReflectUtil() {MiscUtil.instantiationOfUtilClass(CALLER_CLASS.getCallerClass());}
 	
 	public static Class<?> getClass(String path, String name) {
 		return getClass(path.replace('/', '.') + "." + name);
@@ -343,6 +399,6 @@ public class ReflectUtil {
 			}
 		}
 		
-		private Bypass() {throw new HmmmException(CALLER_CLASS.getCallerClass());}
+		private Bypass() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	}
 }

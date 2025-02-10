@@ -3,9 +3,6 @@ package dev.progames723.hmmm.event.api;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Do not use as forge like events!
- */
 @ApiStatus.Experimental
 public abstract class ReturnableEvent<T> extends Event {
 	private final boolean nullable;

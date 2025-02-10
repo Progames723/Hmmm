@@ -1,6 +1,7 @@
 package dev.progames723.hmmm.internal;
 
 import dev.progames723.hmmm.HmmmException;
+import dev.progames723.hmmm.utils.MiscUtil;
 import dev.progames723.hmmm.utils.ReflectUtil;
 
 import java.lang.annotation.ElementType;
@@ -12,48 +13,15 @@ import java.util.List;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 public @interface CallerSensitive {
-	//my own spin on caller sensitive shit
-	
-	/**
-	 * wildcards allowed
-	 * @return overridden allowed caller classes
-	 */
-	Class<?>[] allowedClasses() default {};
-	
-	/**
-	 * overrides allowed classes!
-	 * wildcards allowed
-	 * @return overridden forbidden caller classes
-	 */
-	Class<?>[] forbiddenClasses() default {};
-	
-	/**
-	 * wildcards allowed
-	 * @return overridden allowed caller packages
-	 */
-	String[] allowedPackages() default {};
-	
-	/**
-	 * overrides allowed classes!
-	 * wildcards allowed
-	 * @return overridden forbidden caller packages
-	 */
-	String[] forbiddenPackages() default {};
-	
 	class Utils {
-		private Utils() {}
+		private Utils() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 		
 		@CallerSensitive
-		public static void throwExceptionIfNotAllowed(Class<?> caller) {
+		public static void throwExceptionIfNotAllowed(Class<?> caller, List<Class<?>> allowedClasses, List<String> allowedPackages, List<Class<?>> forbiddenClasses, List<String> forbiddenPackages) {
+			CallerSensitive instance = ReflectUtil.getInstance();
 			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
-			CallerSensitive instance = ReflectUtil.CALLER_CLASS.getCallerClass().getAnnotation(CallerSensitive.class);
 			
 			String packageName = caller.getPackageName();
-			//list things
-			List<Class<?>> allowedClasses = List.of(instance.allowedClasses());
-			List<String> allowedPackages = List.of(instance.allowedPackages());
-			List<Class<?>> forbiddenClasses = List.of(instance.forbiddenClasses());
-			List<String> forbiddenPackages = List.of(instance.forbiddenPackages());
 			
 			boolean isInModule = packageName.startsWith("dev.progames723.hmmm");
 			
@@ -63,7 +31,7 @@ public @interface CallerSensitive {
 			if (allowedClasses.contains(caller)) return;
 			if (allowedPackages.contains(packageName)) return;
 			
-			if (!isInModule) throw new HmmmException(caller);
+			if (!isInModule) throw new HmmmException(caller, "instance: %s".formatted(instance.toString()));
 		}
 	}
 }
