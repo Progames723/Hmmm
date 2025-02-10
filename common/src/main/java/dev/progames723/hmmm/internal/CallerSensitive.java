@@ -18,7 +18,7 @@ public @interface CallerSensitive {
 		
 		@CallerSensitive
 		public static void throwExceptionIfNotAllowed(Class<?> caller, List<Class<?>> allowedClasses, List<String> allowedPackages, List<Class<?>> forbiddenClasses, List<String> forbiddenPackages) {
-			CallerSensitive instance = ReflectUtil.getInstance();
+			ReflectUtil.getInstance();
 			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
 			
 			String packageName = caller.getPackageName();
@@ -31,7 +31,7 @@ public @interface CallerSensitive {
 			if (allowedClasses.contains(caller)) return;
 			if (allowedPackages.contains(packageName)) return;
 			
-			if (!isInModule) throw new HmmmException(caller, "instance: %s".formatted(instance.toString()));
+			if (!isInModule) throw new HmmmException(caller);
 		}
 	}
 }
