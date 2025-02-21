@@ -1,23 +1,14 @@
 package dev.progames723.hmmm.utils;
 
 import dev.progames723.hmmm.internal.CallerSensitive;
-import org.mariuszgromada.math.mxparser.Argument;
-import org.mariuszgromada.math.mxparser.Expression;
-import org.mariuszgromada.math.mxparser.License;
 
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public class MathUtil {
 	private static final Supplier<SecureRandom> secureRandom = SecureRandom::new;
-	
-	static {
-		//how can i make money if no one downloads my mods and there are no paywalls so idfk
-		License.iConfirmNonCommercialUse("Progames723");
-	}
 	
 	@CallerSensitive
 	private MathUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
@@ -75,25 +66,6 @@ public class MathUtil {
 	
 	public static long clamp(long value, long min, long max) {
 		return Math.max(Math.min(value, max), min);
-	}
-	
-	public static double eval(String str) {
-		return new Expression(str).calculate();
-	}
-	
-	public static double evalWithArgs(String str, Argument... arguments) {
-		Expression expression = new Expression(str);
-		expression.addArguments(arguments);
-		return expression.calculate();
-	}
-	
-	public static double evalWithArgs(String str, Map<String, Double> args) {
-		Expression expression = new Expression(str);
-		args.forEach((s, d) -> {
-			if (d == null) return;
-			expression.defineArgument(s, d);
-		});
-		return expression.calculate();
 	}
 	
 	public static double javaFastInvSqrt(double x) {

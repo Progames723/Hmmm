@@ -1,5 +1,8 @@
 package dev.progames723.hmmm.code_gen;
 
+import dev.progames723.hmmm.HmmmException;
+import dev.progames723.hmmm.HmmmLibrary;
+import dev.progames723.hmmm.utils.ReflectUtil;
 import org.objectweb.asm.*;
 import org.objectweb.asm.util.CheckClassAdapter;
 
@@ -57,18 +60,36 @@ public class RuntimeClassGenerator {
 		
 		cw.visitEnd();
 		byte[] bytes = cw.toByteArray();
-		if (DEBUG) {
-			ClassReader classReader = new ClassReader(bytes);
-			classReader.accept(new CheckClassAdapter(null), 0);
-			Path path = Paths.get(classReader.getClassName() + ".class");
-			try {
-				Files.createDirectories(path.getParent());
-				Files.write(path, bytes);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+		debug(bytes);
+		Class<?> generated;
+		try {
+			generated = loader.defineClass(clazz.className().replace('/', '.'), bytes);
+		} catch (Exception e) {
+			if (!DEBUG) {
+				try {
+					HmmmLibrary.LOGGER.error("Unknown class loading exception! Forcing debug for better error message...", e);
+					DEBUG = true;
+					debug(bytes);
+				} finally {
+					DEBUG = false;
+				}
 			}
+			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
 		}
-		return loader.defineClass(clazz.className().replace('/', '.'), bytes);
+		return generated;
+	}
+	
+	private static void debug(byte[] bytes) {
+		if (!DEBUG) return;
+		ClassReader classReader = new ClassReader(bytes);
+		classReader.accept(new CheckClassAdapter(null), 0);
+		Path path = Paths.get(classReader.getClassName() + ".class");
+		try {
+			Files.createDirectories(path.getParent());
+			Files.write(path, bytes);
+		} catch (IOException e) {
+			throw new HmmmException((Class<?>) null, e);
+		}
 	}
 	
 	private static void generateField(ClassWriter cw, FieldDefinition field) {

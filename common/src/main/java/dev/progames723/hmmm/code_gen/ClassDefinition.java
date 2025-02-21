@@ -12,7 +12,6 @@ public record ClassDefinition(
 	int version,
 	int access,
 	List<AnnotationDefinition> annotations,
-	List<ClassDefinition> innerClasses,
 	List<FieldDefinition> fields,
 	List<MethodDefinition> methods,
 	boolean createDefaultConstructor
@@ -23,11 +22,10 @@ public record ClassDefinition(
 		String[] interfaces,
 		int access,
 		List<AnnotationDefinition> annotations,
-		List<ClassDefinition> innerClasses,
 		List<FieldDefinition> fields,
 		List<MethodDefinition> methods,
 		boolean createDefaultConstructor
 	) {
-		this(className, superName, interfaces, Opcodes.V1_8, access, annotations, innerClasses, fields, methods, createDefaultConstructor);
+		this(className, superName, interfaces, Opcodes.V1_8, access, annotations, fields, methods, createDefaultConstructor);
 	}
 }

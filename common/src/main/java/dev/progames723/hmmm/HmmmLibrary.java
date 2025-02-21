@@ -4,12 +4,16 @@ import dev.architectury.event.EventHandler;
 import dev.architectury.utils.EnvExecutor;
 import dev.progames723.hmmm.utils.PlatformUtil;
 import dev.progames723.hmmm.utils.TestUtil;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class HmmmLibrary {
@@ -56,10 +60,27 @@ public class HmmmLibrary {
 	}
 	
 	public static void init() {
+		ClassGraph.CIRCUMVENT_ENCAPSULATION = ClassGraph.CircumventEncapsulationMethod.JVM_DRIVER;
 		LOGGER.info("Initializing HmmmLibrary");
 		EventHandler.init();
 		LOGGER.info("Running system architecture: {}", PlatformUtil.getArchitecture());
 		if (TEST_ARG) TestUtil.testAll();
 		LOGGER.info("Initialized HmmmLibrary!");
+	}
+	
+	/**
+	 * for this to work the mod needs to be loaded before the library
+	 */
+	@SuppressWarnings("removal")
+	private static void scanForDependentMods() {
+		ClassLoader loader = AccessController.doPrivileged((PrivilegedAction<ClassLoader>) ClassLoader::getSystemClassLoader, AccessController.getContext(), new RuntimePermission("getClassLoader"));
+		try (ScanResult result = new ClassGraph()
+			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
+			.overrideClassLoaders(loader)//me when system classloader
+			.enableAllInfo()
+			.removeTemporaryFilesAfterScan()
+			.scan()) {
+			//TODO finish this
+		}
 	}
 }
