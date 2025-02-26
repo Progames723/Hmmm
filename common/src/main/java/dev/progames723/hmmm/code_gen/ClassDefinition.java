@@ -7,6 +7,7 @@ import java.util.List;
 
 public record ClassDefinition(
 	String className,
+	@Nullable String signature,
 	@Nullable String superName, //set to null if you dont have a super class or just extend Object
 	String[] interfaces,
 	int version,
@@ -18,6 +19,7 @@ public record ClassDefinition(
 ) {
 	public ClassDefinition(
 		String className,
+		@Nullable String signature,
 		@Nullable String superName, //same here
 		String[] interfaces,
 		int access,
@@ -26,6 +28,6 @@ public record ClassDefinition(
 		List<MethodDefinition> methods,
 		boolean createDefaultConstructor
 	) {
-		this(className, superName, interfaces, Opcodes.V1_8, access, annotations, fields, methods, createDefaultConstructor);
+		this(className, signature, superName, interfaces, Opcodes.V1_8, access, annotations, fields, methods, createDefaultConstructor);
 	}
 }
