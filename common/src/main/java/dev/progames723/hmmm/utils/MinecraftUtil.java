@@ -1,8 +1,10 @@
 package dev.progames723.hmmm.utils;
 
+import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.mixin.LivingEntityAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.EntityTypeTags;
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -27,6 +30,29 @@ public class MinecraftUtil {
 	private MinecraftUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	
 	//everything else later
+	
+	public static class Server {
+		private Server() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+		
+		/**
+		 * really neat on the server-side, huh?
+		 * @return {@code null} if the server is not running and if not running locally
+		 */
+		public static MinecraftServer getServerInstance() {
+			Field field;
+			MinecraftServer instance;
+			try {
+				field = MinecraftServer.class.getDeclaredField("hmmm$serverInstance");
+				field.setAccessible(true);
+				instance = (MinecraftServer) field.get(null);
+				field.setAccessible(false);
+			} catch (Exception e) {
+				HmmmLibrary.LOGGER.debug("Exception while getting server instance!", e);
+				return null;
+			}
+			return instance;
+		}
+	}
 	
 	public static class DamageReduction {
 		private DamageReduction() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
