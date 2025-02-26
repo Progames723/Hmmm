@@ -33,5 +33,12 @@ public @interface CallerSensitive {
 			
 			if (!isInModule) throw new HmmmException(caller);
 		}
+		
+		@CallerSensitive
+		public static void throwExceptionIfNotAllowed(Class<?> caller) {
+			ReflectUtil.getInstance();
+			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
+			throwExceptionIfNotAllowed(caller, List.of(), List.of(), List.of(), List.of());
+		}
 	}
 }

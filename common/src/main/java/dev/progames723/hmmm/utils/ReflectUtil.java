@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.security.AccessController;
-import java.security.AllPermission;
 import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.function.Supplier;
@@ -183,20 +182,19 @@ public class ReflectUtil {
 		return result;
 	}
 	
-	public static void tryToMakeItAccessible(AccessibleObject object) {
+	public static void tryToMakeItAccessible(final AccessibleObject object) {
 		warnOnReflection(CALLER_CLASS.getCallerClass());
-		AccessibleObject finalObject = object;
 		PrivilegedAction<AccessibleObject> action = () -> {
-			finalObject.setAccessible(true);
-			return finalObject;
+			object.setAccessible(true);
+			return object;
 		};
-		object = AccessController.doPrivileged(action);//just to be safe
+		AccessController.doPrivileged(action);//just to be safe
 		try {
 			object.setAccessible(true);
 			return;
 		} catch (Exception ignored) {}
 		try {
-			AccessController.doPrivileged(action, AccessController.getContext(), new AllPermission());
+			AccessController.doPrivileged(action, AccessController.getContext(), new ReflectPermission("suppressAccessChecks"));
 		} catch (Exception exc) {
 			//last attempt
 			//effectively forces availability
