@@ -1,5 +1,6 @@
 package dev.progames723.hmmm.event.api;
 
+import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +28,7 @@ public abstract class ReturnableEvent<T> extends Event {
 	}
 	
 	public void setValue(T value) {
-		if (isVoid) return;
+		if (isVoid || !canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
 		this.value = value;
 	}
 }

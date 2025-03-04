@@ -8,7 +8,6 @@ import dev.progames723.hmmm.MappingsImpl;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import org.burningwave.core.classes.*;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.security.AccessController;
@@ -93,9 +92,8 @@ public class ReflectUtil {
 	public static Class<?> getClass(String path) {
 		try {
 			return Class.forName(path);
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace(System.err);
+		} catch (ClassNotFoundException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 			return null;
 		}
 	}
@@ -103,13 +101,11 @@ public class ReflectUtil {
 	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... types) {
 		try {
 			warnOnReflection(CALLER_CLASS.getCallerClass());
-			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
 			Constructor<?> constructor = clazz.getDeclaredConstructor(types);
 			tryToMakeItAccessible(constructor);
 			return constructor;
-		}
-		catch (ReflectiveOperationException e) {
-			e.printStackTrace(System.err);
+		} catch (ReflectiveOperationException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 		}
 		return null;
 	}
@@ -117,12 +113,10 @@ public class ReflectUtil {
 	public static Object invokeConstructor(Constructor<?> constructor, Object... args) {
 		warnOnReflection(CALLER_CLASS.getCallerClass());
 		try {
-			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), constructor.getDeclaringClass());
 			tryToMakeItAccessible(constructor);
 			return constructor.newInstance(args);
-		}
-		catch (ReflectiveOperationException e) {
-			e.printStackTrace(System.err);
+		} catch (ReflectiveOperationException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 		}
 		return args;
 	}
@@ -133,15 +127,13 @@ public class ReflectUtil {
 		for (Field field : ReflectUtil.getFields(clazz)) {
 			if (!field.getDeclaringClass().equals(clazz)) continue;
 			if (!Modifier.isStatic(field.getModifiers())) continue;
-			if (!Modifier.isFinal(field.getModifiers())) continue;
 			if (!type.isAssignableFrom(field.getType())) continue;
-			if (!field.trySetAccessible()) continue;
+			if (!field.trySetAccessible()) tryToMakeItAccessible(field);
 			
 			try {
 				list.add(type.cast(field.get(null)));
-			}
-			catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace(System.err);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 			}
 		}
 		
@@ -155,8 +147,7 @@ public class ReflectUtil {
 		while (clazz != null && clazz != Object.class) {
 			if (!result.isEmpty()) {
 				result.addAll(Arrays.asList(clazz.getDeclaredFields()));
-			}
-			else {
+			} else {
 				Collections.addAll(result, clazz.getDeclaredFields());
 			}
 			clazz = clazz.getSuperclass();
@@ -172,8 +163,7 @@ public class ReflectUtil {
 		while (clazz != null && clazz != Object.class) {
 			if (!result.isEmpty()) {
 				result.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-			}
-			else {
+			} else {
 				Collections.addAll(result, clazz.getDeclaredMethods());
 			}
 			clazz = clazz.getSuperclass();
@@ -205,13 +195,7 @@ public class ReflectUtil {
 			} catch (Exception ex) {
 				throw new HmmmException("Impossible to set accessible", ex);
 			}
-			throw new HmmmException("Impossible to set accessible");
 		}
-	}
-	
-	private static void throwExceptionIfNotOpenForReflection(Class<?> caller, Class<?> target) {
-		if (target.getModule().isOpen(target.getPackageName(), caller.getModule()))
-			throw new HmmmError(caller, "Module not open for reflection!");
 	}
 	
 	private static void warnOnReflection(Class<?> caller) {
@@ -224,8 +208,7 @@ public class ReflectUtil {
 	public static Field getField(Class<?> clazz, String fieldName) {
 		try {
 			return clazz.getDeclaredField(fieldName);
-		}
-		catch (NoSuchFieldException e) {
+		} catch (NoSuchFieldException e) {
 			Class<?> superClass = clazz.getSuperclass();
 			if (superClass == null) {
 				throw new HmmmException(e);
@@ -239,14 +222,12 @@ public class ReflectUtil {
 		try {
 			warnOnReflection(CALLER_CLASS.getCallerClass());
 			Class<?> clazz = from instanceof Class<?> ? (Class<?>) from : from.getClass();
-			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
 			Field field = getField(clazz, fieldName);
 			if (field == null) return null;
 			tryToMakeItAccessible(field);
 			return field.get(from);
-		}
-		catch (IllegalAccessException e) {
-			e.printStackTrace(System.err);
+		} catch (IllegalAccessException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 		}
 		return null;
 	}
@@ -257,17 +238,14 @@ public class ReflectUtil {
 			boolean isStatic = of instanceof Class;
 			Class<?> clazz = isStatic ? (Class<?>) of : of.getClass();
 			
-			throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), clazz);
-			
 			Field field = getField(clazz, fieldName);
 			if (field == null) return false;
 			
 			tryToMakeItAccessible(field);
 			field.set(isStatic ? null : of, value);
 			return true;
-		}
-		catch (IllegalAccessException e) {
-			e.printStackTrace(System.err);
+		} catch (IllegalAccessException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 		}
 		return false;
 	}
@@ -275,8 +253,7 @@ public class ReflectUtil {
 	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... o) {
 		try {
 			return clazz.getDeclaredMethod(methodName, o);
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			Class<?> superClass = clazz.getSuperclass();
 			if (superClass == null) {
 				throw new HmmmException(e);
@@ -288,13 +265,11 @@ public class ReflectUtil {
 	
 	public static Object invokeMethod(Method method, Object object, Object... param) {
 		warnOnReflection(CALLER_CLASS.getCallerClass());
-		throwExceptionIfNotOpenForReflection(CALLER_CLASS.getCallerClass(), method.getDeclaringClass());
 		tryToMakeItAccessible(method);
 		try {
 			return method.invoke(object, param);
-		}
-		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace(System.err);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			HmmmLibrary.LOGGER.error(HmmmLibrary.REFLECT, "Reflection error!", e);
 		}
 		return null;
 	}
@@ -309,7 +284,7 @@ public class ReflectUtil {
 		try {
 			return CALLER_CLASS.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst().orElseThrow());
 		} catch (Exception e) {
-			throw new HmmmError(ReflectUtil.class, "Something went wrong when getting caller class! Please do not inject this into #main() methods!");
+			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting caller class! Please do not inject this into #main() methods!");
 		}
 	}
 	
@@ -352,10 +327,7 @@ public class ReflectUtil {
 	}
 	
 	public static void bypassModuleReflectionRestrictions(Module moduleToBypass) {
-		if (!HmmmLibrary.UNSAFE_REFLECT) throw new HmmmException("Please use the \"enable_unsafe_reflection_hmmm\" flag in minecraft launch arguments to access this");
 		warnOnReflection(CALLER_CLASS.getCallerClass());
-		
-		assert Bypass.FIELDS != null; assert Bypass.CONSTRUCTORS != null; assert Bypass.METHODS != null; assert Bypass.CLASSES != null; assert Bypass.MEMBERS != null;
 		
 		String[] packagesToOpen = moduleToBypass.getPackages().toArray(new String[0]);
 		
@@ -375,27 +347,11 @@ public class ReflectUtil {
 	}
 	
 	public static class Bypass {//well mostly
-		@Nullable public static final Methods METHODS;
-		@Nullable public static final Fields FIELDS;
-		@Nullable public static final Constructors CONSTRUCTORS;
-		@Nullable public static final Classes CLASSES;
-		@Nullable public static final Members MEMBERS;
-		
-		static {
-			if (HmmmLibrary.UNSAFE_REFLECT) {
-				METHODS = Methods.create();
-				FIELDS = Fields.create();
-				CONSTRUCTORS = Constructors.create();
-				CLASSES = Classes.create();
-				MEMBERS = Members.create();
-			} else {
-				METHODS = null;
-				FIELDS = null;
-				CONSTRUCTORS = null;
-				CLASSES = null;
-				MEMBERS = null;
-			}
-		}
+		public static final Methods METHODS = Methods.create();
+		public static final Fields FIELDS = Fields.create();
+		public static final Constructors CONSTRUCTORS = Constructors.create();
+		public static final Classes CLASSES = Classes.create();
+		public static final Members MEMBERS = Members.create();
 		
 		private Bypass() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	}

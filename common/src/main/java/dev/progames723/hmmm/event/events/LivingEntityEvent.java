@@ -1,38 +1,180 @@
 package dev.progames723.hmmm.event.events;
 
-import dev.progames723.hmmm.event.api.ReturnableEvent;
-import dev.progames723.hmmm.event.utils.DoubleValue;
-import dev.progames723.hmmm.event.utils.QuadrupleValue;
-import dev.progames723.hmmm.event.utils.TripleValue;
+import dev.progames723.hmmm.event.api.Event;
+import dev.progames723.hmmm.utils.ReflectUtil;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class LivingEntityEvent<T> extends ReturnableEvent<T> {
-	@Nullable private final LivingEntity entity;
+public abstract class LivingEntityEvent extends Event {
+	private final LivingEntity entity;
 	
-	public LivingEntityEvent(boolean isVoid, @Nullable T value, @Nullable LivingEntity entity) {
-		super(isVoid, true, true);
-		this.value = value;
+	protected LivingEntityEvent(LivingEntity entity, boolean isCancellable) {
+		super(isCancellable);
 		this.entity = entity;
 	}
 	
-	public LivingEntityEvent(boolean isCancellable, boolean isVoid, @Nullable T value, @Nullable LivingEntity entity) {
-		super(isVoid, isCancellable, true);
-		this.value = value;
-		this.entity = entity;
-	}
-	
-	@Override
-	public boolean returnsNull() {
-		if (value == null) return true;
-		if (value instanceof QuadrupleValue<?,?,?,?> q) return q.getA() == null || q.getB() == null || q.getC() == null || q.getD() == null;
-		if (value instanceof TripleValue<?,?,?> t) return t.getA() == null || t.getB() == null || t.getC() == null;
-		if (value instanceof DoubleValue<?,?> d) return d.getA() == null || d.getB() == null;
-		return false;
-	}
-	
-	@Nullable
-	public LivingEntity getEntity() {
+	public final LivingEntity getEntity() {
 		return entity;
+	}
+	
+	private abstract static class Damage extends LivingEntityEvent {
+		private float damage;
+		
+		public Damage(LivingEntity entity, float initialDamage) {
+			super(entity, true);
+			damage = initialDamage;
+		}
+		
+		public Damage(LivingEntity entity) {
+			this(entity, 0.0f);
+		}
+		
+		public float getDamage() {
+			return damage;
+		}
+		
+		public void setDamage(float damage) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass()))
+				this.damage = damage;
+		}
+	}
+	
+	/**
+	 * the opposite to {@link Hurt}
+	 */
+	public static final class Damaged extends Damage {
+		public Damaged(LivingEntity entity, float initialDamage) {
+			super(entity, initialDamage);
+		}
+		
+		public Damaged(LivingEntity entity) {
+			super(entity);
+		}
+	}
+	
+	/**
+	 * earliest damage event, you can alter the {@link DamageSource} because no damage had been dealt yet
+	 */
+	public static final class Hurt extends Damage {
+		private DamageSource damageSource;
+		
+		public Hurt(LivingEntity entity, DamageSource damageSource, float initialDamage) {
+			super(entity, initialDamage);
+			this.damageSource = damageSource;
+		}
+		
+		public Hurt(LivingEntity entity, DamageSource damageSource) {
+			this(entity, damageSource, 0.0f);
+		}
+		
+		@Nullable
+		public DamageSource getDamageSource() {
+			return damageSource;
+		}
+		
+		public void setDamageSource(DamageSource damageSource) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass()))
+				this.damageSource = damageSource;
+		}
+	}
+	
+	public static final class EarlyTick extends LivingEntityEvent {
+		public EarlyTick(LivingEntity entity) {
+			super(entity, false);
+		}
+	}
+	
+	public static final class LateTick extends LivingEntityEvent {
+		public LateTick(LivingEntity entity) {
+			super(entity, false);
+		}
+	}
+	
+	private abstract static class Effect extends LivingEntityEvent {
+		protected MobEffectInstance effectInstance;
+		
+		public Effect(LivingEntity entity, MobEffectInstance effectInstance, boolean isCancellable) {
+			super(entity, isCancellable);
+			this.effectInstance = effectInstance;
+		}
+		
+		public MobEffectInstance getEffectInstance() {
+			return effectInstance;
+		}
+		
+		protected void setEffectInstance(MobEffectInstance effectInstance) {
+			//NO-OP
+		}
+	}
+	
+	public static final class EffectTick extends Effect {
+		public EffectTick(LivingEntity entity, MobEffectInstance effectInstance) {
+			super(entity, effectInstance, false);
+		}
+	}
+	
+	public static final class BeforeEffectExpired extends Effect {
+		public BeforeEffectExpired(LivingEntity entity, MobEffectInstance effectInstance) {
+			super(entity, effectInstance, false);
+		}
+	}
+	
+	public static final class BeforeEffectApplied extends Effect implements HasEventResult {
+		private EventResult eventResult = EventResult.PASS;
+		
+		public BeforeEffectApplied(LivingEntity entity, MobEffectInstance effectInstance) {
+			super(entity, effectInstance, true);
+		}
+		
+		@Override
+		public void setEffectInstance(MobEffectInstance effectInstance) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+		}
+		
+		@Override
+		public EventResult getEventResult() {
+			return eventResult;
+		}
+		
+		@Override
+		public void setEventResult(EventResult eventResult) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.eventResult = eventResult;
+		}
+	}
+	
+	public static final class BeforeEffectAdded extends Effect {
+		public BeforeEffectAdded(LivingEntity entity, MobEffectInstance effectInstance) {
+			super(entity, effectInstance, true);
+		}
+		
+		@Override
+		public void setEffectInstance(MobEffectInstance effectInstance) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+		}
+	}
+	
+	public static final class BeforeEffectRemoved extends Effect implements HasEventResult {
+		private EventResult eventResult = EventResult.PASS;
+		
+		public BeforeEffectRemoved(LivingEntity entity, MobEffectInstance effectInstance) {
+			super(entity, effectInstance, true);
+		}
+		
+		@Override
+		public void setEffectInstance(MobEffectInstance effectInstance) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+		}
+		
+		@Override
+		public EventResult getEventResult() {
+			return eventResult;
+		}
+		
+		@Override
+		public void setEventResult(EventResult eventResult) {
+			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.eventResult = eventResult;
+		}
 	}
 }

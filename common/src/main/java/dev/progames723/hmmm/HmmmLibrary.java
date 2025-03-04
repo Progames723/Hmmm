@@ -2,6 +2,7 @@ package dev.progames723.hmmm;
 
 import dev.architectury.event.EventHandler;
 import dev.architectury.utils.EnvExecutor;
+import dev.progames723.hmmm.event.api.Events;
 import dev.progames723.hmmm.utils.PlatformUtil;
 import dev.progames723.hmmm.utils.TestUtil;
 import io.github.classgraph.ClassGraph;
@@ -19,12 +20,11 @@ public class HmmmLibrary {
 	public static final Logger LOGGER = LoggerFactory.getLogger("HmmmLibrary");
 	public static final Marker TEST = MarkerFactory.getMarker("Test");
 	public static final Marker REFLECT = MarkerFactory.getMarker("Reflection");
+	public static final Marker EVENT = MarkerFactory.getMarker("Event");
 	public static final boolean TEST_ARG;
-	public static final boolean UNSAFE_REFLECT;
 	
 	static {
 		boolean temp_test;
-		boolean temp_reflect;
 		try {
 			temp_test = EnvExecutor.getEnvSpecific(() -> () -> {
 				try {return net.minecraft.client.main.Main.class.getDeclaredField("test_hmmm").getBoolean(null);
@@ -32,18 +32,10 @@ public class HmmmLibrary {
 				try {return net.minecraft.server.Main.class.getDeclaredField("test_hmmm").getBoolean(null);
 				} catch (Exception e) {return false;}
 			});
-			temp_reflect = EnvExecutor.getEnvSpecific(() -> () -> {
-				try {return net.minecraft.client.main.Main.class.getDeclaredField("enableUnsafeReflect").getBoolean(null);
-				} catch (Exception e) {return false;}}, () -> () -> {
-				try {return net.minecraft.server.Main.class.getDeclaredField("enableUnsafeReflect").getBoolean(null);
-				} catch (Exception e) {return false;}
-			});
 		} catch (AssertionError e) {
 			temp_test = false;
-			temp_reflect = false;
 		}
 		TEST_ARG = temp_test;
-		UNSAFE_REFLECT = temp_reflect;
 	}
 	
 	public static void main(String[] args) {
@@ -65,6 +57,7 @@ public class HmmmLibrary {
 		EventHandler.init();
 		LOGGER.info("Running system architecture: {}", PlatformUtil.getArchitecture());
 		if (TEST_ARG) TestUtil.testAll();
+		Events.startEventRegistration();
 		LOGGER.info("Initialized HmmmLibrary!");
 	}
 }

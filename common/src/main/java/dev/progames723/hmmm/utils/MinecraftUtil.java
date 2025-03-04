@@ -38,6 +38,7 @@ public class MinecraftUtil {
 		 * really neat on the server-side, huh?
 		 * @return {@code null} if the server is not running and if not running locally
 		 */
+		@SuppressWarnings("JavaReflectionMemberAccess")
 		public static MinecraftServer getServerInstance() {
 			Field field;
 			MinecraftServer instance;

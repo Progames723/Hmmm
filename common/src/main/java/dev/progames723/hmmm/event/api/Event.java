@@ -4,45 +4,49 @@ import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 @ApiStatus.Experimental
 public abstract class Event {
 	private final AtomicLong eventCancelViolations = new AtomicLong(0);
 	private final boolean isCancellable;
-	private EventResult eventResult = EventResult.PASS;
+	private boolean cancelled;
 	
 	protected Event(boolean isCancellable) {
 		this.isCancellable = isCancellable;
 	}
 	
-	public boolean isCancellable() {
+	public final boolean isCancellable() {
 		return isCancellable;
 	}
 	
-	public final void setEventResult(EventResult value) {
-		if (value == null) throw new NullPointerException("Cannot use null in Event#isCanceled()!");
-		if (!isCancellable && value.cancelsEvents()) {
+	protected void cancel() {
+		if (!canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
+		if (!isCancellable) {
 			if (eventCancelViolations.get() < 12) {
 				HmmmLibrary.LOGGER.warn("Cancellable event violation! {} violations.", eventCancelViolations.incrementAndGet(), new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get())));
 			} else {
 				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.incrementAndGet()));
 			}
-		}
-		eventResult = value;
+		} else cancelled = true;
 	}
 	
-	@NotNull
-	public EventResult getEventResult() {
-		return eventResult;
+	protected final boolean canChangeEvent(Class<?> caller) {
+		EventListener instance = caller.getDeclaredAnnotation(EventListener.class);
+		if (instance == null) return false;
+		return instance.priority().canModifyEvent();
 	}
 	
 	public boolean isCancelled() {
 		//sanity checks because that shit is very possible
-		return Objects.requireNonNullElse(eventResult, EventResult.PASS).cancelsEvents();
+		return cancelled;
+	}
+	
+	public interface HasEventResult {
+		EventResult getEventResult();
+		
+		void setEventResult(EventResult eventResult);
 	}
 	
 	public enum EventResult {
@@ -68,11 +72,11 @@ public abstract class Event {
 	}
 	
 	public enum EventPriority {
-		HIGHEST(4),
-		HIGH(3),
-		DEFAULT(2),
-		LOW(1),
 		LOWEST(0),
+		LOW(1),
+		DEFAULT(2),
+		HIGH(3),
+		HIGHEST(4),
 		MONITOR(999, false);
 		
 		private final int priority;

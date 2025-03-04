@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "dev.progames723",
+    "id": "hmmm",
+    "version": "${version}",
+    "metadata": {
+      "name": "hmmm library",
+      "description": "A library for my mods!",
+      "contributors": {
+        "Progames723": "Creator"
+      },
+      "license": "GNU GPL 3.0",
+      "icon": "icon.png"
+    },
+    "entrypoints": {
+      "init": "dev.progames723.hmmm.fabric.HmmmLibraryFabric"
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "depends": [
+      "architectury",
+      "quilted_fabric_api"
+    ]
+  },
+  "mixin": [
+    "hmmm.mixins.json",
+    "hmmm-common.mixins.json"
+  ]
+}

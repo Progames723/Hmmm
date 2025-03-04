@@ -7,7 +7,7 @@
     "DamageSourceAccess",
     "EventFactoryAccess",
     "LivingEntityAccess",
-    "LivingEntityMixin",
+    "events.LivingEntityMixin",
     "MinecraftServerMixin"
   ],
   "client": [

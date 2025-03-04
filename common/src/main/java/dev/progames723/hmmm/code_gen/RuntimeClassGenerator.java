@@ -2,6 +2,8 @@ package dev.progames723.hmmm.code_gen;
 
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
+import dev.progames723.hmmm.event.utils.DoubleValue;
+import dev.progames723.hmmm.utils.MiscUtil;
 import dev.progames723.hmmm.utils.ReflectUtil;
 import org.burningwave.core.classes.Methods;
 import org.objectweb.asm.*;
@@ -15,55 +17,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class RuntimeClassGenerator {
+@SuppressWarnings("unchecked")
+public final class RuntimeClassGenerator {
+	private RuntimeClassGenerator() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	
 	private static boolean DEBUG = false;//set manually or through reflection, dont leave as true in production
 	
-	private static final GeneratedClassLoader loader = new GeneratedClassLoader();
+	private static final ClassLoader loader = new ClassLoader() {};
 	
-	private static final class GeneratedClassLoader extends ClassLoader {}
-	
-	@SuppressWarnings("unchecked")
 	public static <T> Class<? extends T> generateClass(ClassDefinition clazz) {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		
 		//yes im forced to use the class loader that loaded the interface to even think about casting
 		//and dont ask about this
-		ClassLoader casting = null;
-		Class<? extends T> cls = null;
-		String superName = clazz.superName();
-		if (superName == null) {
-			List<String> interfaces = List.of(clazz.interfaces());
-			if (interfaces.isEmpty()) {
-				cls = (Class<? extends T>) Object.class;
-				casting = loader;
-			} else {
-				HmmmException stored = null;
-				for (String string : interfaces) {
-					try {
-						cls = (Class<? extends T>) Class.forName(string.replace('/', '.'));
-						break;
-					} catch (Exception e) {
-						if (stored != null) stored.addSuppressed(e);
-						else (stored = new HmmmException(null, "Parent exception")).addSuppressed(e);
-					}
-				}
-				if (cls == null) //noinspection ConstantValue
-					throw stored != null ? stored : new HmmmException(null, "impossible");
-			}
-		} else {
-			try {
-				cls = (Class<? extends T>) Class.forName(superName.replace('/', '.'));
-			} catch (Exception e) {
-				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
-			}
-		}
-		if (casting == null) casting = cls.getClassLoader();
-		Method defineClassMethod = Methods.create().findFirstAndMakeItAccessible(
-			casting.getClass(),
-			"defineClass",
-			String.class, byte[].class, int.class, int.class
-		);
-		assert defineClassMethod != null : "impossible";
+		DoubleValue<Method, ClassLoader> castingMethod = RuntimeClassGenerator.<T>getCastingMethod(clazz);
 		
 		//it did work actually
 		cw.visit(
@@ -105,7 +72,7 @@ public class RuntimeClassGenerator {
 		debug(bytes);
 		Class<? extends T> generated;
 		try {
-			generated = (Class<? extends T>) defineClassMethod.invoke(casting, clazz.className().replace('/', '.'), bytes, 0, bytes.length);
+			generated = (Class<? extends T>) castingMethod.getA().invoke(castingMethod.getB(), clazz.className().replace('/', '.'), bytes, 0, bytes.length);
 		} catch (ClassCastException e) {
 			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "bro you used the wrong interface/super class", e);
 		} catch (Exception e) {
@@ -121,6 +88,46 @@ public class RuntimeClassGenerator {
 			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
 		}
 		return generated;
+	}
+	
+	private static <T> DoubleValue<Method, ClassLoader> getCastingMethod(ClassDefinition clazz) {
+		ClassLoader casting = null;
+		Class<? extends T> cls = null;
+		String superName = clazz.superName();
+		if (superName == null) {
+			List<String> interfaces = List.of(clazz.interfaces());
+			if (interfaces.isEmpty()) {
+				cls = (Class<? extends T>) Object.class;
+				casting = loader;
+			} else {
+				HmmmException stored = null;
+				for (String string : interfaces) {
+					try {
+						cls = (Class<? extends T>) Class.forName(string.replace('/', '.'));
+						break;
+					} catch (Exception e) {
+						if (stored != null) stored.addSuppressed(e);
+						else (stored = new HmmmException(null, "Parent exception")).addSuppressed(e);
+					}
+				}
+				if (cls == null) //noinspection ConstantValue
+					throw stored != null ? stored : new HmmmException(null, "impossible");
+			}
+		} else {
+			try {
+				cls = (Class<? extends T>) Class.forName(superName.replace('/', '.'));
+			} catch (Exception e) {
+				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
+			}
+		}
+		if (casting == null) casting = cls.getClassLoader();
+		Method defineClassMethod = Methods.create().findFirstAndMakeItAccessible(
+			casting.getClass(),
+			"defineClass",
+			String.class, byte[].class, int.class, int.class
+		);
+		assert defineClassMethod != null : "impossible";
+		return new DoubleValue<>(defineClassMethod, casting);
 	}
 	
 	public static <T> T generate(ClassDefinition clazz, Class<?>[] paramTypes, Object... args) {
