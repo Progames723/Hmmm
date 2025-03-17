@@ -1,7 +1,7 @@
 package dev.progames723.hmmm.forge;
 
 import dev.progames723.hmmm.HmmmLibrary;
-import dev.progames723.hmmm.MappingsImpl;
+import dev.progames723.hmmm.ReflectionMappingsImpl;
 import dev.progames723.hmmm.forge.include.net.fabricmc.mappingio.MappingReader;
 import dev.progames723.hmmm.forge.include.net.fabricmc.mappingio.adapter.FilteringMappingVisitor;
 import dev.progames723.hmmm.forge.include.net.fabricmc.mappingio.format.MappingFormat;
@@ -21,16 +21,14 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.zip.ZipError;
 
-public class MappingsNeoForgeImpl extends MappingsImpl {
+public class ReflectionMappingsNeoForgeImpl extends ReflectionMappingsImpl {
 	private static final MemoryMappingTree mappings = (MemoryMappingTree) new MappingConfiguration().getMappings();
 	
-	private static final MixinIntermediaryDevRemapper mapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "named", "intermediary");
+	private static final MixinIntermediaryDevRemapper mapper = new MixinIntermediaryDevRemapper(mappings, "named", "intermediary");
 	
-	private static final MixinIntermediaryDevRemapper unmapper = new MixinIntermediaryDevRemapper(new MappingConfiguration().getMappings(), "intermediary", "named");
+	private static final MixinIntermediaryDevRemapper unmapper = new MixinIntermediaryDevRemapper(mappings, "intermediary", "named");
 	
-	public MappingsNeoForgeImpl() {
-		super();
-	}
+	public ReflectionMappingsNeoForgeImpl() {super();}
 	
 	@Override
 	public String mapClassName(String className) {

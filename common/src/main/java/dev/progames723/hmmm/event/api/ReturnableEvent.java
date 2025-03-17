@@ -22,13 +22,19 @@ public abstract class ReturnableEvent<T> extends Event {
 		return nullable;
 	}
 	
+	@Override
+	public final void cancel() {
+		super.cancel();
+	}
+	
 	@Nullable
 	public T getValue() {
 		return value;
 	}
 	
-	public void setValue(T value) {
-		if (isVoid || !canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
-		this.value = value;
+	public void returnEvent(T value) {
+		if (!canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
+		this.cancel();
+		if (!isVoid) this.value = value;
 	}
 }

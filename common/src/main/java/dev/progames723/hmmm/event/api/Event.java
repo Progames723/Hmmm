@@ -4,6 +4,7 @@ import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -21,6 +22,7 @@ public abstract class Event {
 		return isCancellable;
 	}
 	
+	@MustBeInvokedByOverriders
 	protected void cancel() {
 		if (!canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
 		if (!isCancellable) {

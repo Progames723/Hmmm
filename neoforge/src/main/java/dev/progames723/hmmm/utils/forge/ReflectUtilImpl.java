@@ -1,10 +1,10 @@
 package dev.progames723.hmmm.utils.forge;
 
-import dev.progames723.hmmm.MappingsImpl;
-import dev.progames723.hmmm.forge.MappingsNeoForgeImpl;
+import dev.progames723.hmmm.ReflectionMappingsImpl;
+import dev.progames723.hmmm.forge.ReflectionMappingsNeoForgeImpl;
 
 public class ReflectUtilImpl {
-	public static MappingsImpl getModLoaderSpecificMappingsImpl() {
-		return new MappingsNeoForgeImpl();
+	public static ReflectionMappingsImpl getModLoaderSpecificMappingsImpl() {
+		return new ReflectionMappingsNeoForgeImpl();
 	}
 }

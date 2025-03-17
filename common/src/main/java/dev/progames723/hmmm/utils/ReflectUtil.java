@@ -4,7 +4,7 @@ import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.progames723.hmmm.HmmmError;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
-import dev.progames723.hmmm.MappingsImpl;
+import dev.progames723.hmmm.ReflectionMappingsImpl;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import org.burningwave.core.classes.*;
 import org.jetbrains.annotations.ApiStatus;
@@ -315,12 +315,12 @@ public class ReflectUtil {
 	}
 //
 	@ExpectPlatform
-	private static MappingsImpl getModLoaderSpecificMappingsImpl() {
+	private static ReflectionMappingsImpl getModLoaderSpecificMappingsImpl() {
 		return null;
 	}
 	
-	public static MappingsImpl getMappingsImpl() {
-		MappingsImpl mappings = getModLoaderSpecificMappingsImpl();
+	public static ReflectionMappingsImpl getReflectionMappingsImpl() {
+		ReflectionMappingsImpl mappings = getModLoaderSpecificMappingsImpl();
 		//every modern mod loader should be supported!
 		if (mappings == null) throw new HmmmError("Method wasnt transformed!");
 		return mappings;

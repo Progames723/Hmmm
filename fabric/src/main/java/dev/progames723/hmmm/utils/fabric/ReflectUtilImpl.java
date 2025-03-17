@@ -1,10 +1,10 @@
 package dev.progames723.hmmm.utils.fabric;
 
-import dev.progames723.hmmm.MappingsImpl;
-import dev.progames723.hmmm.fabric.MappingsFabricImpl;
+import dev.progames723.hmmm.ReflectionMappingsImpl;
+import dev.progames723.hmmm.fabric.ReflectionMappingsFabricImpl;
 
 public class ReflectUtilImpl {
-	public static MappingsImpl getModLoaderSpecificMappingsImpl() {
-		return new MappingsFabricImpl();
+	public static ReflectionMappingsImpl getModLoaderSpecificMappingsImpl() {
+		return new ReflectionMappingsFabricImpl();
 	}
 }

@@ -43,18 +43,18 @@ public class MathUtil {
 	
 	public static double saturationFunction(double value, double divisor, double maxValue) {//now i know the real name
 		if (value <= 0.0d) return 0.0d;
-		double output = (1-(1/(1+value/divisor))) * maxValue;
+		double output = (1 - (1 / (1 + value / divisor))) * maxValue;
 		return roundTo(output, 3);//rounding to the 0.001!
 	}
 	
 	public static double invertedSaturationFunction(double value, double divisor, double maxValue) {
 		if (value <= 0.0d) return maxValue;
-		double output = -((1-(1/(1+value/divisor))) * maxValue) + maxValue;
+		double output = -((1 - (1 / (1 + value / divisor))) * maxValue) + maxValue;
 		return roundTo(output, 3);
 	}
 	
-	public static double roundTo(double value, long tenthPower) {//no way this actually works
-		return Math.round(value * Math.pow(10.0, tenthPower)) / Math.pow(10.0, tenthPower);
+	public static double roundTo(double value, long digits) {//no way this actually works
+		return Math.round(value * Math.pow(10.0, digits)) / Math.pow(10.0, digits);
 	}
 	
 	public static double clamp(double value, double min, double max) {

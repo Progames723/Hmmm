@@ -4,18 +4,15 @@
   "package": "dev.progames723.hmmm.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "DamageSourceAccess",
     "EventFactoryAccess",
     "LivingEntityAccess",
-    "events.LivingEntityMixin",
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "events.CommandsMixin",
+    "events.LivingEntityMixin"
   ],
   "client": [
-    "client.ClientMainMixin",
-    "client.OptionInstanceAccess"
   ],
   "server": [
-    "server.ServerMainMixin"
   ],
   "priority": 2147483647,
   "mixinPriority": 2147483647,

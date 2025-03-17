@@ -32,12 +32,8 @@ dependencies {
     implementation 'io.github.llamalad7:mixinextras-neoforge:0.4.0'
     include 'io.github.llamalad7:mixinextras-neoforge:0.4.0'
 
-    include "io.github.classgraph:classgraph:4.8.179"
-
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
-
-    include "org.burningwave:core:12.65.1"
 }
 
 processResources {

@@ -1,72 +1,89 @@
 package dev.progames723.hmmm;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class BaseMappingsImpl extends MappingsImpl {
-	public BaseMappingsImpl(Collection<String> in, Collection<String> out) {
-		super(in, out);
+public class BaseMappingsImpl<A, B> implements Mappings<A, B> {
+	private final Map<A, B> mappings = new HashMap<>();
+	
+	public BaseMappingsImpl(Collection<A> in, Collection<B> out) {
+		if (in == null || out == null) {
+			throw new NullPointerException("Null args not allowed!");
+		}
+		if (in.size() != out.size()) {
+			throw new RuntimeException("Collection sizes dont match!");
+		}
+		List<A> inList = List.copyOf(in);
+		List<B> outList = List.copyOf(out);
+		putValues(inList, outList);
 	}
 	
-	public BaseMappingsImpl(String[] in, String[] out) {
-		super(in, out);
+	public BaseMappingsImpl(A[] in, B[] out) {
+		if (in == null || out == null) {
+			throw new NullPointerException("Null args not allowed!");
+		}
+		if (in.length != out.length) {
+			throw new RuntimeException("Array sizes dont match!");
+		}
+		List<A> inList = List.of(in);
+		List<B> outList = List.of(out);
+		putValues(inList, outList);
 	}
 	
-	public BaseMappingsImpl(Enumeration<String> in, Enumeration<String> out) {
-		super(in, out);
+	public BaseMappingsImpl(Enumeration<A> in, Enumeration<B> out) {
+		if (in == null || out == null) {
+			throw new NullPointerException("Null lists not allowed!");
+		}
+		ArrayList<A> inList = new ArrayList<>();
+		ArrayList<B> outList = new ArrayList<>();
+		in.asIterator().forEachRemaining(inList::add);
+		out.asIterator().forEachRemaining(outList::add);
+		if (inList.size() != outList.size()) {
+			throw new RuntimeException("Enumeration sizes dont match!");
+		}
+		putValues(inList, outList);
 	}
 	
-	public BaseMappingsImpl(Iterator<String> in, Iterator<String> out) {
-		super(in, out);
+	public BaseMappingsImpl(Iterator<A> in, Iterator<B> out) {
+		if (in == null || out == null) {
+			throw new NullPointerException("Null lists not allowed!");
+		}
+		ArrayList<A> inList = new ArrayList<>();
+		ArrayList<B> outList = new ArrayList<>();
+		in.forEachRemaining(inList::add);
+		out.forEachRemaining(outList::add);
+		if (inList.size() != outList.size()) {
+			throw new RuntimeException("Iterator sizes dont match!");
+		}
+		putValues(inList, outList);
 	}
 	
-	public BaseMappingsImpl(Map<String, String> mappingMap) {
-		super(mappingMap);
+	public BaseMappingsImpl(Map<A, B> mappingMap) {
+		if (mappingMap == null) {
+			throw new RuntimeException("Map is null!");
+		}
+		mappings.putAll(mappingMap);
+	}
+	
+	private void putValues(List<A> in, List<B> out) {
+		for (int i = 0; i < in.size(); i++) {
+			mappings.put(in.get(i), out.get(i));
+		}
 	}
 	
 	@Override
-	public String map(String string) {
-		if (!super.from.contains(string)) return "";
-		else if (!this.to.contains(string)) return "";
-		else return super.map(string);
+	public B map(A a) {
+		if (a == null) return null;
+		return mappings.get(a);
 	}
 	
 	@Override
-	public String unmap(String string) {
-		if (!super.from.contains(string)) return "";
-		else if (!this.to.contains(string)) return "";
-		else return super.unmap(string);
-	}
-	
-	@Override
-	public String mapClassName(String className) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
-	}
-	
-	@Override
-	public String mapField(String className, String field, String descriptor) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
-	}
-	
-	@Override
-	public String mapMethod(String className, String method, String descriptor) {
-		return "";
-	}
-	
-	@Override
-	public String unmapClassName(String className) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
-	}
-	
-	@Override
-	public String unmapField(String className, String field, String descriptor) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
-	}
-	
-	@Override
-	public String unmapMethod(String className, String method, String descriptor) {
-		throw new UnsupportedOperationException("Please use ReflectUtil#getMappingsImpl!");
+	public A unmap(B b) {
+		if (b == null) return null;
+		AtomicReference<A> returned = new AtomicReference<>();
+		mappings.forEach((a, b1) -> {
+			if (b.equals(b1)) returned.set(a);
+		});
+		return returned.get();
 	}
 }
