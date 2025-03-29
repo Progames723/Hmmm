@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id "architectury-plugin" version "3.4-SNAPSHOT"
 	id "dev.architectury.loom" version "1.9-SNAPSHOT" apply false
-	id "com.badlogicgames.jnigen.jnigen-gradle" version "3.0.0" apply false
 }
 
 architectury {
@@ -11,12 +10,6 @@ architectury {
 
 subprojects {
 	apply plugin: "dev.architectury.loom"
-	apply plugin: "com.badlogicgames.jnigen.jnigen-gradle"
-
-	jnigen {
-		sharedLibName = "hmmm-native"
-		multiThreadedCompile = true
-	}
 
 	loom {
 		silentMojangMappingsLicense()
@@ -32,11 +25,14 @@ subprojects {
 
 		api "org.burningwave:core:12.65.1"
 		api "io.github.classgraph:classgraph:4.8.179"
+		//my own thing
+		implementation "dev.progames723.hmmm_natives:hmmm_natives-platform:1.0"
 
 		//it was that easy the whole time!?
 		if (project.name != "common") {
 			include "org.burningwave:core:12.65.1"
 			include "io.github.classgraph:classgraph:4.8.179"
+			include "dev.progames723.hmmm_natives:hmmm_natives-platform:1.0"
 		}
 
 		// The following line declares the yarn mappings you may select this one as well.
@@ -67,6 +63,7 @@ allprojects {
 		maven { url "https://repo.spongepowered.org/repository/maven-public/" }
 		maven { url "https://maven.google.com/" }
 		maven { url "https://maven.parchmentmc.org" }
+		maven { url "https://github.com/Progames723/maven/raw/main/maven/" }
 		mavenCentral()
 	}
 

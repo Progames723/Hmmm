@@ -14,7 +14,7 @@ architectury {
 }
 
 loom {
-//  accessWidenerPath = file("src/main/resources/hmmm.accesswidener")
+    accessWidenerPath = file("src/main/resources/hmmm.accesswidener")
     enableTransitiveAccessWideners = true
     interfaceInjection {
         interfaceInjection.setEnableDependencyInterfaceInjection(true)

@@ -8,7 +8,9 @@ import dev.progames723.hmmm.ReflectionMappingsImpl;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import org.burningwave.core.classes.*;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.instrument.Instrumentation;
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -22,8 +24,14 @@ import java.util.function.Supplier;
 public class ReflectUtil {
 	private static boolean reflectionUsed = false;
 	public static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
+	/**
+	 * throws exception if caller is jni
+	 */
 	public static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-	public static final Supplier<Class<?>> TRUE_CALLER_CLASS = () -> STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst().orElseThrow());
+	/**
+	 * returns null if caller is jni
+	 */
+	public static final Supplier<Class<?>> TRUE_CALLER_CLASS = () -> STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst().orElse(null));
 	
 	@CallerSensitive
 	@ApiStatus.Internal

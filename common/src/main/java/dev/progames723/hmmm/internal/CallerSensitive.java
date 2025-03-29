@@ -13,32 +13,54 @@ import java.util.List;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
 public @interface CallerSensitive {
+	Class<?>[] allowedClasses() default {};
+	
+	String[] allowedPackages() default {};
+	
+	/**
+	 * overrides allowed classes
+	 */
+	Class<?>[] forbiddenClasses() default {};
+	
+	/**
+	 * overrides allowed packages
+	 */
+	String[] forbiddenPackages() default {};
+	
 	class Utils {
 		private Utils() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 		
 		@CallerSensitive
-		public static void throwExceptionIfNotAllowed(Class<?> caller, List<Class<?>> allowedClasses, List<String> allowedPackages, List<Class<?>> forbiddenClasses, List<String> forbiddenPackages) {
-			ReflectUtil.getInstance();
-			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
+		public static void throwExceptionIfNotAllowed(Class<?> caller) {
+			CallerSensitive instance = ReflectUtil.getInstance();
+			if (caller == null || instance == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
 			
 			String packageName = caller.getPackageName();
 			
-			boolean isInModule = packageName.startsWith("dev.progames723.hmmm");
+			boolean isInModule = packageName.startsWith("dev.progames723");
+			var h = new Object() {
+				public boolean isForbidden = false;
+				public boolean isAllowed = false;
+			};
 			
-			if (forbiddenClasses.contains(caller)) throw new HmmmException(caller);
-			if (forbiddenPackages.contains(packageName)) throw new HmmmException(caller);
+			h.isForbidden = List.of(instance.forbiddenClasses()).contains(caller);
+			if (!h.isForbidden) {
+				List.of(instance.forbiddenPackages()).forEach(string -> {
+					if (packageName.startsWith(string)) h.isForbidden = true;
+				});
+			}
+			h.isAllowed = List.of(instance.allowedClasses()).contains(caller);
+			if (!h.isAllowed) {
+				List.of(instance.allowedPackages()).forEach(string -> {
+					if (packageName.startsWith(string)) h.isAllowed = true;
+				});
+			}
 			
-			if (allowedClasses.contains(caller)) return;
-			if (allowedPackages.contains(packageName)) return;
+			if (h.isForbidden) throw new HmmmException(caller, new IllegalAccessException("Wrong class tried to access internal method!"));
 			
-			if (!isInModule) throw new HmmmException(caller);
-		}
-		
-		@CallerSensitive
-		public static void throwExceptionIfNotAllowed(Class<?> caller) {
-			ReflectUtil.getInstance();
-			if (caller == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass());
-			throwExceptionIfNotAllowed(caller, List.of(), List.of(), List.of(), List.of());
+			if (h.isAllowed) return;
+			
+			if (!isInModule) throw new HmmmException(caller, new IllegalAccessException("Wrong class tried to access internal method!"));
 		}
 	}
 }

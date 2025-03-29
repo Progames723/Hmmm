@@ -1,7 +1,7 @@
 package dev.progames723.hmmm.utils;
 
 import dev.progames723.hmmm.HmmmLibrary;
-import sun.misc.Unsafe;
+import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,7 +29,7 @@ public class CrashJVMUtil {
 			HmmmLibrary.LOGGER.error("Unable to crash due to unsufficient permissions");
 			return;
 		}
-		Unsafe.getUnsafe().putAddress(0xffffffffL, 0);
+		UnsafeAccess.UNSAFE.putAddress(0xFFFFFFFFFFFFFFFFL, 0);
 	}//crashes jvm on windows 100%
 	
 	//Causes a StackOverflowError, it can be caught?

@@ -18,7 +18,7 @@ public class InternalUtils {
 	private InternalUtils() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	
 	@CallerSensitive
-	public static <T> List<Class<T>> scanClassesFor(Class<T> classToScanFor, ScanType type, boolean ignoreExceptions) {
+	public static <T> List<Class<T>> scanClassesForGenerics(Class<T> classToScanFor, ScanType type, boolean ignoreExceptions) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
 		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
 		try (ScanResult result = new ClassGraph()
@@ -37,7 +37,33 @@ public class InternalUtils {
 	}
 	
 	@CallerSensitive
-	public static <T> List<Class<T>> scanClassesFor(Class<T> classToScanFor, ScanType type) {
+	public static <T> List<Class<T>> scanClassesForGenerics(Class<T> classToScanFor, ScanType type) {
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
+		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		return scanClassesForGenerics(classToScanFor, type, false);
+	}
+	
+	@CallerSensitive
+	public static List<Class<?>> scanClassesFor(Class<?> classToScanFor, ScanType type, boolean ignoreExceptions) {
+		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
+		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		try (ScanResult result = new ClassGraph()
+			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
+			.overrideClassLoaders(systemClassLoader)//me when system class loader
+			.enableAllInfo()
+			.removeTemporaryFilesAfterScan()
+			.scan()) {
+			return switch (type) {
+				case SUPER_CLASS -> result.getSuperclasses(classToScanFor).loadClasses(ignoreExceptions);
+				case SUB_CLASSES -> result.getSubclasses(classToScanFor).loadClasses(ignoreExceptions);
+				case INTERFACE_IMPL -> result.getClassesImplementing(classToScanFor).loadClasses(ignoreExceptions);
+				default -> throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Malformed enum!");
+			};
+		}
+	}
+	
+	@CallerSensitive
+	public static List<Class<?>> scanClassesFor(Class<?> classToScanFor, ScanType type) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
 		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
 		return scanClassesFor(classToScanFor, type, false);

@@ -1,10 +1,9 @@
 package dev.progames723.hmmm.event.api;
 
 import dev.progames723.hmmm.utils.ReflectUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-@ApiStatus.Experimental
+@Deprecated(forRemoval = true)
 public abstract class ReturnableEvent<T> extends Event {
 	private final boolean nullable;
 	protected final boolean isVoid;
@@ -20,11 +19,6 @@ public abstract class ReturnableEvent<T> extends Event {
 	
 	public boolean isNullable() {
 		return nullable;
-	}
-	
-	@Override
-	public final void cancel() {
-		super.cancel();
 	}
 	
 	@Nullable

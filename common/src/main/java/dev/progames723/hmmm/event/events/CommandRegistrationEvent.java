@@ -20,6 +20,7 @@ public class CommandRegistrationEvent extends Event {
 	}
 	
 	/**
+	 * i recommend using this, its much simpler
 	 * @param consumer the registration
 	 */
 	public void registerCommand(TriConsumer<CommandDispatcher<CommandSourceStack>, Commands.CommandSelection, CommandBuildContext> consumer) {

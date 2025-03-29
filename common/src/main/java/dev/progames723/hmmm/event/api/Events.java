@@ -13,12 +13,23 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Function;
 
-//TODO finish
-@SuppressWarnings({"unchecked"}) //i have to format the string to be able to display the exception
+@SuppressWarnings({"unchecked", "StringConcatenationArgumentToLogCall"})//i have to format the string to be able to display the exception
 public final class Events {
+	private static boolean finalized;
 	private static final Set<Class<? extends Event>> registeredEvents = new HashSet<>();
-	private static final Map<Class<? extends Event>, TreeSet<Listener<? extends Event>>> eventListeners = new HashMap<>();
+	private static final Map<Class<? extends Event>, TreeSet<Listener<Event>>> eventListeners = new HashMap<>();
+	private static final Function<Event, Thread> asyncEventExecutor = (event) -> new Thread(() -> {
+		TreeSet<Listener<Event>> listeners = eventListeners.get(event.getClass());
+		try {
+			assert listeners != null : "event not registered!";
+		} catch (AssertionError e) {
+			HmmmLibrary.LOGGER.debug("Async event(%s) executor caught an error".formatted(event.toString()), e);
+			throw e;
+		}
+		for (Listener<Event> listener : listeners) listener.invoke(event);
+	}, "Async event(%s) executor".formatted(event.toString()));
 	
 	private Events() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
 	
@@ -55,9 +66,9 @@ public final class Events {
 		}
 	}
 	
-	private static Set<Listener<? extends Event>> getEveryListener(Class<? extends Event> eventClass) {
+	private static Set<Listener<Event>> getEveryListener(Class<? extends Event> eventClass) {
 		final var h = new Object() {
-			final Set<Listener<? extends Event>> set = eventListeners.get(eventClass);
+			final Set<Listener<Event>> set = eventListeners.get(eventClass);
 		};
 		eventListeners.forEach((cls, listeners) -> {
 			if (!eventClass.isAssignableFrom(cls)) return;
@@ -68,14 +79,19 @@ public final class Events {
 	}
 	
 	public static synchronized <E extends Event> E invokeEvent(E event) {
-		Set<Listener<? extends Event>> listeners = getEveryListener(event.getClass());
+		Set<Listener<Event>> listeners = getEveryListener(event.getClass());
 		try {
 			assert listeners != null : "unregistered event!";
 		} catch (AssertionError e) {
 			throw new HmmmException((Class<?>) null, e);
 		}
-		for (Listener<? extends Event> listener : listeners) {
-			((Listener<E>) listener).invoke(event);
+		if (AsyncEvent.class.isAssignableFrom(event.getClass()) && ((AsyncEvent) event).isAsync()) {
+			//run asynchronously
+			asyncEventExecutor.apply(event).start();
+		} else {
+			for (Listener<? extends Event> listener : listeners) {
+				((Listener<E>) listener).invoke(event);
+			}
 		}
 		return event;
 	}
@@ -86,7 +102,7 @@ public final class Events {
 			try {
 				registerEventListener(new Listener<>(method));
 			} catch (Exception e) {
-				HmmmLibrary.LOGGER.debug(HmmmLibrary.EVENT, "method {} cannot be registered\n{}", method, e.toString());
+				HmmmLibrary.LOGGER.debug(HmmmLibrary.EVENT, "Listener {} cannot be registered\n{}", method, e.toString());
 			}
 		}
 	}
@@ -97,26 +113,26 @@ public final class Events {
 			try {
 				unregisterEventListener(new Listener<>(method));
 			} catch (Exception e) {
-				HmmmLibrary.LOGGER.debug(HmmmLibrary.EVENT, "method {} cannot be unregistered\n{}", method, e.toString());
+				HmmmLibrary.LOGGER.debug(HmmmLibrary.EVENT, "Listener {} cannot be unregistered\n{}", method, e.toString());
 			}
 		}
 	}
 	
-	public static synchronized void registerEventListener(Listener<? extends Event> listener) {
+	public static synchronized void registerEventListener(Listener<Event> listener) {
 		Class<? extends Event> event = checkIfCorrectMethod(listener.method);
-		TreeSet<Listener<? extends Event>> listeners = eventListeners.get(event);
+		TreeSet<Listener<Event>> listeners = eventListeners.get(event);
 		try {
 			assert listeners != null : "unregistered event!";
 		} catch (AssertionError e) {
 			throw new HmmmException((Class<?>) null, e);
 		}
-		if (!listeners.add(listener)) throw new HmmmException(null, "Method already registered!");
+		if (!listeners.add(listener)) throw new HmmmException(null, "Listener already registered!");
 		eventListeners.put(event, listeners);
 	}
 	
 	public static synchronized void unregisterEventListener(Listener<? extends Event> listener) {
 		Class<? extends Event> event = checkIfCorrectMethod(listener.method);
-		TreeSet<Listener<? extends Event>> listeners = eventListeners.get(event);
+		TreeSet<Listener<Event>> listeners = eventListeners.get(event);
 		try {
 			assert listeners != null : "unregistered event!";
 		} catch (AssertionError e) {
@@ -156,9 +172,23 @@ public final class Events {
 	
 	@ApiStatus.Internal
 	@CallerSensitive
-	public static void startEventRegistration() {
+	public static synchronized void startEventRegistration() {
+		if (finalized) return;
+		finalized = true;
 		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		List<Class<RegisterEventCallback>> list = InternalUtils.scanClassesFor(RegisterEventCallback.class, InternalUtils.ScanType.INTERFACE_IMPL, true);
+		HmmmLibrary.LOGGER.debug("Registering events...");
+		List<Class<?>> events = InternalUtils.scanClassesFor(Event.class, InternalUtils.ScanType.SUB_CLASSES, true);
+		if (!events.isEmpty()) events.add(Event.class);
+		for (Class<?> event : events) {
+			try {
+				registerEvent((Class<? extends Event>) event);
+			} catch (Exception e) {
+				HmmmLibrary.LOGGER.error(HmmmLibrary.EVENT, "Failed to register %s event!".formatted(event), e);
+			}
+		}
+		HmmmLibrary.LOGGER.debug("Scanning for registering callbacks... ");
+		List<Class<RegisterEventCallback>> list = InternalUtils.scanClassesForGenerics(RegisterEventCallback.class, InternalUtils.ScanType.INTERFACE_IMPL, true);
+		if (!list.isEmpty()) HmmmLibrary.LOGGER.debug("Scan successful, entries: {}.", list); else HmmmLibrary.LOGGER.debug("No callback entries have been found.");
 		list.forEach(cls -> {
 			try {
 				Constructor<? extends RegisterEventCallback> constructor = cls.getDeclaredConstructor();
@@ -166,7 +196,7 @@ public final class Events {
 				constructor.newInstance().registrationStart();
 				constructor.setAccessible(false);
 			} catch (Exception e) {
-				HmmmLibrary.LOGGER.error(HmmmLibrary.EVENT, "failed to instantiate %s!".formatted(cls), e);
+				HmmmLibrary.LOGGER.error(HmmmLibrary.EVENT, "failed to instantiate %s! Make sure to have a public no args constructor!".formatted(cls), e);
 			}
 		});
 		List<Class<?>> list1 = InternalUtils.scanForAnnotatedClassesWith(AutoRegisterEvents.class);

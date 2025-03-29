@@ -3,12 +3,10 @@ package dev.progames723.hmmm.event.api;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.utils.ReflectUtil;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@ApiStatus.Experimental
 public abstract class Event {
 	private final AtomicLong eventCancelViolations = new AtomicLong(0);
 	private final boolean isCancellable;
@@ -23,11 +21,11 @@ public abstract class Event {
 	}
 	
 	@MustBeInvokedByOverriders
-	protected void cancel() {
-		if (!canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
+	public final void cancel() {
+		if (cancelled || !canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
 		if (!isCancellable) {
 			if (eventCancelViolations.get() < 12) {
-				HmmmLibrary.LOGGER.warn("Cancellable event violation! {} violations.", eventCancelViolations.incrementAndGet(), new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.get())));
+				HmmmLibrary.LOGGER.warn("Event cancel violation! {}/13 violations.", eventCancelViolations.incrementAndGet(), new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s/13 cancellation violations!".formatted(eventCancelViolations.get())));
 			} else {
 				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.incrementAndGet()));
 			}
@@ -43,6 +41,11 @@ public abstract class Event {
 	public boolean isCancelled() {
 		//sanity checks because that shit is very possible
 		return cancelled;
+	}
+	
+	@Override
+	public final String toString() {
+		return this.getClass().getName();
 	}
 	
 	public interface HasEventResult {
