@@ -1,7 +1,16 @@
 package dev.progames723.hmmm;
 
-public abstract class ReflectionMappingsImpl {
-	public ReflectionMappingsImpl() {}
+import dev.progames723.hmmm.xplat.XplatProvider;
+
+public abstract class ReflectionMappings implements XplatProvider {
+	private static ReflectionMappings instance;
+	
+	public ReflectionMappings() {}
+	
+	public static ReflectionMappings getInstance() {
+		if (instance == null) instance = XplatProvider.tryFindInstance(ReflectionMappings.class, false);
+		return instance;
+	}
 	
 	/**
 	 * mapping a class to obfuscated(whatever is used)

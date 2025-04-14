@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @SuppressWarnings("all")
 public class CrashJVMUtil {
-	private CrashJVMUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private CrashJVMUtil() {MiscUtil.instantiationOfUtilClass();}
 	
 	private static final boolean hasPermission;
 	
@@ -30,7 +30,7 @@ public class CrashJVMUtil {
 			return;
 		}
 		UnsafeAccess.UNSAFE.putAddress(0xFFFFFFFFFFFFFFFFL, 0);
-	}//crashes jvm on windows 100%
+	}
 	
 	//Causes a StackOverflowError, it can be caught?
 	@KillsIt(false)

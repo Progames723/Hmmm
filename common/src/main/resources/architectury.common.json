@@ -1,4 +1,6 @@
 {
-  "injected_interfaces": {},
+  "injected_interfaces": {
+    "net/minecraft/class_1657": ["dev/progames723/hmmm/interface_injection/PlayerAttachments"]
+  },
   "accessWidener": "hmmm.accesswidener"
 }

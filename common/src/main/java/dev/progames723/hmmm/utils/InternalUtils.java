@@ -7,49 +7,47 @@ import io.github.classgraph.ScanResult;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.annotation.Annotation;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.List;
 
 public class InternalUtils {
-	@SuppressWarnings("removal")
-	private static final ClassLoader systemClassLoader = AccessController.doPrivileged((PrivilegedAction<ClassLoader>) ClassLoader::getSystemClassLoader, AccessController.getContext(), new RuntimePermission("getClassLoader"));
-	
-	private InternalUtils() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private InternalUtils() {MiscUtil.instantiationOfUtilClass();}
 	
 	@CallerSensitive
 	public static <T> List<Class<T>> scanClassesForGenerics(Class<T> classToScanFor, ScanType type, boolean ignoreExceptions) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		if (classToScanFor == null) throw new HmmmException(new NullPointerException("argument cannot be null!"));
 		try (ScanResult result = new ClassGraph()
 			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
-			.overrideClassLoaders(systemClassLoader)//me when system class loader
+			.overrideClassLoaders(ReflectUtil.getCaller().getDeclaringClass().getClassLoader())
 			.enableAllInfo()
 			.removeTemporaryFilesAfterScan()
 			.scan()) {
 			return switch (type) {
 				case SUPER_CLASS -> result.getSuperclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
 				case SUB_CLASSES -> result.getSubclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
-				case INTERFACE_IMPL -> result.getClassesImplementing(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
-				default -> throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Malformed enum!");
+				case INTERFACE_IMPL -> {
+					List<Class<T>> clsList = result.getClassesImplementing(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
+					yield clsList;
+				}
+				default -> throw new HmmmException("Malformed enum!");
 			};
 		}
 	}
 	
 	@CallerSensitive
 	public static <T> List<Class<T>> scanClassesForGenerics(Class<T> classToScanFor, ScanType type) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		if (classToScanFor == null) throw new HmmmException(new NullPointerException("argument cannot be null!"));
 		return scanClassesForGenerics(classToScanFor, type, false);
 	}
 	
 	@CallerSensitive
 	public static List<Class<?>> scanClassesFor(Class<?> classToScanFor, ScanType type, boolean ignoreExceptions) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		if (classToScanFor == null) throw new HmmmException(new NullPointerException("argument cannot be null!"));
 		try (ScanResult result = new ClassGraph()
 			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
-			.overrideClassLoaders(systemClassLoader)//me when system class loader
+			.overrideClassLoaders(ReflectUtil.getCaller().getDeclaringClass().getClassLoader())
 			.enableAllInfo()
 			.removeTemporaryFilesAfterScan()
 			.scan()) {
@@ -57,25 +55,25 @@ public class InternalUtils {
 				case SUPER_CLASS -> result.getSuperclasses(classToScanFor).loadClasses(ignoreExceptions);
 				case SUB_CLASSES -> result.getSubclasses(classToScanFor).loadClasses(ignoreExceptions);
 				case INTERFACE_IMPL -> result.getClassesImplementing(classToScanFor).loadClasses(ignoreExceptions);
-				default -> throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Malformed enum!");
+				default -> throw new HmmmException("Malformed enum!");
 			};
 		}
 	}
 	
 	@CallerSensitive
 	public static List<Class<?>> scanClassesFor(Class<?> classToScanFor, ScanType type) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		if (classToScanFor == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		if (classToScanFor == null) throw new HmmmException(new NullPointerException("argument cannot be null!"));
 		return scanClassesFor(classToScanFor, type, false);
 	}
 	
 	@CallerSensitive
 	public static List<Class<?>> scanForAnnotatedClassesWith(Class<? extends Annotation> annotation) {
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
-		if (annotation == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("argument cannot be null!"));
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		if (annotation == null) throw new HmmmException(new NullPointerException("argument cannot be null!"));
 		try (ScanResult result = new ClassGraph()
 			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
-			.overrideClassLoaders(systemClassLoader)//me when system class loader
+			.overrideClassLoaders(ReflectUtil.getCaller().getDeclaringClass().getClassLoader())
 			.enableAllInfo()
 			.removeTemporaryFilesAfterScan()
 			.scan()) {

@@ -1,17 +1,17 @@
 package dev.progames723.hmmm.fabric;
 
-import dev.progames723.hmmm.ReflectionMappingsImpl;
+import dev.progames723.hmmm.ReflectionMappings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import net.fabricmc.loader.impl.util.mappings.MixinIntermediaryDevRemapper;
 
-public class ReflectionMappingsFabricImpl extends ReflectionMappingsImpl {
+public class ReflectionMappingsFabric extends ReflectionMappings {
 	private static final MappingResolver resolver = FabricLoader.getInstance().getMappingResolver();
 	
 	private static final MixinIntermediaryDevRemapper remapper = new MixinIntermediaryDevRemapper(FabricLauncherBase.getLauncher().getMappingConfiguration().getMappings(), "named", "intermediary");
 	
-	public ReflectionMappingsFabricImpl() {super();}
+	public ReflectionMappingsFabric() {super();}
 	
 	@Override
 	public String mapClassName(String className) {

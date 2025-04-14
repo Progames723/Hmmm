@@ -9,7 +9,7 @@ on forge make the mod load before the library and listen to the `HmmmLibraryLoad
 on fabric implement the `HmmmLibraryEntrypoint` and do
 ```json
 "hmmm_library": [
-"your.entrypoint.Class"
+	"your.entrypoint.Class"
 ]
 ```
 

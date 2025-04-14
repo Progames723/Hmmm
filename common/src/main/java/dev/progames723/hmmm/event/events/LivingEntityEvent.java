@@ -1,7 +1,6 @@
 package dev.progames723.hmmm.event.events;
 
 import dev.progames723.hmmm.event.api.Event;
-import dev.progames723.hmmm.utils.ReflectUtil;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,7 +35,7 @@ public abstract class LivingEntityEvent extends Event {
 		}
 		
 		public void setDamage(float damage) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass()))
+			if (canChangeEvent())
 				this.damage = damage;
 		}
 	}
@@ -75,7 +74,7 @@ public abstract class LivingEntityEvent extends Event {
 		}
 		
 		public void setDamageSource(DamageSource damageSource) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass()))
+			if (canChangeEvent())
 				this.damageSource = damageSource;
 		}
 	}
@@ -130,7 +129,7 @@ public abstract class LivingEntityEvent extends Event {
 		
 		@Override
 		public void setEffectInstance(MobEffectInstance effectInstance) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+			if (canChangeEvent()) this.effectInstance = effectInstance;
 		}
 		
 		@Override
@@ -140,7 +139,7 @@ public abstract class LivingEntityEvent extends Event {
 		
 		@Override
 		public void setEventResult(EventResult eventResult) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.eventResult = eventResult;
+			if (canChangeEvent()) this.eventResult = eventResult;
 		}
 	}
 	
@@ -151,7 +150,7 @@ public abstract class LivingEntityEvent extends Event {
 		
 		@Override
 		public void setEffectInstance(MobEffectInstance effectInstance) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+			if (canChangeEvent()) this.effectInstance = effectInstance;
 		}
 	}
 	
@@ -164,7 +163,7 @@ public abstract class LivingEntityEvent extends Event {
 		
 		@Override
 		public void setEffectInstance(MobEffectInstance effectInstance) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.effectInstance = effectInstance;
+			if (canChangeEvent()) this.effectInstance = effectInstance;
 		}
 		
 		@Override
@@ -174,7 +173,7 @@ public abstract class LivingEntityEvent extends Event {
 		
 		@Override
 		public void setEventResult(EventResult eventResult) {
-			if (canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) this.eventResult = eventResult;
+			if (canChangeEvent()) this.eventResult = eventResult;
 		}
 	}
 }

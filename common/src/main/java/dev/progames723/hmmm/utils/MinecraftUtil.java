@@ -18,12 +18,12 @@ import java.lang.reflect.Field;
 
 @SuppressWarnings("unused")
 public class MinecraftUtil {
-	private MinecraftUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private MinecraftUtil() {MiscUtil.instantiationOfUtilClass();}
 	
 	//everything else later
 	
 	public static class Server {
-		private Server() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+		private Server() {MiscUtil.instantiationOfUtilClass();}
 		
 		/**
 		 * really neat on the server-side, huh?
@@ -48,7 +48,7 @@ public class MinecraftUtil {
 	
 	@Deprecated(forRemoval = true)
 	public static class DamageReduction {
-		private DamageReduction() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+		private DamageReduction() {MiscUtil.instantiationOfUtilClass();}
 		
 		public static float getDamageAfterArmorAbsorb(DamageSource damageSource, float f, LivingEntity entity) {
 			//no explanations needed

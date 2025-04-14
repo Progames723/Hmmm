@@ -1,7 +1,6 @@
 package dev.progames723.hmmm;
 
 import dev.progames723.hmmm.utils.MiscUtil;
-import dev.progames723.hmmm.utils.ReflectUtil;
 
 import java.security.SecureRandom;
 import java.util.Random;
@@ -10,7 +9,7 @@ import java.util.Random;
  * NOT ACTUAL IMPLEMENTATION OF SECURE RANDOM
  */
 public class ActualSecureRandom {
-	private ActualSecureRandom() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private ActualSecureRandom() {MiscUtil.instantiationOfUtilClass();}
 	
 	public static SecureRandom createSecureRandom() {
 		SecureRandom sRandom = new SecureRandom(generateSeed());

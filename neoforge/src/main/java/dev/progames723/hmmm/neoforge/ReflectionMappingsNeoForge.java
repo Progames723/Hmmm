@@ -1,7 +1,7 @@
 package dev.progames723.hmmm.neoforge;
 
 import dev.progames723.hmmm.HmmmLibrary;
-import dev.progames723.hmmm.ReflectionMappingsImpl;
+import dev.progames723.hmmm.ReflectionMappings;
 import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.MappingReader;
 import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.adapter.FilteringMappingVisitor;
 import dev.progames723.hmmm.neoforge.include.net.fabricmc.mappingio.format.MappingFormat;
@@ -21,14 +21,14 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.zip.ZipError;
 
-public class ReflectionMappingsNeoForgeImpl extends ReflectionMappingsImpl {
+public class ReflectionMappingsNeoForge extends ReflectionMappings {
 	private static final MemoryMappingTree mappings = (MemoryMappingTree) new MappingConfiguration().getMappings();
 	
 	private static final MixinIntermediaryDevRemapper mapper = new MixinIntermediaryDevRemapper(mappings, "named", "intermediary");
 	
 	private static final MixinIntermediaryDevRemapper unmapper = new MixinIntermediaryDevRemapper(mappings, "intermediary", "named");
 	
-	public ReflectionMappingsNeoForgeImpl() {super();}
+	public ReflectionMappingsNeoForge() {super();}
 	
 	@Override
 	public String mapClassName(String className) {
@@ -136,7 +136,7 @@ public class ReflectionMappingsNeoForgeImpl extends ReflectionMappingsImpl {
 								default:
 									throw new UnsupportedOperationException("Unsupported mapping format: " + format);
 							}
-//							HmmmLibrary.LOGGER.debug(MarkerFactory.getMarker("Mappings"), "Loading mappings took %d ms", new Object[]{System.currentTimeMillis() - time});
+//							HmmmConfig.LOGGER.debug(MarkerFactory.getMarker("Mappings"), "Loading mappings took %d ms", new Object[]{System.currentTimeMillis() - time});
 						} catch (Throwable var8) {
 							try {
 								reader.close();

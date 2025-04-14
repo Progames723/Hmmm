@@ -1,21 +1,15 @@
 package dev.progames723.hmmm.utils;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
-import dev.progames723.hmmm.HmmmError;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
-import dev.progames723.hmmm.ReflectionMappingsImpl;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import org.burningwave.core.classes.*;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.instrument.Instrumentation;
 import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * only useful for mods without mixins, otherwise redundant
@@ -23,71 +17,13 @@ import java.util.function.Supplier;
 @SuppressWarnings({"unused", "removal", "deprecation"})
 public class ReflectUtil {
 	private static boolean reflectionUsed = false;
-	public static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
+	private static final StackWalker STACK_WALKER = StackWalker.getInstance(Set.of(StackWalker.Option.values()));
 	/**
 	 * throws exception if caller is jni
 	 */
-	public static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-	/**
-	 * returns null if caller is jni
-	 */
-	public static final Supplier<Class<?>> TRUE_CALLER_CLASS = () -> STACK_WALKER.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(4).findFirst().orElse(null));
+	private static final StackWalker CALLER_CLASS = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	
-	@CallerSensitive
-	@ApiStatus.Internal
-	public static CallerSensitive getInstance() {
-		Class<?> caller = CALLER_CLASS.getCallerClass();
-		if (!caller.getPackageName().startsWith("dev.progames723.hmmm")) {
-			throw new HmmmError(caller, "tried to access internal method!");
-		}
-		Supplier<? extends RuntimeException> supplier = () -> new HmmmException(caller, "this should never happen!");
-		String methodName = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodName());
-		Class<?>[] params = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodType().parameterArray());
-		Method method;
-		CallerSensitive instance;
-		try {
-			method = caller.getDeclaredMethod(methodName, params);
-			boolean accessible = method.isAccessible();
-			if (!accessible) method.setAccessible(true);
-			instance = method.getDeclaredAnnotation(CallerSensitive.class);
-			method.setAccessible(accessible);
-		} catch (Exception e) {
-			throw supplier.get();
-		}
-		if (instance == null) {
-			throw supplier.get();
-		}
-		return instance;
-	}
-	
-	@CallerSensitive
-	@ApiStatus.Internal
-	public static CallerSensitive getInstance(Class<?> caller) {
-		String requiredPackage = "dev.progames723.hmmm";
-		if (!CALLER_CLASS.getCallerClass().getPackageName().startsWith("dev.progames723.hmmm")) {
-			throw new HmmmError(CALLER_CLASS.getCallerClass(), "tried to access internal method!");
-		}
-		Supplier<? extends RuntimeException> supplier = () -> new HmmmException(caller, "this should never happen!");
-		String methodName = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodName());
-		Class<?>[] params = CALLER_CLASS.walk(stackFrameStream -> stackFrameStream.filter(stackFrame -> stackFrame.getDeclaringClass() == caller).findFirst().orElseThrow(supplier).getMethodType().parameterArray());
-		Method method;
-		CallerSensitive instance;
-		try {
-			method = caller.getDeclaredMethod(methodName, params);
-			boolean accessible = method.isAccessible();
-			if (!accessible) method.setAccessible(true);
-			instance = method.getDeclaredAnnotation(CallerSensitive.class);
-			method.setAccessible(accessible);
-		} catch (Exception e) {
-			throw supplier.get();
-		}
-		if (instance == null) {
-			throw supplier.get();
-		}
-		return instance;
-	}
-	
-	private ReflectUtil() {MiscUtil.instantiationOfUtilClass(CALLER_CLASS.getCallerClass());}
+	private ReflectUtil() {MiscUtil.instantiationOfUtilClass();}
 	
 	public static Class<?> getClass(String path, String name) {
 		return getClass(path.replace('/', '.') + "." + name);
@@ -108,7 +44,7 @@ public class ReflectUtil {
 	
 	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... types) {
 		try {
-			warnOnReflection(CALLER_CLASS.getCallerClass());
+			warnOnReflection(getCaller().getDeclaringClass());
 			Constructor<?> constructor = clazz.getDeclaredConstructor(types);
 			tryToMakeItAccessible(constructor);
 			return constructor;
@@ -119,7 +55,7 @@ public class ReflectUtil {
 	}
 	
 	public static Object invokeConstructor(Constructor<?> constructor, Object... args) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+		warnOnReflection(getCaller().getDeclaringClass());
 		try {
 			tryToMakeItAccessible(constructor);
 			return constructor.newInstance(args);
@@ -181,7 +117,7 @@ public class ReflectUtil {
 	}
 	
 	public static void tryToMakeItAccessible(final AccessibleObject object) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+		warnOnReflection(getCaller().getDeclaringClass());
 		PrivilegedAction<AccessibleObject> action = () -> {
 			object.setAccessible(true);
 			return object;
@@ -228,7 +164,7 @@ public class ReflectUtil {
 	
 	public static Object getFieldValue(Object from, String fieldName) {
 		try {
-			warnOnReflection(CALLER_CLASS.getCallerClass());
+			warnOnReflection(getCaller().getDeclaringClass());
 			Class<?> clazz = from instanceof Class<?> ? (Class<?>) from : from.getClass();
 			Field field = getField(clazz, fieldName);
 			if (field == null) return null;
@@ -242,7 +178,7 @@ public class ReflectUtil {
 	
 	public static boolean setFieldValue(Object of, String fieldName, Object value) {
 		try {
-			warnOnReflection(CALLER_CLASS.getCallerClass());
+			warnOnReflection(getCaller().getDeclaringClass());
 			boolean isStatic = of instanceof Class;
 			Class<?> clazz = isStatic ? (Class<?>) of : of.getClass();
 			
@@ -272,7 +208,7 @@ public class ReflectUtil {
 	}
 	
 	public static Object invokeMethod(Method method, Object object, Object... param) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+		warnOnReflection(getCaller().getDeclaringClass());
 		tryToMakeItAccessible(method);
 		try {
 			return method.invoke(object, param);
@@ -283,21 +219,115 @@ public class ReflectUtil {
 	}
 	
 	/**
-	 * @deprecated please dont use this as it's easy to mixin and change the return value of this method <p>
-	 * use {@link ReflectUtil#CALLER_CLASS}'s {@link StackWalker#getCallerClass()} instead!
-	 * @return a {@link Class} that called the method that invoked this method
+	 * @return a {@link java.lang.StackWalker.StackFrame} of the caller
 	 */
-	@Deprecated
-	public static Class<?> getCallerClass() {//should work
+	@CallerSensitive
+	public static StackWalker.StackFrame getCallerOfCaller() {//should work
 		try {
-			return CALLER_CLASS.walk(stack -> stack.map(StackWalker.StackFrame::getDeclaringClass).skip(3).findFirst().orElseThrow());
+			List<StackWalker.StackFrame> list = CALLER_CLASS.walk(stack -> stack.limit(4).skip(1).collect(Collectors.toList()));
+			StackWalker.StackFrame caller = list.get(0);
+			StackWalker.StackFrame returned = list.get(2);
+			try {
+				if (caller.getDeclaringClass().getDeclaredMethod(caller.getMethodName(), caller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			} catch (NoSuchMethodException e) {
+				if (caller.getDeclaringClass().getDeclaredConstructor(caller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			}
+			throw new HmmmException(caller.getDeclaringClass() != null ? caller.getDeclaringClass() : Class.forName(caller.getClassName()), "Illegal access!");
+		} catch (HmmmException e) {
+			throw e;
 		} catch (Exception e) {
-			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting caller class! Please do not inject this into #main() methods!");
+			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting the stack frame!", e);
+		}
+	}
+	
+	/**
+	 * @return a {@link java.lang.StackWalker.StackFrame} of the caller
+	 */
+	@CallerSensitive
+	public static StackWalker.StackFrame getCaller() {//should work
+		try {
+			List<StackWalker.StackFrame> list = CALLER_CLASS.walk(stack -> stack.limit(4).skip(1).collect(Collectors.toList()));
+			StackWalker.StackFrame caller = list.get(0);
+			StackWalker.StackFrame returned = list.get(1);
+			try {
+				if (caller.getDeclaringClass().getDeclaredMethod(caller.getMethodName(), caller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			} catch (NoSuchMethodException e) {
+				if (caller.getDeclaringClass().getDeclaredConstructor(caller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			}
+			throw new HmmmException(caller.getDeclaringClass() != null ? caller.getDeclaringClass() : Class.forName(caller.getClassName()), "Illegal access!");
+		} catch (HmmmException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting the stack frame!");
+		}
+	}
+	
+	public static boolean checkCallers(StackWalker.StackFrame first, StackWalker.StackFrame second) {
+		return first.toStackTraceElement().equals(second.toStackTraceElement());
+	}
+	
+	/**
+	 * @return a {@link java.lang.StackWalker.StackFrame} of the true caller(doesnt skip Method#invoke() and etc)
+	 */
+	@CallerSensitive
+	public static StackWalker.StackFrame getTrueCallerOfTrueCaller() {//should work
+		try {
+			List<StackWalker.StackFrame> list = CALLER_CLASS.walk(stack -> stack.limit(4).skip(1).collect(Collectors.toList()));
+			StackWalker.StackFrame trueCaller = list.get(0);
+			StackWalker.StackFrame returned = list.get(2);
+			try {
+				if (trueCaller.getDeclaringClass().getDeclaredMethod(trueCaller.getMethodName(), trueCaller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			} catch (NoSuchMethodException e) {
+				if (trueCaller.getDeclaringClass().getDeclaredConstructor(trueCaller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			}
+			throw new HmmmException(trueCaller.getDeclaringClass() != null ? trueCaller.getDeclaringClass() : Class.forName(trueCaller.getClassName()), "Illegal access!");
+		} catch (HmmmException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting the stack frame!");
+		}
+	}
+	
+	/**
+	 * @return a {@link java.lang.StackWalker.StackFrame} of the true caller(doesnt skip Method#invoke() and etc)
+	 */
+	@CallerSensitive
+	public static StackWalker.StackFrame getTrueCaller() {//should work
+		try {
+			List<StackWalker.StackFrame> list = CALLER_CLASS.walk(stack -> stack.limit(4).skip(1).collect(Collectors.toList()));
+			StackWalker.StackFrame trueCaller = list.get(0);
+			StackWalker.StackFrame returned = list.get(1);
+			try {
+				if (trueCaller.getDeclaringClass().getDeclaredMethod(trueCaller.getMethodName(), trueCaller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			} catch (NoSuchMethodException e) {
+				if (trueCaller.getDeclaringClass().getDeclaredConstructor(trueCaller.getMethodType().parameterArray())
+					.isAnnotationPresent(CallerSensitive.class)
+				) return returned;
+			}
+			throw new HmmmException(trueCaller.getDeclaringClass() != null ? trueCaller.getDeclaringClass() : Class.forName(trueCaller.getClassName()), "Illegal access!");
+		} catch (HmmmException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new HmmmException(ReflectUtil.class, "Something went wrong when getting the stack frame!");
 		}
 	}
 	
 	public static String getMethodSignature(Method method) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+		warnOnReflection(getCaller().getDeclaringClass());
 		String signature;
 		try {
 			Method signatureMethod = Method.class.getDeclaredMethod("getGenericSignature");
@@ -311,7 +341,7 @@ public class ReflectUtil {
 	}
 	
 	public static String getFieldSignature(Field field) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+		warnOnReflection(getCaller().getDeclaringClass());
 		String signature;
 		try {
 			Method signatureMethod = Field.class.getDeclaredMethod("getGenericSignature");
@@ -321,21 +351,9 @@ public class ReflectUtil {
 		} catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
 		return field.getType() == void.class ? "V" : (signature = Array.newInstance(field.getType(), 0).toString()).substring(1, signature.indexOf("@"));
 	}
-//
-	@ExpectPlatform
-	private static ReflectionMappingsImpl getModLoaderSpecificMappingsImpl() {
-		return null;
-	}
 	
-	public static ReflectionMappingsImpl getReflectionMappingsImpl() {
-		ReflectionMappingsImpl mappings = getModLoaderSpecificMappingsImpl();
-		//every modern mod loader should be supported!
-		if (mappings == null) throw new HmmmError("Method wasnt transformed!");
-		return mappings;
-	}
-	
-	public static void bypassModuleReflectionRestrictions(Module moduleToBypass) {
-		warnOnReflection(CALLER_CLASS.getCallerClass());
+	public static void bypassModuleReflectionRestrictions(Module moduleToBypass, boolean open) {
+		warnOnReflection(getCaller().getDeclaringClass());
 		
 		String[] packagesToOpen = moduleToBypass.getPackages().toArray(new String[0]);
 		
@@ -348,7 +366,7 @@ public class ReflectUtil {
 				//actual params now
 				/*package name*/s,
 				/*module*/Bypass.FIELDS.<Module>getStatic(Bypass.FIELDS.findOneAndMakeItAccessible(Module.class, "EVERYONE_MODULE")),
-				/*open*/true,
+				open,
 				/*syncVM*/true
 			);
 		}
@@ -361,6 +379,6 @@ public class ReflectUtil {
 		public static final Classes CLASSES = Classes.create();
 		public static final Members MEMBERS = Members.create();
 		
-		private Bypass() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+		private Bypass() {MiscUtil.instantiationOfUtilClass();}
 	}
 }

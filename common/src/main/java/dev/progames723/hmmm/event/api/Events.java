@@ -5,7 +5,6 @@ import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import dev.progames723.hmmm.utils.InternalUtils;
 import dev.progames723.hmmm.utils.MiscUtil;
-import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,7 +30,7 @@ public final class Events {
 		for (Listener<Event> listener : listeners) listener.invoke(event);
 	}, "Async event(%s) executor".formatted(event.toString()));
 	
-	private Events() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private Events() {MiscUtil.instantiationOfUtilClass();}
 	
 	public static final class Listener<E extends Event> implements Comparable<Listener<E>> {
 		private final Method method;
@@ -42,7 +41,7 @@ public final class Events {
 		}
 		
 		public Listener(Method method, EventListener listener) {
-			if (method == null || listener == null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), new NullPointerException("Arguments must not be null!"));
+			if (method == null || listener == null) throw new HmmmException(new NullPointerException("Arguments must not be null!"));
 			checkIfCorrectMethod(method);//just for the exception
 			this.method = method;
 			this.listener = listener;
@@ -161,8 +160,8 @@ public final class Events {
 	}
 	
 	public static synchronized void registerEvent(Class<? extends Event> event) {
-		if (!registeredEvents.add(event)) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Event already exists!");
-		if (eventListeners.put(event, new TreeSet<>(Comparator.comparingInt(value -> -value.listener.priority().ordinal()))) != null) throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Event already exists! also this should never happen");
+		if (!registeredEvents.add(event)) throw new HmmmException("Event already exists!");
+		if (eventListeners.put(event, new TreeSet<>(Comparator.comparingInt(value -> -value.listener.priority().ordinal()))) != null) throw new HmmmException("Event already exists! also this should never happen");
 	}
 	
 	public static synchronized void unregisterEvent(Class<? extends Event> event) {
@@ -175,7 +174,7 @@ public final class Events {
 	public static synchronized void startEventRegistration() {
 		if (finalized) return;
 		finalized = true;
-		CallerSensitive.Utils.throwExceptionIfNotAllowed(ReflectUtil.CALLER_CLASS.getCallerClass());
+		CallerSensitive.Utils.throwExceptionIfNotAllowed();
 		HmmmLibrary.LOGGER.debug("Registering events...");
 		List<Class<?>> events = InternalUtils.scanClassesFor(Event.class, InternalUtils.ScanType.SUB_CLASSES, true);
 		if (!events.isEmpty()) events.add(Event.class);

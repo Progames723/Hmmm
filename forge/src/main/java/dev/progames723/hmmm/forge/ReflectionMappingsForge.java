@@ -1,14 +1,14 @@
 package dev.progames723.hmmm.forge;
 
 import cpw.mods.modlauncher.api.INameMappingService;
-import dev.progames723.hmmm.ReflectionMappingsImpl;
+import dev.progames723.hmmm.ReflectionMappings;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.spongepowered.asm.bridge.RemapperAdapterFML;
 
-public class ReflectionMappingsForgeImpl extends ReflectionMappingsImpl {
+public class ReflectionMappingsForge extends ReflectionMappings {
 	private static final RemapperAdapterFML remapper = (RemapperAdapterFML) RemapperAdapterFML.create();
 	
-	public ReflectionMappingsForgeImpl() {super();}
+	public ReflectionMappingsForge() {super();}
 	
 	@Override
 	public String unmapClassName(String className) {

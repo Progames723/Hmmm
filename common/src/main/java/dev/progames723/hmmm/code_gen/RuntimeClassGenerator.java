@@ -3,8 +3,8 @@ package dev.progames723.hmmm.code_gen;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.event.utils.DoubleValue;
+import dev.progames723.hmmm.internal.CallerSensitive;
 import dev.progames723.hmmm.utils.MiscUtil;
-import dev.progames723.hmmm.utils.ReflectUtil;
 import org.burningwave.core.classes.Methods;
 import org.objectweb.asm.*;
 import org.objectweb.asm.util.CheckClassAdapter;
@@ -19,12 +19,13 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public final class RuntimeClassGenerator {
-	private RuntimeClassGenerator() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private RuntimeClassGenerator() {MiscUtil.instantiationOfUtilClass();}
 	
 	private static boolean DEBUG = false;//set manually or through reflection, dont leave as true in production
 	
 	private static final ClassLoader loader = new ClassLoader() {};
 	
+	@CallerSensitive
 	public static <T> Class<? extends T> generateClass(ClassDefinition clazz) {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		
@@ -74,7 +75,7 @@ public final class RuntimeClassGenerator {
 		try {
 			generated = (Class<? extends T>) castingMethod.getA().invoke(castingMethod.getB(), clazz.className().replace('/', '.'), bytes, 0, bytes.length);
 		} catch (ClassCastException e) {
-			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "bro you used the wrong interface/super class", e);
+			throw new HmmmException("bro you used the wrong interface/super class", e);
 		} catch (Exception e) {
 			if (!DEBUG) {
 				try {
@@ -85,11 +86,12 @@ public final class RuntimeClassGenerator {
 					DEBUG = false;
 				}
 			}
-			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
+			throw new HmmmException(e);
 		}
 		return generated;
 	}
 	
+	@CallerSensitive
 	private static <T> DoubleValue<Method, ClassLoader> getCastingMethod(ClassDefinition clazz) {
 		ClassLoader casting = null;
 		Class<? extends T> cls = null;
@@ -117,7 +119,7 @@ public final class RuntimeClassGenerator {
 			try {
 				cls = (Class<? extends T>) Class.forName(superName.replace('/', '.'));
 			} catch (Exception e) {
-				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
+				throw new HmmmException(e);
 			}
 		}
 		if (casting == null) casting = cls.getClassLoader();
@@ -130,21 +132,18 @@ public final class RuntimeClassGenerator {
 		return new DoubleValue<>(defineClassMethod, casting);
 	}
 	
+	@CallerSensitive
 	public static <T> T generate(ClassDefinition clazz, Class<?>[] paramTypes, Object... args) {
 		Class<? extends T> cls = generateClass(clazz);
-		Constructor<? extends T> constructor;
+		Constructor<? extends T> constructor = null;
 		try {
 			constructor = cls.getDeclaredConstructor(paramTypes);
-		} catch (Exception e) {
-			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
-		}
-		try {
 			constructor.setAccessible(true);
 			return constructor.newInstance(args);
 		} catch (Exception e) {
-			throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), e);
+			throw new HmmmException(e);
 		} finally {
-			constructor.setAccessible(false);
+			if (constructor != null) constructor.setAccessible(false);
 		}
 	}
 	

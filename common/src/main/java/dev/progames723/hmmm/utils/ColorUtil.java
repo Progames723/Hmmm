@@ -49,5 +49,5 @@ public class ColorUtil {
 		return new Vector4d(alpha, red, green, blue);
 	}
 	
-	private ColorUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private ColorUtil() {MiscUtil.instantiationOfUtilClass();}
 }

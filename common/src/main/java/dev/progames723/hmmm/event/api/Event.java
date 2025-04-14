@@ -1,14 +1,16 @@
 package dev.progames723.hmmm.event.api;
 
+import dev.progames723.hmmm.HmmmError;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Event {
-	private final AtomicLong eventCancelViolations = new AtomicLong(0);
+	private static final AtomicLong eventCancelViolations = new AtomicLong(0);
 	private final boolean isCancellable;
 	private boolean cancelled;
 	
@@ -22,18 +24,25 @@ public abstract class Event {
 	
 	@MustBeInvokedByOverriders
 	public final void cancel() {
-		if (cancelled || !canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
+		if (cancelled || !canChangeEvent()) return;
 		if (!isCancellable) {
 			if (eventCancelViolations.get() < 12) {
-				HmmmLibrary.LOGGER.warn("Event cancel violation! {}/13 violations.", eventCancelViolations.incrementAndGet(), new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s/13 cancellation violations!".formatted(eventCancelViolations.get())));
+				HmmmLibrary.LOGGER.warn("Event cancel violation! {}/13 violations.", eventCancelViolations.incrementAndGet(), new HmmmException("Some event is faulty! %s/13 cancellation violations!".formatted(eventCancelViolations.get())));
 			} else {
-				throw new HmmmException(ReflectUtil.CALLER_CLASS.getCallerClass(), "Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.incrementAndGet()));
+				throw new HmmmException("Some event is faulty! %s cancellation violations!".formatted(eventCancelViolations.incrementAndGet()));
 			}
 		} else cancelled = true;
 	}
 	
-	protected final boolean canChangeEvent(Class<?> caller) {
-		EventListener instance = caller.getDeclaredAnnotation(EventListener.class);
+	protected final boolean canChangeEvent() {
+		StackWalker.StackFrame frame = ReflectUtil.getCallerOfCaller();
+		Method h;
+		try {
+			h = frame.getDeclaringClass().getDeclaredMethod(frame.getMethodName(), frame.getMethodType().parameterArray());
+		} catch (NoSuchMethodException e) {
+			throw new HmmmError("Unreliable stack", e);
+		}
+		EventListener instance = h.getDeclaredAnnotation(EventListener.class);
 		if (instance == null) return false;
 		return instance.priority().canModifyEvent();
 	}

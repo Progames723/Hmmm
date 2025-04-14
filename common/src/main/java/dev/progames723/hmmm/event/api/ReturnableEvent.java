@@ -1,11 +1,13 @@
 package dev.progames723.hmmm.event.api;
 
-import dev.progames723.hmmm.utils.ReflectUtil;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * quite useless once you consider that extending the default event gives the same results
+ */
 @Deprecated(forRemoval = true)
 public abstract class ReturnableEvent<T> extends Event {
-	private final boolean nullable;
+	protected final boolean nullable;
 	protected final boolean isVoid;
 	protected T value;
 	
@@ -27,7 +29,7 @@ public abstract class ReturnableEvent<T> extends Event {
 	}
 	
 	public void returnEvent(T value) {
-		if (!canChangeEvent(ReflectUtil.CALLER_CLASS.getCallerClass())) return;
+		if (!canChangeEvent()) return;
 		this.cancel();
 		if (!isVoid) this.value = value;
 	}

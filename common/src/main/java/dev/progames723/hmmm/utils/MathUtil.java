@@ -11,7 +11,7 @@ public class MathUtil {
 	private static final Supplier<SecureRandom> secureRandom = SecureRandom::new;
 	
 	@CallerSensitive
-	private MathUtil() {MiscUtil.instantiationOfUtilClass(ReflectUtil.CALLER_CLASS.getCallerClass());}
+	private MathUtil() {MiscUtil.instantiationOfUtilClass();}
 	
 	public static long percent(long number, long max) {
 		return (long) (number / (double) max) * 100;
