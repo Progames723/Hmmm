@@ -23,12 +23,13 @@ public interface XplatProvider {
 		} catch (ClassCastException e) {
 			throw new HmmmException("Class could not be cast to the impl", e);
 		}
-		if (cls.isInterface()) throw new HmmmException("Xplat provider found an interface impl! Interfaces cannot be used as platform implementations!");
+		if (cls.isInterface())
+			throw new HmmmException("Xplat provider found an interface impl! Interfaces cannot be used as platform implementations!");
 		try {
 			constructor = cls.getDeclaredConstructor();
 			instance = constructor.newInstance();
 		} catch (NoSuchMethodException e) {
-			throw new HmmmException("Expected a no-args constructor in Xplat impl, found: %s".formatted((Object[]) cls.getDeclaredConstructors()), e);
+			throw new HmmmException("Expected a no-args constructor in Xplat impl, found %s instead!".formatted((Object[]) cls.getDeclaredConstructors()), e);
 		} catch (Exception e) {
 			throw new HmmmException("Failure to construct a new Xplat impl instance!", e);
 		}

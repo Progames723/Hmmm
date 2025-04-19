@@ -7,14 +7,20 @@
     "EventFactoryAccess",
     "LivingEntityAccess",
     "MinecraftServerMixin",
+    "PlayerDataStorageAccessor",
+    "PlayerDataStorageMixin",
+    "PlayerListMixin",
     "PlayerMixin",
+    "events.ArgumentTypeInfosMixin",
     "events.CommandsMixin",
     "events.LivingEntityMixin",
     "server.ServerCommonPacketListenerImplMixin"
   ],
   "client": [
     "client.ClientCommonPacketListenerImplMixin",
-    "client.GuiGraphicsMixin"
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.ScreenMixin"
   ],
   "server": [
   ],

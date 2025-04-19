@@ -12,23 +12,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings({"unchecked", "StringConcatenationArgumentToLogCall"})//i have to format the string to be able to display the exception
+@SuppressWarnings({"unchecked"})//i have to format the string to be able to display the exception
 public final class Events {
-	private static boolean finalized;
+	private static boolean finalized = false;
 	private static final Set<Class<? extends Event>> registeredEvents = new HashSet<>();
 	private static final Map<Class<? extends Event>, TreeSet<Listener<Event>>> eventListeners = new HashMap<>();
-	private static final Function<Event, Thread> asyncEventExecutor = (event) -> new Thread(() -> {
-		TreeSet<Listener<Event>> listeners = eventListeners.get(event.getClass());
-		try {
-			assert listeners != null : "event not registered!";
-		} catch (AssertionError e) {
-			HmmmLibrary.LOGGER.debug("Async event(%s) executor caught an error".formatted(event.toString()), e);
-			throw e;
-		}
-		for (Listener<Event> listener : listeners) listener.invoke(event);
-	}, "Async event(%s) executor".formatted(event.toString()));
 	
 	private Events() {MiscUtil.instantiationOfUtilClass();}
 	
@@ -52,8 +42,10 @@ public final class Events {
 			try {
 				method.setAccessible(true);
 				method.invoke(null, event);
+			} catch (IllegalArgumentException e) {
+				HmmmLibrary.LOGGER.debug(HmmmLibrary.EVENT, "Method(%s, from %s) has invalid generics for the event!".formatted(method, method.getDeclaringClass()), e);
 			} catch (Exception e) {
-				HmmmLibrary.LOGGER.error(HmmmLibrary.EVENT, "Method(%s, from %s) threw an exception when handling event!".formatted(method, method.getDeclaringClass()), e);
+				HmmmLibrary.LOGGER.warn(HmmmLibrary.EVENT, "Method(%s, from %s) threw an exception when handling event!".formatted(method, method.getDeclaringClass()), e);
 			} finally {
 				method.setAccessible(false);
 			}
@@ -66,27 +58,28 @@ public final class Events {
 	}
 	
 	private static Set<Listener<Event>> getEveryListener(Class<? extends Event> eventClass) {
-		final var h = new Object() {
-			final Set<Listener<Event>> set = eventListeners.get(eventClass);
-		};
-		eventListeners.forEach((cls, listeners) -> {
-			if (!eventClass.isAssignableFrom(cls)) return;
-			if (listeners == null || listeners.isEmpty()) return;
-			h.set.addAll(listeners);
-		});
-		return h.set;
+		Set<Listener<Event>> set = eventListeners.get(eventClass);
+		if (set != null) {
+			Class<?> superClass = eventClass.getSuperclass();
+			while (superClass != Event.class) {
+				Set<Listener<Event>> tempSet = eventListeners.get(superClass);
+				if (!tempSet.isEmpty()) set.addAll(tempSet);
+				superClass = superClass.getSuperclass();
+			}
+			set.addAll(eventListeners.get(Event.class));
+		}
+		return set;
 	}
 	
 	public static synchronized <E extends Event> E invokeEvent(E event) {
 		Set<Listener<Event>> listeners = getEveryListener(event.getClass());
-		try {
-			assert listeners != null : "unregistered event!";
-		} catch (AssertionError e) {
-			throw new HmmmException((Class<?>) null, e);
-		}
+		if (listeners == null) return event;
 		if (AsyncEvent.class.isAssignableFrom(event.getClass()) && ((AsyncEvent) event).isAsync()) {
 			//run asynchronously
-			asyncEventExecutor.apply(event).start();
+			CompletableFuture.supplyAsync(() -> {
+				listeners.forEach(eventListener -> eventListener.invoke(event));
+				return event;
+			});
 		} else {
 			for (Listener<? extends Event> listener : listeners) {
 				((Listener<E>) listener).invoke(event);
@@ -146,7 +139,11 @@ public final class Events {
 		if (!Modifier.isStatic(eventHandler.getModifiers())) list.add(new HmmmException(null, "method must be static!"));
 		if (eventHandler.getAnnotation(EventListener.class) == null) list.add(new HmmmException(null, "method must have an EventListener annotation!"));
 		if (eventHandler.getParameterTypes().length != 1) list.add(new HmmmException(null, "method has malformed(or incorrect) arguments"));
-		if (!Event.class.isAssignableFrom(eventHandler.getParameterTypes()[0])) list.add(new HmmmException(null, "expected %s(or subclass) in argument, got %s".formatted(Event.class, eventHandler.getParameterTypes()[0])));
+		try {
+			if (!Event.class.isAssignableFrom(eventHandler.getParameterTypes()[0])) list.add(new HmmmException(null, "expected %s(or subclass) in argument, got %s".formatted(Event.class, eventHandler.getParameterTypes()[0])));
+		} catch (Exception e) {
+			list.add(new HmmmException((Class<?>) null, e));
+		}
 		if (!list.isEmpty()) {
 			list.add(0, new HmmmException(null, "Cannot use incorrect methods!"));
 			HmmmException exception = null;

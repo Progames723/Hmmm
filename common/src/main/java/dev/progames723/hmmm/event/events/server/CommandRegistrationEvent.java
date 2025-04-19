@@ -1,4 +1,4 @@
-package dev.progames723.hmmm.event.events;
+package dev.progames723.hmmm.event.events.server;
 
 import com.mojang.brigadier.CommandDispatcher;
 import dev.progames723.hmmm.event.api.Event;

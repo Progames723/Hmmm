@@ -2,7 +2,6 @@ package dev.progames723.hmmm.event.utils;
 
 import dev.architectury.event.Event;
 import dev.architectury.event.EventFactory;
-import dev.progames723.hmmm.event.api.ReturnableEvent;
 import dev.progames723.hmmm.mixin.EventFactoryAccess;
 
 import java.lang.reflect.Proxy;
@@ -118,34 +117,6 @@ public final class EventFactoryUtil {//no fabric port ig :(
 				if (!isGood(quadrupleValue.getD(), defaultReturn.getD())) {throw new NullPointerException();}
 				return quadrupleValue;
 			}
-			return defaultReturn;
-		}));
-	}
-	
-	public static <T, K extends dev.progames723.hmmm.event.api.Event> Event<T> createEvent(K defaultReturn, T... typeGetter) {
-		if (typeGetter.length != 0) throw new IllegalStateException("array must be empty!");
-		return createEvent(defaultReturn, (Class<T>) typeGetter.getClass().getComponentType());
-	}
-	
-	public static <T, K extends dev.progames723.hmmm.event.api.Event> Event<T> createEvent(K defaultReturn, Class<T> clazz) {
-		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
-			for (var listener : listeners) {
-				dev.progames723.hmmm.event.api.Event event = Objects.requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
-				if (event instanceof ReturnableEvent e) if (e.returnsNull() && !e.isNullable()) throw new NullPointerException();
-				return event;
-			}
-			return defaultReturn;
-		}));
-	}
-	
-	public static <T, K extends dev.progames723.hmmm.event.api.Event> Event<T> createVoidEvent(K defaultReturn, T... typeGetter) {
-		if (typeGetter.length != 0) throw new IllegalStateException("array must be empty!");
-		return createVoidEvent(defaultReturn, (Class<T>) typeGetter.getClass().getComponentType());
-	}
-	
-	public static <T, K extends dev.progames723.hmmm.event.api.Event> Event<T> createVoidEvent(K defaultReturn, Class<T> clazz) {
-		return EventFactory.of(listeners -> (T) Proxy.newProxyInstance(EventFactory.class.getClassLoader(), new Class[]{clazz}, (proxy, method, args) -> {
-			for (var listener : listeners) return Objects.<dev.progames723.hmmm.event.api.Event>requireNonNull(EventFactoryAccess.invokeMethod(listener, method, args));
 			return defaultReturn;
 		}));
 	}

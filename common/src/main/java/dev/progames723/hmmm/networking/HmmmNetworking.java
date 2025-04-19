@@ -1,5 +1,6 @@
 package dev.progames723.hmmm.networking;
 
+import com.google.common.collect.ImmutableSet;
 import dev.progames723.hmmm.HmmmException;
 import dev.progames723.hmmm.internal.CallerSensitive;
 import dev.progames723.hmmm.utils.MiscUtil;
@@ -24,9 +25,20 @@ import java.util.function.Consumer;
 public final class HmmmNetworking {
 	private HmmmNetworking() {MiscUtil.instantiationOfUtilClass();}
 	
-	private static final Set<MessageHandler> S2CHandlers = new HashSet<>();
+	private static final Set<MessageHandler> S2CHandlers;
+	private static final Set<MessageHandler> C2SHandlers;
+	private static final Set<MessageHandler> handlers;
 	
-	private static final Set<MessageHandler> C2SHandlers = new HashSet<>();
+	static {
+		if (XplatUtils.getInstance().getSide().isServer()) {
+			S2CHandlers = new HashSet<>();
+			C2SHandlers = new ImmutableSet.Builder<MessageHandler>().build();
+		} else {
+			S2CHandlers = new ImmutableSet.Builder<MessageHandler>().build();
+			C2SHandlers = new HashSet<>();
+		}
+		handlers = new HashSet<>();
+	}
 	
 	public static Packet<?> constructPacket(Message message) {
 		if (XplatUtils.getInstance().getSide().isServer())
@@ -71,19 +83,30 @@ public final class HmmmNetworking {
 	}
 	
 	public static void registerS2CMessageHandler(MessageHandler handler) {
-		if (XplatUtils.getInstance().getSide().isServer()) throw new HmmmException("Why are you adding S2C handlers on a server");
+		if (!XplatUtils.getInstance().getSide().isServer()) throw new HmmmException("Why are you adding S2C handlers on a client");
 		S2CHandlers.add(handler);
 	}
 	
 	public static void registerC2SMessageHandler(MessageHandler handler) {
-		if (XplatUtils.getInstance().getSide().isClient()) throw new HmmmException("Why are you adding C2S handlers on a client");
+		if (!XplatUtils.getInstance().getSide().isClient()) throw new HmmmException("Why are you adding C2S handlers on a server");
 		C2SHandlers.add(handler);
+	}
+	
+	public static void registerMessageHandler(MessageHandler handler, boolean sided) {
+		if (!sided) {
+			handlers.add(handler);
+			return;
+		}
+		if (XplatUtils.getInstance().getSide().isServer())
+			registerS2CMessageHandler(handler);
+		else registerC2SMessageHandler(handler);
 	}
 	
 	@ApiStatus.Internal
 	@CallerSensitive
 	public static void iterateThroughHandlers(MessagePacketPayload payload) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed();
+		handlers.forEach(handler -> handler.handle(payload));
 		if (payload.message().isS2C())
 			S2CHandlers.forEach(handler -> handler.S2CHandle(payload));
 		else
@@ -92,6 +115,7 @@ public final class HmmmNetworking {
 	
 	@FunctionalInterface
 	public interface MessageHandler {
+		//yes it only handles my packets but why do i need other packets?
 		void handle(MessagePacketPayload payload);
 		
 		default void S2CHandle(MessagePacketPayload payload) {

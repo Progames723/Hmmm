@@ -9,6 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class InternalUtils {
 	private InternalUtils() {MiscUtil.instantiationOfUtilClass();}
 	
@@ -23,11 +24,32 @@ public class InternalUtils {
 			.removeTemporaryFilesAfterScan()
 			.scan()) {
 			return switch (type) {
-				case SUPER_CLASS -> result.getSuperclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
-				case SUB_CLASSES -> result.getSubclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
+				case SUPER_CLASS -> {
+					List<Class<T>> clsList = result.getSuperclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
+					if (!clsList.isEmpty()) yield clsList;
+					try {
+						yield (List<Class<T>>) (Object) result.getSuperclasses(classToScanFor).loadClasses(ignoreExceptions);
+					} catch (ClassCastException e) {
+						yield clsList;
+					}
+				}
+				case SUB_CLASSES -> {
+					List<Class<T>> clsList = result.getSubclasses(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
+					if (!clsList.isEmpty()) yield clsList;
+					try {
+						yield (List<Class<T>>) (Object) result.getSubclasses(classToScanFor).loadClasses(ignoreExceptions);
+					} catch (ClassCastException e) {
+						yield clsList;
+					}
+				}
 				case INTERFACE_IMPL -> {
 					List<Class<T>> clsList = result.getClassesImplementing(classToScanFor).loadClasses(classToScanFor, ignoreExceptions);
-					yield clsList;
+					if (!clsList.isEmpty()) yield clsList;
+					try {
+						yield (List<Class<T>>) (Object) result.getClassesImplementing(classToScanFor).loadClasses(ignoreExceptions);
+					} catch (ClassCastException e) {
+						yield clsList;
+					}
 				}
 				default -> throw new HmmmException("Malformed enum!");
 			};
