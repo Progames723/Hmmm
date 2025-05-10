@@ -1,0 +1,37 @@
+{
+  "required": true,
+  "minVersion": "0.8.5",
+  "package": "dev.progames723.hmmm.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ConnectionMixin",
+    "ConnectionProtocolMixin",
+    "FriendlyByteBufMixin",
+    "MinecraftServerMixin",
+    "PlayerDataStorageAccessor",
+    "PlayerDataStorageMixin",
+    "PlayerListMixin",
+    "PlayerMixin",
+    "ArgumentTypeInfosMixin",
+    "events.CommandsMixin",
+    "events.LivingEntityMixin",
+    "server.ServerCommonPacketListenerImplMixin",
+    "server.ServerPlayerMixin"
+  ],
+  "client": [
+    "client.AbstractContainerScreenMixin",
+    "client.ClientPacketListenerMixin",
+    "client.GuiGraphicsMixin",
+    "client.GuiMixin",
+    "client.MinecraftMixin",
+    "client.OptionInstanceAccess",
+    "client.ScreenMixin"
+  ],
+  "server": [
+  ],
+  "priority": 2147483647,
+  "mixinPriority": 2147483647,
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

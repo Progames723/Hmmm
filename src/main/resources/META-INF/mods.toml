@@ -1,0 +1,32 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "${license}"
+issueTrackerURL="${url}/issues"
+
+[[mods]]
+modId = "${id}"
+version = "${version}"
+displayName = "${name}"
+authors = "${author}"
+description = "${description}"
+logoFile = "assets/${id}/icon.png"
+logoBlur = false
+
+[[dependencies."${id}"]]
+modId = "minecraft"
+#? if forge {
+#mandatory = true
+#?} else {
+type = "required"
+#?}
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"
+
+#? if neoforge {
+[[mixins]]
+config = "${id}-common.mixins.json"
+
+[[mixins]]
+config = "${id}-neoforge.mixins.json"
+#?}

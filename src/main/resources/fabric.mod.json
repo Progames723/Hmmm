@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}",
+  "name": "${name}",
+  "version": "${version}",
+  "description": "${description}",
+  "icon": "assets/${id}/icon.png",
+  "contact": {
+    "homepage": "${url}",
+    "issues": "${url}/issues"
+  },
+  "authors": [
+    "${author}"
+  ],
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "dev.progames723.hmmm.platforms.fabric.client.HmmmLibraryClientFabric"
+    ],
+    "preLaunch": [
+      "dev.progames723.hmmm.platforms.fabric.HmmmLibraryFabric"
+    ]
+  },
+  "depends": {
+    "minecraft": "${minecraft}",
+    "fabric-api": ">=${fabric_api}"
+  },
+  "mixins": [
+    "${id}-common.mixins.json",
+    "${id}-fabric.mixins.json"
+  ]
+}

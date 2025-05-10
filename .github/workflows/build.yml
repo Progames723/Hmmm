@@ -1,0 +1,58 @@
+#wow is that a workflow
+name: build mod
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "buildSrc/**"
+      - "versions/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+  push:
+    paths:
+      - "src/**"
+      - "buildSrc/**"
+      - "versions/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      - name: setup jdk 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        id: gradle-cache
+        with:
+          fail-on-cache-miss: false
+          key: "gradle cache"
+          restore-keys: |
+            "arch loom cache"
+          path: |
+            .gradle
+            ~/.gradle
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: generate wrapper for some reason
+        if: ${{ steps.gradle-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        run: ./gradlew wrapper
+      - name: build
+        run: ./gradlew chiseledBuild
+      - name: upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 2
+          compression-level: 9
+          name: build-artifacts
+          path: build/libs/
