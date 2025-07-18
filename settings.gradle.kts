@@ -12,7 +12,7 @@ pluginManagement {
 }
 
 plugins {
-    id("dev.kikugie.stonecutter") version "0.7-alpha.10"
+    id("dev.kikugie.stonecutter") version "0.7-alpha.14"
 }
 
 stonecutter {
@@ -30,4 +30,4 @@ stonecutter {
     create(rootProject)
 }
 
-rootProject.name = "Example"
+rootProject.name = "hmmm_library"

@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class AttachmentSync {
 	private AttachmentSync() {MiscUtil.instantiationOfUtilClass();}
 	
-	public static final ResourceLocation ATTACHMENT_SYNC_ID = /*? if > 1.20.4 {*//*ResourceLocation.fromNamespaceAndPath(HmmmLibrary.MOD_ID, "attachment_sync");*//*?} else {*/new ResourceLocation(HmmmLibrary.MOD_ID, "attachment_sync");/*?}*/
+	public static final ResourceLocation ATTACHMENT_SYNC_ID = HmmmLibrary.createRL(HmmmLibrary.MOD_ID, "attachment_sync");
 	
 	private static final Function<SynchronizedAttachment, Consumer<FriendlyByteBuf>> funnyFunction = sync -> buf -> {
 		byte[] data;

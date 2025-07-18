@@ -23,9 +23,6 @@ public final class RuntimeClassGenerator {
 	
 	private static boolean DEBUG = false;//set manually or through reflection, dont leave as true in production
 	
-	private static final ClassLoader loader = new ClassLoader() {};
-	
-	@CallerSensitive
 	public static <T> Class<? extends T> generateClass(ClassDefinition clazz) {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		
@@ -91,7 +88,6 @@ public final class RuntimeClassGenerator {
 		return generated;
 	}
 	
-	@CallerSensitive
 	private static <T> DoubleValue<Method, ClassLoader> getCastingMethod(ClassDefinition clazz) {
 		ClassLoader casting = null;
 		Class<? extends T> cls = null;
@@ -99,8 +95,8 @@ public final class RuntimeClassGenerator {
 		if (superName == null) {
 			List<String> interfaces = List.of(clazz.interfaces());
 			if (interfaces.isEmpty()) {
-				cls = (Class<? extends T>) Object.class;
-				casting = loader;
+				cls = (Class<? extends T>) RuntimeClassGenerator.class;
+				casting = cls.getClassLoader();
 			} else {
 				HmmmException stored = null;
 				for (String string : interfaces) {
@@ -137,7 +133,6 @@ public final class RuntimeClassGenerator {
 		return new DoubleValue<>(defineClassMethod, casting);
 	}
 	
-	@CallerSensitive
 	public static <T> T generate(ClassDefinition clazz, Class<?>[] paramTypes, Object... args) {
 		Class<? extends T> cls = generateClass(clazz);
 		Constructor<? extends T> constructor = null;

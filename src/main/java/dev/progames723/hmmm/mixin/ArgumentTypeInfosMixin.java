@@ -1,6 +1,7 @@
 package dev.progames723.hmmm.mixin;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import dev.progames723.hmmm.HmmmLibrary;
 import dev.progames723.hmmm.misc.commands.argument_types.EnumArgumentType;
 import dev.progames723.hmmm.misc.commands.argument_types.JavaClassArgumentType;
 import dev.progames723.hmmm.misc.commands.argument_types.JavaCodeArgumentType;
@@ -31,15 +32,16 @@ public abstract class ArgumentTypeInfosMixin {
 		);
 		register(
 			registry,
+			"hmmm:java_class_argument_type",
+			JavaClassArgumentType.class,
+			new JavaClassArgumentType.Info()
+		);
+		if (!HmmmLibrary.getConfig().canEvalJavaCode()) return;
+		register(
+			registry,
 			"hmmm:java_code_argument_type",
 			JavaCodeArgumentType.class,
 			new JavaCodeArgumentType.Info()
-		);
-		register(
-			registry,
-			"hmmm:java_class_argument_type",
-			(Class<? extends JavaClassArgumentType<?>>) new JavaClassArgumentType.Info.Template<>(null).instantiate(null).getClass(),
-			new JavaClassArgumentType.Info<>()
 		);
 	}
 }

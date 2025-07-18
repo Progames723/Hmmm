@@ -2,7 +2,7 @@ package dev.progames723.hmmm;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.sun.jna.Platform;
-import dev.progames723.hmmm.config.Config;
+import dev.progames723.hmmm.config.v0.Json5Config;
 import dev.progames723.hmmm.event.api.AutoRegisterEvents;
 import dev.progames723.hmmm.event.api.Event;
 import dev.progames723.hmmm.event.api.EventListener;
@@ -10,6 +10,7 @@ import dev.progames723.hmmm.event.api.Events;
 import dev.progames723.hmmm.event.events.server.CommandRegistrationEvent;
 import dev.progames723.hmmm.interface_injection.PlayerAttachments;
 import dev.progames723.hmmm.internal.CallerSensitive;
+import dev.progames723.hmmm.misc.IterableMap;
 import dev.progames723.hmmm.misc.commands.AttachmentsCommand;
 import dev.progames723.hmmm.misc.commands.ConfigCommand;
 import dev.progames723.hmmm.misc.commands.JavaEvalCommand;
@@ -22,18 +23,18 @@ import io.github.classgraph.ClassGraph;
 import io.netty.buffer.Unpooled;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
-import org.mozilla.javascript.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @AutoRegisterEvents
@@ -42,7 +43,6 @@ public class HmmmLibrary {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Hmmm Library");
 	public static final Marker REFLECT = MarkerFactory.getMarker("Reflection");
 	public static final Marker EVENT = MarkerFactory.getMarker("Event");
-	public static final HmmmConfig CONFIG = HmmmConfig.instance;
 	
 	@ApiStatus.Internal
 	@CallerSensitive
@@ -65,13 +65,25 @@ public class HmmmLibrary {
 		LOGGER.info("Initialized Hmmm Library!");
 	}
 	
+	public static HmmmConfig getConfig() {
+		return HmmmConfig.instance;
+	}
+	
 	@EventListener(priority = Event.EventPriority.HIGHEST)
 	public static void onCommandRegister(CommandRegistrationEvent event) {
 		CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
 		AttachmentsCommand.register(dispatcher);
-		if (HmmmLibrary.CONFIG.canEvalJavaCode())
+		if (HmmmLibrary.getConfig().canEvalJavaCode())
 			JavaEvalCommand.register(dispatcher);
 		ConfigCommand.register(dispatcher);
+	}
+	
+	public static ResourceLocation createRL(String namespace, String path) {
+		//? if > 1.20.4 {
+		/*return ResourceLocation.fromNamespaceAndPath(namespace, path);
+		*///?} else {
+		return new ResourceLocation(namespace, path);
+		//?}
 	}
 	
 	private static void registerPacketListeners() {
@@ -93,7 +105,7 @@ public class HmmmLibrary {
 		});
 	}
 	
-	public static final class HmmmConfig extends Config {
+	public static final class HmmmConfig extends Json5Config {
 		private static final AtomicLong instancesCount = new AtomicLong();
 		private static final HmmmConfig instance = new HmmmConfig();
 		
@@ -109,17 +121,34 @@ public class HmmmLibrary {
 		}
 		
 		@Override
-		protected void onFileInit(FileInitType type, File file) throws IOException {
-			if (!type.equals(FileInitType.COMMON)) return;
-			try (FileWriter writer = new FileWriter(file)) {
-				writer.write("# Hmmm library common configuration file\n");
-				writer.write("# Whether to enable possibly dangerous java code evaluation");
-				writer.write("eval_code=false");
-			}
+		protected Map<String, String> createDefaultConfigValues(FileType type) {
+			return IterableMap.ofEntries(
+				Map.entry("eval_code", "false"),
+				Map.entry("can_eval", "")
+			);
+		}
+		
+		@Override
+		protected void writeComments(Writer writer, FileType type) throws IOException {
+			writer.write("""
+				// I am not responsible if you fuck up and enable code
+				// evaluation on a server and if it does something bad.
+				// Enable only if required(and maybe troll your friends)
+    
+				// For "can_eval" enter player names, separated by a " "(space)
+				// character that can use the command.
+				// Case-sensitive!!!
+				""");
 		}
 		
 		public boolean canEvalJavaCode() {
 			return getBoolean("eval_code", false);
+		}
+		
+		public List<String> getCanEval() {
+			String s = getConfigValue("can_eval", "");
+			if (s == null) return List.of();
+			return List.of(s.split(" "));
 		}
 	}
 }

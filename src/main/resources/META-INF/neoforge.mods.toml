@@ -20,7 +20,7 @@ ordering = "NONE"
 side = "BOTH"
 
 [[mixins]]
-config = "${id}-common.mixins.json"
+propertiesConfig = "${id}-common.mixins.json"
 
 [[mixins]]
-config = "${id}-neoforge.mixins.json"
+propertiesConfig = "${id}-neoforge.mixins.json"

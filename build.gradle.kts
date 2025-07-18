@@ -2,7 +2,6 @@
 import java.util.*
 
 plugins {
-//	id("stonecutter") version "0.6"
 	id("dev.architectury.loom")
 	id("architectury-plugin")
 	id("me.modmuss50.mod-publish-plugin")
@@ -10,7 +9,7 @@ plugins {
 }
 
 val minecraft = stonecutter.current.version
-val loader = loom.platform.get().name.lowercase()
+val loader = stonecutter.current.project.split("-")[1]
 
 version = "${mod.version}+$minecraft"
 group = mod.group
@@ -69,12 +68,13 @@ dependencies {
 		modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_version")}")
 		modApi("net.fabricmc.fabric-api:fabric-api:${mod.dep("fabric-api_version")}")
 	}
-	"io.github.llamalad7:mixinextras-$loader:${mod.dep("mixin_extras")}".let {modApi(it); include(it)}
 	if (loader == "forge") {
 		"forge"("net.minecraftforge:forge:${minecraft}-${mod.dep("forge_version")}")
+		"io.github.llamalad7:mixinextras-$loader:${mod.dep("mixin_extras")}".let {modApi(it); include(it)}
 	}
 	if (loader == "neoforge") {
 		"neoForge"("net.neoforged:neoforge:${mod.dep("neoforge_version")}")
+		"io.github.llamalad7:mixinextras-$loader:${mod.dep("mixin_extras")}".let {modApi(it); include(it)}
 	}
 }
 

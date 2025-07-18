@@ -227,7 +227,7 @@ public final class HmmmNetworking {
 		private final Consumer<FriendlyByteBuf> bufConsumer;
 		
 		public Message(ResourceLocation id, Consumer<FriendlyByteBuf> bufConsumer) {
-			if (id == null || bufConsumer == null) throw new HmmmException(new IllegalArgumentException());
+			if (id == null || bufConsumer == null) throw new HmmmException((Class<?>) null, new IllegalArgumentException());
 			this.id = id;
 			this.bufConsumer = bufConsumer;
 		}
@@ -256,6 +256,10 @@ public final class HmmmNetworking {
 			this.receiver = receiver;
 		}
 		
+		public S2CMessage(ServerPlayer receiver, ResourceLocation id) {
+			this(receiver, id, buf -> {});
+		}
+		
 		public ServerPlayer getReceiver() {
 			return receiver;
 		}
@@ -280,6 +284,10 @@ public final class HmmmNetworking {
 			super(id, bufConsumer);
 			if (sender == null) throw new HmmmException(new IllegalArgumentException());
 			this.sender = sender;
+		}
+		
+		public C2SMessage(UUID sender, ResourceLocation id) {
+			this(sender, id, buf -> {});
 		}
 		
 		public UUID getSender() {

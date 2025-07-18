@@ -4,14 +4,12 @@ import com.esotericsoftware.kryo.kryo5.Kryo;
 import com.esotericsoftware.kryo.kryo5.io.Input;
 import com.esotericsoftware.kryo.kryo5.io.Output;
 import com.esotericsoftware.kryo.kryo5.objenesis.strategy.StdInstantiatorStrategy;
-import com.esotericsoftware.kryo.kryo5.serializers.FieldSerializer;
 import com.esotericsoftware.kryo.kryo5.util.DefaultInstantiatorStrategy;
 import com.esotericsoftware.kryo.kryo5.util.MapReferenceResolver;
 import dev.progames723.hmmm.HmmmLibrary;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 import java.util.zip.DeflaterInputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -35,7 +33,7 @@ public final class SerializationUtil {
 	 * @param o object to serialize
 	 * @return a serialized object(aka byte array)
 	 */
-	public static byte[] serializeObject(Object o) {
+	public synchronized static byte[] serializeObject(Object o) {
 		Kryo kryo = kryoThreadLocal.get();
 		try (Output output = new Output(0, -1)) {
 			kryo.writeObject(output, o);
@@ -72,7 +70,7 @@ public final class SerializationUtil {
 	 * @return deserialized object
 	 * @param <T> type
 	 */
-	public static <T> T deserializeObject(byte[] bytes, Class<T> type) {
+	public synchronized static <T> T deserializeObject(byte[] bytes, Class<T> type) {
 		Kryo kryo = kryoThreadLocal.get();
 		try (Input input = new Input(bytes)) {
 			return kryo.readObject(input, type);

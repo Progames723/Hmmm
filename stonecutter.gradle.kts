@@ -1,5 +1,5 @@
 plugins {
-    id("dev.kikugie.stonecutter") version "0.7-alpha.10"
+    id("dev.kikugie.stonecutter") version "0.7-alpha.14"
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("architectury-plugin") version "3.4-SNAPSHOT" apply false
     id("com.github.johnrengelman.shadow") version "8.1.1" apply false

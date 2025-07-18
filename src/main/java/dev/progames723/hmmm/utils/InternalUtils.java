@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
 public class InternalUtils {
@@ -114,6 +115,11 @@ public class InternalUtils {
 		}
 	}
 	
+	private static final Function<String, ClassInfoList.ClassInfoFilter> filterFunction = string -> classInfo -> {
+		if (string.isEmpty()) return true;
+		return classInfo.getName().startsWith(string);
+	};
+	
 	@CallerSensitive
 	public static List<Class<?>> getClassesForString(String string) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed();
@@ -121,22 +127,27 @@ public class InternalUtils {
 		try (ScanResult result = new ClassGraph()
 			.acceptPackages(string)
 			.scan()) {
-			return filter(result.getAllClasses()).loadClasses();
+			return filter(result.getAllClasses()).filter(filterFunction.apply(string)).loadClasses();
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
 	}
 	
 	@CallerSensitive
-	public static <T> List<Class<T>> getClassesForString(String string, Class<T> classToScanFor, ScanType type, boolean ignoreExceptions) {
+	public static List<Class<?>> getClassesForString(String string, Class<?> classToScanFor, ScanType type, boolean ignoreExceptions) {
 		CallerSensitive.Utils.throwExceptionIfNotAllowed();
 		if (string == null) throw new HmmmException("argument cannot be null!");
 		try (ScanResult result = new ClassGraph()
-			.acceptPackages(string)
+			.rejectPaths("java", "javax", "com.sun", "sun", "org.jetbrains", "jdk")//the basics
+			.overrideClassLoaders(ReflectUtil.getCaller().getDeclaringClass().getClassLoader())
+			.enableAllInfo()
+			.removeTemporaryFilesAfterScan()
 			.scan()) {
 			return switch (type) {
-				case SUB_CLASSES -> filter(result.getSubclasses(classToScanFor)).loadClasses(classToScanFor, ignoreExceptions);
-				case INTERFACE_IMPL -> filter(result.getClassesImplementing(classToScanFor)).loadClasses(classToScanFor, ignoreExceptions);
+				case SUB_CLASSES ->
+					filter(result.getSubclasses(classToScanFor).filter(filterFunction.apply(string))).loadClasses(ignoreExceptions);
+				case INTERFACE_IMPL ->
+					filter(result.getClassesImplementing(classToScanFor).filter(filterFunction.apply(string))).loadClasses(ignoreExceptions);
 				case SUPER_CLASS -> new ArrayList<>();
 				default -> throw new HmmmException("Malformed enum!");
 			};
